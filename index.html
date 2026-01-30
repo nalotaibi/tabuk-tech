@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>رادار الحرمان - تقنية تبوك</title>
+    <style>
+        :root {
+            --primary: #1d5c41;
+            --safe: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --badge-bg: #e8f5e9;
+            --badge-text: #2e7d32;
+        }
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: #f4f7f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .app-wrapper { width: 95%; max-width: 420px; padding: 20px; }
+        .glass-card {
+            background: white;
+            border-radius: 32px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .college-logo img { width: 100%; max-width: 250px; margin-bottom: 15px; }
+        .header-text h1 { margin: 5px 0; font-size: 1.4rem; color: var(--primary); }
+        .system-badge {
+            display: inline-block; padding: 4px 12px; background: var(--badge-bg);
+            color: var(--badge-text); border-radius: 15px; font-size: 0.8rem; font-weight: bold;
+        }
+        .input-container { margin: 25px 0; text-align: right; }
+        .form-group label { display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 8px; color: #444; }
+        .absent-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
+        input, select {
+            width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 12px;
+            font-size: 1rem; box-sizing: border-box; outline: none;
+        }
+        .result-display { border-radius: 20px; padding: 20px; margin-top: 20px; }
+        .safe-mode { background: #f0fdf4; border: 1px solid #dcfce7; }
+        .danger-mode { background: #fef2f2; border: 1px solid #fee2e2; }
+        .main-metric h2 { font-size: 2rem; margin: 10px 0; color: var(--primary); }
+        .progress-track { background: #eee; height: 8px; border-radius: 5px; overflow: hidden; margin-top: 10px; }
+        .progress-thumb { height: 100%; width: 0%; transition: 0.5s; background: var(--safe); }
+    </style>
+</head>
+<body>
+
+<div class="app-wrapper">
+    <div class="glass-card">
+        <div class="college-logo">
+            <img src="https://upload.wikimedia.org/wikipedia/ar/b/be/TVTC_Logo.svg" alt="TVTC">
+        </div>
+        <div class="header-text">
+            <h1>رادار الحرمان الذكي</h1>
+            <span class="system-badge">نظام الـ 16 أسبوعاً (20%)</span>
+            <p style="font-size: 0.8rem; color: #888;">الكلية التقنية الرقمية للبنات بتبوك</p>
+        </div>
+
+        <div class="input-container">
+            <div class="form-group">
+                <label>ساعات المقرر (في الخطة)</label>
+                <select id="courseHours" onchange="calculate()">
+                    <option value="1">1 ساعة</option>
+                    <option value="2">2 ساعة</option>
+                    <option value="3">3 ساعات</option>
+                    <option value="4" selected>4 ساعات</option>
+                    <option value="5">5 ساعات</option>
+                    <option value="6">6 ساعات</option>
+                </select>
+            </div>
+            <div class="absent-grid">
+                <div class="form-group">
+                    <label>غياب (ساعة واحدة)</label>
+                    <input type="number" id="count1" placeholder="0" oninput="calculate()">
+                </div>
+                <div class="form-group">
+                    <label>غياب (ساعتين)</label>
+                    <input type="number" id="count2" placeholder="0" oninput="calculate()">
+                </div>
+            </div>
+        </div>
+
+        <div id="statusBox" class="result-display safe-mode">
+            <div class="main-metric">
+                <span style="font-size: 0.8rem; color: #666;">المتبقي قبل الحرمان</span>
+                <h2 id="leftRes">--</h2>
+            </div>
+            <div class="progress-track">
+                <div id="progressBar" class="progress-thumb"></div>
+            </div>
+            <p id="percentRes" style="font-size: 0.8rem; margin-top: 10px;">النسبة: 0%</p>
+        </div>
+    </div>
+</div>
+
+<script>
+function calculate() {
+    const hours = parseInt(document.getElementById('courseHours').value);
+    const c1 = parseFloat(document.getElementById('count1').value) || 0;
+    const c2 = parseFloat(document.getElementById('count2').value) || 0;
+
+    const actualAbsent = (c1 * 1) + (c2 * 2);
+    const limitHours = (hours * 16) * 0.20;
+    const currentPercent = (actualAbsent / (hours * 16)) * 100;
+    const remaining = limitHours - actualAbsent;
+
+    document.getElementById('percentRes').innerText = "النسبة الحالية: " + currentPercent.toFixed(1) + "%";
+    const leftRes = document.getElementById('leftRes');
+    const thumb = document.getElementById('progressBar');
+    const box = document.getElementById('statusBox');
+
+    thumb.style.width = Math.min(currentPercent, 100) + "%";
+
+    if (actualAbsent >= limitHours) {
+        leftRes.innerText = "حرمان!";
+        leftRes.style.color = "red";
+        box.className = "result-display danger-mode";
+        thumb.style.background = "red";
+    } else {
+        leftRes.innerText = Math.floor(remaining) + " ساعة متبقية";
+        leftRes.style.color = "var(--primary)";
+        box.className = "result-display safe-mode";
+        thumb.style.background = "var(--safe)";
+    }
+}
+window.onload = calculate;
+</script>
+
+</body>
+</html>
