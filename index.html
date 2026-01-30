@@ -25,38 +25,50 @@
             direction: rtl;
         }
 
+        /* هنا التدرج اللوني الذي طلبته */
         .glass-card {
-            background: #f0f7f4; /* اللون الجديد هنا */
+            background: linear-gradient(to bottom, #ffffff, #f0f7f4);
             border-radius: 32px;
             padding: 30px;
             width: 90%;
             max-width: 420px;
             box-shadow: 0 20px 50px rgba(0,0,0,0.1);
-            border: 1px solid #e0eee7;
+            border: 1px solid rgba(255, 255, 255, 0.8);
         }
 
         .app-header-centered { text-align: center; margin-bottom: 25px; }
-        .college-logo img { width: 80px; height: auto; margin-bottom: 10px; }
+        .college-logo img { width: 85px; height: auto; margin-bottom: 10px; }
         .college-name { margin: 0; font-size: 0.9rem; color: #666; font-weight: 600; }
         .header-text h1 { margin: 5px 0; font-size: 1.5rem; color: var(--primary); font-weight: 800; }
         .system-badge { display: inline-block; padding: 4px 14px; background-color: var(--badge-bg); color: var(--badge-text); border-radius: 20px; font-size: 0.8rem; font-weight: bold; }
+        
+        .input-container { margin-top: 20px; }
         .absent-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; }
         .form-group label, .input-box label { display: block; font-size: 0.85rem; font-weight: 600; color: #555; margin-bottom: 8px; }
-        input, select { width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 14px; font-size: 1rem; box-sizing: border-box; outline: none; transition: 0.3s; background: white; }
-        input:focus { border-color: var(--primary); }
-        .result-display { border-radius: 24px; padding: 25px; text-align: center; transition: 0.4s; }
-        .safe-mode { background: #ffffff; border: 1px solid #e2f3eb; }
+        
+        input, select { 
+            width: 100%; padding: 12px; border: 1.5px solid #e0e0e0; border-radius: 14px; 
+            font-size: 1rem; box-sizing: border-box; outline: none; transition: 0.3s; background: white; 
+        }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(29, 92, 65, 0.1); }
+
+        .result-display { border-radius: 24px; padding: 25px; text-align: center; transition: 0.4s; margin-top: 10px; }
+        .safe-mode { background: rgba(255, 255, 255, 0.6); border: 1px solid #e2f3eb; }
         .warning-mode { background: #fffcf5; border: 1px solid #fef3d1; }
         .danger-mode { background: #fffafb; border: 1px solid #fee2e2; }
+
         .main-metric h2 { font-size: 2.4rem; margin: 10px 0; color: var(--primary); }
-        .m-value { font-size: 1.1rem; font-weight: 800; }
         .metrics-row { display: flex; justify-content: space-around; align-items: center; margin: 15px 0; }
+        .m-label { font-size: 0.75rem; color: #888; display: block; }
+        .m-value { font-size: 1.1rem; font-weight: 800; }
         .v-divider { width: 1px; height: 30px; background: #eee; }
-        .progress-track { background: #eee; height: 10px; border-radius: 10px; overflow: hidden; margin-top: 10px; }
+
+        .progress-track { background: #e0e0e0; height: 10px; border-radius: 10px; overflow: hidden; margin-top: 10px; }
         .progress-thumb { height: 100%; width: 0%; transition: 1s ease-in-out; }
+        
         .app-footer { margin-top: 25px; padding-top: 15px; border-top: 1px solid #e0eee7; text-align: center; }
-        .notes { font-size: 0.7rem; color: #999; margin-bottom: 10px; }
-        .signature { font-size: 0.75rem; color: var(--primary); font-weight: 600; }
+        .notes { font-size: 0.7rem; color: #999; margin-bottom: 10px; line-height: 1.4; }
+        .signature { font-size: 0.75rem; color: var(--primary); font-weight: 700; letter-spacing: 0.2px; }
     </style>
 </head>
 <body>
@@ -106,6 +118,7 @@
                 <span class="metric-label">الرصيد المتبقي قبل الحرمان</span>
                 <h2 id="leftRes">--</h2>
             </div>
+
             <div class="metrics-row">
                 <div class="metric-item">
                     <span class="m-label">نسبة الغياب</span>
@@ -117,8 +130,9 @@
                     <span id="hoursRes" class="m-value">0</span>
                 </div>
             </div>
+
             <div class="progress-section">
-                <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #777;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #777; margin-bottom: 5px;">
                     <span>مؤشر القرب من الحرمان</span>
                     <span id="limitHours">--</span>
                 </div>
@@ -130,7 +144,7 @@
 
         <footer class="app-footer">
             <p class="notes">💡 ملاحظة: غياب الساعتين (العملي) يُرصد كساعتين في نظام رايات.</p>
-            <p class="signature">اعداد وتصميم أ. نورة القثامي - قسم الحاسب وتقنية المعلومات</p>
+            <p class="signature">إعداد وتصميم أ. نورة القثامي - قسم الحاسب وتقنية المعلومات</p>
         </footer>
     </div>
 </div>
@@ -140,15 +154,17 @@ function calculate() {
     const hoursInPlan = parseInt(document.getElementById('courseHours').value);
     const c1 = parseFloat(document.getElementById('count1').value) || 0;
     const c2 = parseFloat(document.getElementById('count2').value) || 0;
+
     const actualAbsentHours = (c1 * 1) + (c2 * 2);
     const totalSemesterHours = hoursInPlan * 16;
     const limitHours = totalSemesterHours * 0.20;
+    
     const currentPercent = (actualAbsentHours / totalSemesterHours) * 100;
     const remainingHours = limitHours - actualAbsentHours;
 
     document.getElementById('percentRes').innerText = currentPercent.toFixed(1) + "%";
     document.getElementById('hoursRes').innerText = actualAbsentHours;
-    document.getElementById('limitHours').innerText = `الحد: ${limitHours.toFixed(1)} ساعة`;
+    document.getElementById('limitHours').innerText = `الحد الأقصى: ${limitHours.toFixed(1)} ساعة`;
     
     const leftRes = document.getElementById('leftRes');
     const thumb = document.getElementById('progressBar');
@@ -157,7 +173,7 @@ function calculate() {
     thumb.style.width = Math.min(currentPercent, 100) + "%";
 
     if (actualAbsentHours >= limitHours) {
-        leftRes.innerText = "حرمان ";
+        leftRes.innerText = "حرمان !";
         leftRes.style.color = "var(--danger)";
         statusBox.className = "result-display danger-mode";
         thumb.style.background = "var(--danger)";
@@ -169,7 +185,6 @@ function calculate() {
             thumb.style.background = "var(--warning)";
         } else {
             statusBox.className = "result-display safe-mode";
-            thumb.style.background = "#ffffff";
             thumb.style.background = "var(--safe)";
         }
     }
