@@ -163,7 +163,7 @@ function calculate() {
     thumb.style.width = Math.min(currentPercent, 100) + "%";
 
     if (actualAbsentHours >= limitHours) {
-        leftRes.innerText = "حرمان !";
+        leftRes.innerText = "حرمان";
         leftRes.style.color = "var(--danger)";
         statusBox.className = "result-display danger-mode";
         thumb.style.background = "var(--danger)";
