@@ -12,6 +12,7 @@
             --danger: #ef4444;
             --badge-bg: #e8f5e9;
             --badge-text: #2e7d32;
+            --gray: #718096;
         }
 
         body {
@@ -42,7 +43,6 @@
         
         .absent-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; }
 
-        /* التعديل هنا لتوسيط النص مع المستطيل */
         .input-box {
             display: flex;
             flex-direction: column;
@@ -65,6 +65,27 @@
         }
         input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(29, 92, 65, 0.1); }
 
+        /* تنسيق زر المسح */
+        .reset-btn {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            background-color: transparent;
+            color: var(--gray);
+            border: 1px dashed var(--gray);
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        .reset-btn:hover {
+            background-color: #fee2e2;
+            color: var(--danger);
+            border-style: solid;
+            border-color: var(--danger);
+        }
+
         .result-display { border-radius: 24px; padding: 25px; text-align: center; transition: 0.4s; margin-top: 10px; }
         .safe-mode { background: rgba(255, 255, 255, 0.7); border: 1px solid #d1d9e6; }
         .warning-mode { background: #fff9e6; border: 1px solid #fef3d1; }
@@ -78,7 +99,6 @@
         .app-footer { margin-top: 25px; padding-top: 15px; border-top: 1px solid #d1d9e6; text-align: center; }
         .signature { font-size: 0.75rem; color: var(--primary); font-weight: 700; }
         
-        /* جعل عنوان ساعات المقرر في المنتصف */
         .form-group { text-align: center; margin-bottom: 15px; }
     </style>
 </head>
@@ -114,13 +134,15 @@
             <div class="absent-grid">
                 <div class="input-box">
                     <label>غياب (محاضرة مدتها ساعة)</label>
-                    <input type="text" id="count1" placeholder="أدخل عدد مرات الغياب" oninput="fixArabicNumbers(this)">
+                    <input type="text" id="count1" placeholder="أدخل المرات" oninput="fixArabicNumbers(this)">
                 </div>
                 <div class="input-box">
                     <label>غياب (محاضرة مدتها ساعتين)</label>
-                    <input type="text" id="count2" placeholder="أدخل عدد مرات الغياب" oninput="fixArabicNumbers(this)">
+                    <input type="text" id="count2" placeholder="أدخل المرات" oninput="fixArabicNumbers(this)">
                 </div>
             </div>
+            
+            <button class="reset-btn" onclick="resetApp()">↺ مسح البيانات</button>
         </div>
 
         <div id="statusBox" class="result-display safe-mode">
@@ -167,6 +189,14 @@ function fixArabicNumbers(el) {
     calculate(); 
 }
 
+// دالة مسح البيانات
+function resetApp() {
+    document.getElementById('count1').value = '';
+    document.getElementById('count2').value = '';
+    document.getElementById('courseHours').selectedIndex = 3; // العودة لـ 4 ساعات
+    calculate();
+}
+
 function calculate() {
     const hoursInPlan = parseInt(document.getElementById('courseHours').value);
     const c1 = parseFloat(document.getElementById('count1').value) || 0;
@@ -193,7 +223,7 @@ function calculate() {
         statusBox.className = "result-display danger-mode";
         thumb.style.background = "var(--danger)";
     } else {
-        leftRes.innerText = Math.floor(remainingHours) + " ساعة متبقية";
+        leftRes.innerText = (actualAbsentHours === 0) ? "--" : Math.floor(remainingHours) + " ساعة متبقية";
         leftRes.style.color = "var(--primary)";
         if (currentPercent > 15) {
             statusBox.className = "result-display warning-mode";
