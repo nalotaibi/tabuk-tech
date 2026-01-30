@@ -43,6 +43,7 @@
         
         .absent-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; }
         .form-group label, .input-box label { display: block; font-size: 0.85rem; font-weight: 600; color: #4a5568; margin-bottom: 5px; }
+        
         .help-text { font-size: 0.65rem; color: #888; margin-bottom: 5px; display: block; line-height: 1.2; }
 
         input, select { 
@@ -56,7 +57,7 @@
         .warning-mode { background: #fff9e6; border: 1px solid #fef3d1; }
         .danger-mode { background: #fff5f5; border: 1px solid #fee2e2; }
 
-        .main-metric h2 { font-size: 2rem; margin: 10px 0; color: var(--primary); }
+        .main-metric h2 { font-size: 2.4rem; margin: 10px 0; color: var(--primary); }
         .m-value { font-size: 1.1rem; font-weight: 800; }
         .progress-track { background: #e2e8f0; height: 10px; border-radius: 10px; overflow: hidden; margin-top: 10px; }
         .progress-thumb { height: 100%; width: 0%; transition: 1s ease-in-out; }
@@ -77,7 +78,7 @@
                 <p class="college-name">الكلية التقنية الرقمية للبنات بتبوك</p>
                 <h1>رادار الحرمان الذكي</h1>
                 <div class="badge-container">
-                    <span class="system-badge">نظام الـ ١٦ أسبوعاً (٢٠%)</span>
+                    <span class="system-badge">نظام الـ 16 أسبوعاً (20%)</span>
                 </div>
             </div>
         </header>
@@ -86,25 +87,25 @@
             <div class="form-group">
                 <label>📚 ساعات المقرر في الخطة</label>
                 <select id="courseHours" onchange="calculate()">
-                    <option value="1">١ ساعة</option>
-                    <option value="2">٢ ساعة</option>
-                    <option value="3">٣ ساعات</option>
-                    <option value="4" selected>٤ ساعات</option>
-                    <option value="5">٥ ساعات</option>
-                    <option value="6">٦ ساعات</option>
+                    <option value="1">1 ساعة</option>
+                    <option value="2">2 ساعة</option>
+                    <option value="3">3 ساعات</option>
+                    <option value="4" selected>4 ساعات</option>
+                    <option value="5">5 ساعات</option>
+                    <option value="6">6 ساعات</option>
                 </select>
             </div>
 
             <div class="absent-grid">
                 <div class="input-box">
                     <label>غياب (ساعة واحدة)</label>
-                    <span class="help-text">عدد مرات الغياب في محاضرة ساعة</span>
-                    <input type="text" id="count1" placeholder="مثلاً: ٣" oninput="handleInput(this)">
+                    <span class="help-text">اكتبي عدد مرات الغياب</span>
+                    <input type="text" id="count1" placeholder="مثلاً: ٣" oninput="fixNumbers(this)">
                 </div>
                 <div class="input-box">
                     <label>غياب (ساعتين)</label>
-                    <span class="help-text">عدد مرات الغياب في محاضرة ساعتين</span>
-                    <input type="text" id="count2" placeholder="مثلاً: ٢" oninput="handleInput(this)">
+                    <span class="help-text">اكتبي عدد مرات الغياب</span>
+                    <input type="text" id="count2" placeholder="مثلاً: ٢" oninput="fixNumbers(this)">
                 </div>
             </div>
         </div>
@@ -117,12 +118,12 @@
             <div class="metrics-row" style="display: flex; justify-content: space-around; align-items: center; margin: 15px 0;">
                 <div class="metric-item">
                     <span style="font-size: 0.75rem; color: #718096; display: block;">نسبة الغياب</span>
-                    <span id="percentRes" class="m-value">٠%</span>
+                    <span id="percentRes" class="m-value">0%</span>
                 </div>
                 <div style="width: 1px; height: 30px; background: #d1d9e6;"></div>
                 <div class="metric-item">
                     <span style="font-size: 0.75rem; color: #718096; display: block;">ساعات الغياب</span>
-                    <span id="hoursRes" class="m-value">٠</span>
+                    <span id="hoursRes" class="m-value">0</span>
                 </div>
             </div>
             <div class="progress-section">
@@ -144,40 +145,39 @@
 </div>
 
 <script>
-// وظيفة تحويل الأرقام للعرض باللغة العربية
-function toArabicDigits(num) {
-    const id = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
-    return num.toString().replace(/[0-9]/g, function(w) {
-        return id[+w];
-    });
-}
-
-// معالجة المدخلات وتحويل الأرقام العربية إلى إنجليزية للحساب
-function handleInput(el) {
-    const arabicNumbers = [/٠/g, /١/g, /٢/g, /٣/g, /٤/g, /٥/g, /٦/g, /٧/g, /٨/g, /٩/g];
+// دالة تحويل الأرقام العربية إلى إنجليزية وتنظيف المدخلات
+function fixNumbers(el) {
+    const arabicDigits = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
     let val = el.value;
+    
+    // تحويل كل رقم عربي يظهر إلى رقم إنجليزي
     for (let i = 0; i < 10; i++) {
-        val = val.replace(arabicNumbers[i], i);
+        val = val.replace(new RegExp(arabicDigits[i], 'g'), i);
     }
-    el.dataset.value = val.replace(/[^\d]/g, ''); // حفظ القيمة الصافية للحساب
+    
+    // إزالة أي حرف غير رقمي (منع كتابة الحروف)
+    el.value = val.replace(/[^\d]/g, '');
+    
+    // تشغيل دالة الحساب تلقائياً
     calculate();
 }
 
 function calculate() {
     const hoursInPlan = parseInt(document.getElementById('courseHours').value);
-    const c1 = parseFloat(document.getElementById('count1').dataset.value) || 0;
-    const c2 = parseFloat(document.getElementById('count2').dataset.value) || 0;
-
+    
+    // جلب القيم كنصوص وتحويلها لأرقام
+    const c1 = parseFloat(document.getElementById('count1').value) || 0;
+    const c2 = parseFloat(document.getElementById('count2').value) || 0;
+    
     const actualAbsentHours = (c1 * 1) + (c2 * 2);
     const totalSemesterHours = hoursInPlan * 16;
     const limitHours = totalSemesterHours * 0.20;
     const currentPercent = (actualAbsentHours / totalSemesterHours) * 100;
     const remainingHours = limitHours - actualAbsentHours;
 
-    // عرض النتائج بالأرقام العربية
-    document.getElementById('percentRes').innerText = toArabicDigits(currentPercent.toFixed(1)) + "٪";
-    document.getElementById('hoursRes').innerText = toArabicDigits(actualAbsentHours);
-    document.getElementById('limitHours').innerText = `الحد الأقصى: ${toArabicDigits(limitHours.toFixed(1))} ساعة`;
+    document.getElementById('percentRes').innerText = currentPercent.toFixed(1) + "%";
+    document.getElementById('hoursRes').innerText = actualAbsentHours;
+    document.getElementById('limitHours').innerText = `الحد الأقصى: ${limitHours.toFixed(1)} ساعة`;
     
     const leftRes = document.getElementById('leftRes');
     const thumb = document.getElementById('progressBar');
@@ -191,7 +191,7 @@ function calculate() {
         statusBox.className = "result-display danger-mode";
         thumb.style.background = "var(--danger)";
     } else {
-        leftRes.innerText = toArabicDigits(Math.floor(remainingHours)) + " ساعة متبقية";
+        leftRes.innerText = Math.floor(remainingHours) + " ساعة متبقية";
         leftRes.style.color = "var(--primary)";
         if (currentPercent > 15) {
             statusBox.className = "result-display warning-mode";
