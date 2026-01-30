@@ -37,7 +37,7 @@
         }
 
         .app-header-centered { text-align: center; margin-bottom: 25px; }
-        .college-logo img { width: 120px; height: auto; margin-bottom: 10px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
+        .college-logo img { width: 150px; height: auto; margin-bottom: 10px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); object-fit: contain; }
         .header-text h1 { margin: 5px 0; font-size: 1.5rem; color: var(--primary); font-weight: 800; text-align: center; }
         .system-badge { display: inline-block; padding: 4px 14px; background-color: var(--badge-bg); color: var(--badge-text); border-radius: 20px; font-size: 0.8rem; font-weight: bold; }
         
@@ -58,14 +58,21 @@
             margin-bottom: 8px; 
         }
         
+        /* تطبيق تعديل الهوامش هنا */
         input, select { 
-            width: 100%; padding: 12px; border: 1.5px solid #d1d9e6; border-radius: 14px; 
-            font-size: 0.9rem; box-sizing: border-box; outline: none; transition: 0.3s; background: white; 
+            width: 100%; 
+            padding: 12px 15px; 
+            border: 1.5px solid #d1d9e6; 
+            border-radius: 14px; 
+            font-size: 0.9rem; 
+            box-sizing: border-box; 
+            outline: none; 
+            transition: 0.3s; 
+            background: white; 
             text-align: center; 
         }
         input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(29, 92, 65, 0.1); }
 
-        /* تنسيق زر المسح */
         .reset-btn {
             width: 100%;
             padding: 10px;
@@ -103,12 +110,11 @@
     </style>
 </head>
 <body>
-
 <div class="app-wrapper">
     <div class="glass-card">
         <header class="app-header-centered">
             <div class="college-logo">
-                <img src="https://tvtc.gov.sa/SiteAssets/images/logo.png" alt="شعار المؤسسة">
+                <img src="logo.png" alt="شعار المؤسسة">
             </div>
             <div class="header-text">
                 <h1>رادار الحرمان الذكي</h1>
@@ -133,12 +139,12 @@
 
             <div class="absent-grid">
                 <div class="input-box">
-                    <label>غياب (محاضرة مدتها ساعة)</label>
-                    <input type="text" id="count1" placeholder="أدخل عدد مرات الغياب" oninput="fixArabicNumbers(this)">
+                    <label>غياب (ساعة واحدة)</label>
+                    <input type="text" id="count1" placeholder="أدخل المرات" oninput="fixArabicNumbers(this)">
                 </div>
                 <div class="input-box">
-                    <label>غياب (محاضرة مدتها ساعتين)</label>
-                    <input type="text" id="count2" placeholder="أدخل عدد مرات الغياب" oninput="fixArabicNumbers(this)">
+                    <label>غياب (ساعتين)</label>
+                    <input type="text" id="count2" placeholder="أدخل المرات" oninput="fixArabicNumbers(this)">
                 </div>
             </div>
             
@@ -189,11 +195,10 @@ function fixArabicNumbers(el) {
     calculate(); 
 }
 
-// دالة مسح البيانات
 function resetApp() {
     document.getElementById('count1').value = '';
     document.getElementById('count2').value = '';
-    document.getElementById('courseHours').selectedIndex = 3; // العودة لـ 4 ساعات
+    document.getElementById('courseHours').selectedIndex = 3;
     calculate();
 }
 
