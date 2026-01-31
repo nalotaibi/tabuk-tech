@@ -50,4 +50,191 @@
         }
 
         .input-group { margin-bottom: 12px; }
-        .input-group label { display: block; font-size: 0.8rem; color: #
+        .input-group label { display: block; font-size: 0.8rem; color: #444; margin-bottom: 6px; font-weight: 700; background: #f8faf9; padding: 4px 10px; border-right: 3px solid var(--primary); }
+        
+        select, input { 
+            width: 100%; padding: 10px; border-radius: 12px; 
+            border: 1.5px solid #edf2f1; font-family: inherit; text-align: center;
+            font-size: 0.9rem; outline: none; box-sizing: border-box;
+            transition: all 0.3s;
+        }
+        
+        input:focus { border-color: var(--primary); background: #f0f7f4; }
+
+        .flex-inputs { display: flex; gap: 8px; align-items: flex-end; }
+        .flex-inputs > div { flex: 1; }
+        .input-sub-label { font-size: 0.7rem; color: #666; margin-bottom: 4px; display: block; font-weight: 600; }
+
+        .result-area { border-radius: 20px; padding: 15px; margin-top: 15px; text-align: center; }
+        .safe-bg { background: #f0fdf4; border: 1px solid #dcfce7; }
+        .warning-bg { background: #fffbeb; border: 1px solid #fef3c7; }
+        .danger-bg { background: #fef2f2; border: 1px solid #fee2e2; }
+
+        .progress-bar { height: 8px; background: #e5e7eb; border-radius: 4px; margin: 10px 0; overflow: hidden; }
+        .progress-fill { height: 100%; width: 0%; transition: 0.8s ease-in-out; }
+
+        .advice-box { margin-top: 10px; padding-top: 10px; border-top: 1px dashed rgba(0,0,0,0.1); font-size: 0.8rem; color: #444; line-height: 1.4; }
+        .advice-box b { color: var(--primary); }
+
+        .footer-note { text-align: center; font-size: 0.8rem; color: #718096; margin-top: 40px; border-top: 1px solid #d1d9e6; padding-top: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <header class="header-section">
+        <div class="college-logo"><img src="IMG_1800.png" alt="Logo"></div>
+        <div class="header-text">
+            <h1>حاسبة الغياب الذكية</h1>
+            <span class="system-badge">نظام 16 أسبوعًا (20% حرمان)</span>
+        </div>
+    </header>
+
+    <div class="action-bars">
+        <button class="add-btn" onclick="addNewCourse()">➕ إضافة مقرر جديد</button>
+        <button class="reset-all" onclick="clearEverything()">إعادة ضبط</button>
+    </div>
+
+    <div id="coursesList"></div>
+
+    <footer class="footer-note">
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+            <p style="font-weight: bold; color: var(--primary); margin: 0 0 5px 0;">إعداد وتصميم: أ. نورة القثامي</p>
+            <a href="mailto:norah.a@tvtc.gov" style="text-decoration: none; color: #555; font-size: 0.8rem; dir: ltr;">📧 norah.a@tvtc.gov</a>
+            <p style="margin: 5px 0;">قسم الحاسب وتقنية المعلومات | 1447هـ - 2026م</p>
+            <div style="margin-top: 10px;">
+                <a href="https://www.freecounterstat.com" target="_blank">
+                    <img src="https://counter1.optistats.ovh/private/freecounterstat.php?c=pt4x3lgqdkek5gqe8qd7ekhfb1ezkp4m" border="0" title="عداد الزيارات" alt="visitor counter">
+                </a>
+            </div>
+        </div>
+    </footer>
+</div>
+
+<script>
+    let courses = JSON.parse(localStorage.getItem('myCourses')) || [];
+
+    function fixNumbers(str) {
+        return str.replace(/[٠-٩]/g, function(d) {
+            return d.charCodeAt(0) - 1632;
+        }).replace(/[^\d.]/g, '');
+    }
+
+    function addNewCourse() {
+        courses.push({ id: Date.now(), name: 'اسم المقرر', weeklyHours: 4, absent1: '', absent2: '' });
+        renderCourses();
+    }
+
+    function renderCourses() {
+        const list = document.getElementById('coursesList');
+        list.innerHTML = '';
+        
+        courses.forEach(course => {
+            const weeklyH = parseFloat(course.weeklyHours) || 0;
+            const limit = (weeklyH * 16) * 0.20;
+            const currentAbsent = (parseFloat(course.absent1) || 0) + ((parseFloat(course.absent2) || 0) * 2);
+            const percent = (currentAbsent / (weeklyH * 16)) * 100 || 0;
+            const remaining = limit - currentAbsent;
+
+            let statusClass = 'safe-bg', statusColor = 'var(--safe)', msg = '🟢 وضعك آمن ومستقر';
+            if (currentAbsent > limit) { 
+                statusClass = 'danger-bg'; statusColor = 'var(--danger)'; msg = '🔴 حالة حرمان'; 
+            } else if (percent >= 15) { 
+                statusClass = 'warning-bg'; statusColor = 'var(--orange)'; msg = '🟠 تنبيه: اقتربت من الحرمان'; 
+            } else if (percent >= 10) { 
+                statusClass = 'warning-bg'; statusColor = 'var(--warning)'; msg = '🟡 انتباه: بدأ رصيدك بالنقصان'; 
+            }
+
+            let advice = "";
+            if (currentAbsent <= limit) {
+                const remHours = Math.floor(remaining); 
+                const lec2 = Math.floor(remHours / 2);
+                const lec1 = remHours % 2;
+                
+                let detail = "";
+                if (lec2 > 0 && lec1 > 0) {
+                    let w2 = (lec2 >= 3) ? "محاضرات" : (lec2 === 2) ? "محاضرتين" : "محاضرة واحدة";
+                    detail = `<b>${lec2}</b> ${w2} (ساعتين) و <b>1</b> (ساعة)`;
+                } else if (lec2 > 0) {
+                    let w = (lec2 >= 3 && lec2 <= 10) ? "محاضرات" : "محاضرة";
+                    detail = `<b>${lec2}</b> ${w} (ساعتين)`;
+                } else if (lec1 > 0) {
+                    detail = `<b>1</b> محاضرة (ساعة)`;
+                } else { detail = "أقل من ساعة"; }
+                
+                advice = `<div class="advice-box">متبقي لك <b>${remHours}</b> ساعة: يُعادل ${detail}</div>`;
+            } else {
+                advice = `<div class="advice-box" style="color:var(--danger); font-weight:bold;">تجاوزت الحد المسموح (${limit.toFixed(1)} ساعة)</div>`;
+            }
+
+            const card = document.createElement('div');
+            card.className = 'course-card';
+            const isOdd = (weeklyH % 2 !== 0);
+
+            card.innerHTML = `
+                <button class="delete-course" onclick="deleteCourse(${course.id})">✕</button>
+                <input type="text" class="course-title" value="${course.name}" onchange="updateCourse(${course.id}, 'name', this.value)">
+                
+                <div class="input-group">
+                    <label>عدد الساعات الأسبوعية</label>
+                    <select onchange="updateCourse(${course.id}, 'weeklyHours', this.value)">
+                        ${[1,2,3,4,5,6].map(h => `<option value="${h}" ${course.weeklyHours == h ? 'selected' : ''}>${h} ساعات</option>`).join('')}
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label>كم محاضرة غبت؟</label>
+                    <div class="flex-inputs">
+                        <div>
+                            <span class="input-sub-label">(ساعتين)</span>
+                            <input type="text" inputmode="numeric" value="${course.absent2}" placeholder="0" oninput="handleInput(${course.id}, 'absent2', this)">
+                        </div>
+                        ${isOdd ? `
+                        <div>
+                            <span class="input-sub-label">(ساعة)</span>
+                            <input type="text" inputmode="numeric" value="${course.absent1}" placeholder="0" oninput="handleInput(${course.id}, 'absent1', this)">
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+
+                <div class="result-area ${statusClass}">
+                    <div style="font-size:0.9rem; font-weight:800; color:${statusColor}; margin-bottom:5px;">${msg}</div>
+                    <div style="display:flex; justify-content:space-between; align-items:baseline;">
+                        <span style="font-size:1.6rem; font-weight:900; color:var(--primary);">${percent.toFixed(1)}%</span>
+                        <span style="font-size:0.75rem; color:#718096; font-weight:600;">الغياب الحالي: ${currentAbsent} ساعة</span>
+                    </div>
+                    <div class="progress-bar"><div class="progress-fill" style="width:${Math.min((percent/20)*100, 100)}%; background:${statusColor}"></div></div>
+                    ${advice}
+                </div>
+            `;
+            list.appendChild(card);
+        });
+        localStorage.setItem('myCourses', JSON.stringify(courses));
+    }
+
+    function handleInput(id, field, el) {
+        el.value = fixNumbers(el.value);
+        updateCourse(id, field, el.value);
+    }
+
+    function updateCourse(id, field, value) {
+        const index = courses.findIndex(c => c.id === id);
+        if (index !== -1) {
+            courses[index][field] = value;
+            renderCourses();
+        }
+    }
+
+    function deleteCourse(id) {
+        if(confirm('حذف المقرر؟')) { courses = courses.filter(c => c.id !== id); renderCourses(); }
+    }
+
+    function clearEverything() {
+        if(confirm('إعادة ضبط كافة البيانات؟')) { courses = []; localStorage.removeItem('myCourses'); renderCourses(); }
+    }
+
+    window.onload = renderCourses;
+</script>
+</body>
+</html>
