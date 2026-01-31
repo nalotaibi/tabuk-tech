@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منبه الغياب الذكي - رقمية تبوك</title>
+    <title>منبه الغياب الذكي</title>
     <style>
         :root {
             --primary: #1d5c41;
@@ -89,7 +89,7 @@
     <div class="glass-card">
         <header class="app-header-centered">
             <div class="college-logo">
-                <img src="IMG_1800.png" alt="شعار المؤسسة">
+                <img src="IMG_1800.png" alt="شعار الكلية الرقمية">
             </div>
             <div class="header-text">
                 <h1>منبه الغياب الذكي</h1>
@@ -235,13 +235,13 @@ function calculate() {
     if(percent >= 20){
         color="var(--danger)"; mode="danger-mode";
         leftRes.innerText="🚫 حرمان";
-        msg="<span style='color:var(--danger); font-weight:bold;'>تجاوزتِ الحد المسموح.</span>";
+        msg="<span style='color:var(--danger); font-weight:bold;'>تجاوزت الحد المسموح.</span>";
     }
     else{
         leftRes.innerText=remaining.toFixed(1)+" ساعة متبقية";
         if(percent >= 15){ color="var(--orange)"; mode="warning-mode"; msg="🟠 اقتربت من حد الحرمان"; }
-        else if(percent >= 10){ color="var(--warning)"; mode="warning-mode"; msg="🟡 تنبيه: بدأتِ في منطقة القلق"; }
-        else{ color="var(--safe)"; mode="safe-mode"; msg="🟢 وضعك مطمئن، حافظي على حضورك"; }
+        else if(percent >= 10){ color="var(--warning)"; mode="warning-mode"; msg="🟡 تنبيه"; }
+        else{ color="var(--safe)"; mode="safe-mode"; msg="🟢 وضعك مطمئن، حافظ على حضورك"; }
     }
 
     progressBar.style.background=color;
@@ -249,7 +249,7 @@ function calculate() {
 
     if(percent < 20) {
         extraInfo.innerHTML=`${msg}<br>
-        يمكنكِ الغياب <b>${Math.floor(remaining)}</b> محاضرة (ساعة واحدة)<br>
+        يمكنك الغياب <b>${Math.floor(remaining)}</b> محاضرة (ساعة واحدة)<br>
         أو <b>${Math.floor(remaining/2)}</b> محاضرة (ساعتين)`;
     } else { extraInfo.innerHTML=msg; }
 }
