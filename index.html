@@ -149,7 +149,7 @@
                 <input type="text" class="course-title" value="${course.name}" onchange="updateCourse(${course.id}, 'name', this.value)">
                 
                 <div class="input-group">
-                    <label> اختار عدد ساعات المقرر الأسبوعية</label>
+                    <label> اختر عدد ساعات المقرر الأسبوعية</label>
                     <select onchange="updateCourse(${course.id}, 'weeklyHours', this.value)">
                         ${[1,2,3,4,5,6].map(h => `<option value="${h}" ${course.weeklyHours == h ? 'selected' : ''}>${h} ساعات</option>`).join('')}
                     </select>
