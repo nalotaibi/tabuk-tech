@@ -28,7 +28,7 @@
         .app-container { max-width: 450px; margin: 0 auto; }
 
         .header-section { text-align: center; margin-bottom: 20px; }
-        .college-logo img { width: 185px; margin-bottom: 10px; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.1)); }
+        .college-logo img { width: 180px; margin-bottom: 10px; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.1)); }
         .header-text h1 { margin: 0; font-size: 1.6rem; color: var(--primary); font-weight: 800; }
         .system-badge { display: inline-block; margin-top: 8px; padding: 4px 12px; background: #e8f5e9; color: #2e7d32; border-radius: 20px; font-size: 0.75rem; font-weight: bold; }
 
@@ -134,16 +134,18 @@
         courses.forEach(course => {
             const weeklyH = parseFloat(course.weeklyHours) || 0;
             const totalSemHours = weeklyH * 16;
-            const limit = totalSemHours * 0.20;
-            
-            if (weeklyH % 2 === 0) { course.absent1 = '0'; }
+            const limit = totalSemHours * 0.20; // الحد الرياضي الدقيق دون أي تقريب
 
             const currentAbsent = (parseFloat(course.absent1) || 0) + ((parseFloat(course.absent2) || 0) * 2);
             const percent = totalSemHours > 0 ? (currentAbsent / totalSemHours) * 100 : 0;
-            const remaining = Math.floor(limit - currentAbsent);
+            
+            // المتبقي هو الفرق بين الحد والغياب الحالي
+            const remaining = limit - currentAbsent;
 
             let statusClass = 'safe-bg', statusColor = 'var(--safe)', msg = '🟢 وضعك آمن ومستقر';
-            if (percent >= 20) { 
+            
+            // الحرمان يحدث فقط إذا تجاوز الغياب الحد
+            if (currentAbsent > limit) { 
                 statusClass = 'danger-bg'; statusColor = 'var(--danger)'; msg = '🔴 حالة حرمان'; 
             } else if (percent >= 15) { 
                 statusClass = 'warning-bg'; statusColor = 'var(--orange)'; msg = '🟠 تنبيه: اقتربت من الحرمان'; 
@@ -152,21 +154,25 @@
             }
 
             let advice = "";
-            if (percent < 20) {
-                const lecturesOf2 = Math.floor(remaining / 2);
-                const lecturesOf1 = remaining % 2;
-                let details = "";
+            if (currentAbsent <= limit) {
+                // تقريب الساعات المتبقية لأسفل لإظهار عدد الساعات الكاملة المتاحة
+                const remHours = Math.floor(remaining); 
+                const lecturesOf2 = Math.floor(remHours / 2);
+                const lecturesOf1 = remHours % 2;
                 
+                let details = "";
                 if (lecturesOf2 > 0 && lecturesOf1 === 0) {
-                    details = `<b>${lecturesOf2}</b> محاضرة`;
+                    details = `<b>${lecturesOf2}</b> محاضرات`;
                 } else if (lecturesOf2 > 0 && lecturesOf1 > 0) {
-                    details = `<b>${lecturesOf2}</b> محاضرة ( مدتها ساعتين)  و <b>${lecturesOf1}</b> محاضرة ( مدتها ساعة) `;
+                    details = `<b>${lecturesOf2}</b> (ساعتين) و <b>${lecturesOf1}</b> (ساعة)`;
                 } else if (lecturesOf1 > 0) {
                     details = `<b>${lecturesOf1}</b> ساعة واحدة`;
+                } else {
+                    details = `أقل من ساعة واحدة`;
                 }
-                advice = `<div class="advice-box">متبقي لك <b>${remaining}</b> ساعة (يُعادل ${details})  </div>`;
+                advice = `<div class="advice-box">متبقي لك <b>${remHours}</b> ساعة (يُعادل ${details}) قبل الحرمان</div>`;
             } else {
-                advice = `<div class="advice-box" style="color:var(--danger); font-weight:bold;">لقد تجاوزت الحد المسموح به (20%)</div>`;
+                advice = `<div class="advice-box" style="color:var(--danger); font-weight:bold;">لقد تجاوزت الحد المسموح به (${limit.toFixed(1)} ساعة)</div>`;
             }
 
             const card = document.createElement('div');
@@ -212,7 +218,7 @@
                     </div>
                     <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:#555; font-weight:bold;">
                         <span>إجمالي غيابك: ${currentAbsent} ساعة</span>
-                        <span>مسموح لك: ${limit.toFixed(0)} ساعة</span>
+                        <span>مسموح لك: ${limit.toFixed(1)} ساعة</span>
                     </div>
                     ${advice}
                 </div>
