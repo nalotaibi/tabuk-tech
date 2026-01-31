@@ -149,8 +149,8 @@
             let advice = "";
             if(percent < 20) {
                 advice = `<div class="advice-box">
-                    يمكنكِ الغياب <b>${Math.floor(remaining)}</b> محاضرة (ساعة واحدة)<br>
-                    أو <b>${Math.floor(remaining/2)}</b> محاضرة (ساعتين)
+                    يمكنك الغياب <b>${Math.floor(remaining)}</b> محاضرة (كل محاضرة ساعة )<br>
+                    أو <b>${Math.floor(remaining/2)}</b> محاضرة (كل محاضرة ساعتين)
                 </div>`;
             } else {
                 advice = `<div class="advice-box" style="color:var(--danger)">لقد تجاوزتِ الحد المسموح به للغياب.</div>`;
