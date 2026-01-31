@@ -164,7 +164,7 @@
 if (lecturesOf2 > 0 && lecturesOf1 > 0) {
     // حالة الخليط (مثل 7 ساعات)
     let word2 = (lecturesOf2 >= 3) ? "محاضرات" : (lecturesOf2 === 2) ? "محاضرتين" : "محاضرة واحدة";
-    details = `يُعادل <b>${lecturesOf2}</b> ${word2} (ساعتين) و <b>1</b> محاضرة (ساعة)`;
+    details = ` <b>${lecturesOf2}</b> ${word2} (ساعتين) و <b>1</b> محاضرة (ساعة)`;
 } 
 else if (lecturesOf2 > 0 && lecturesOf1 === 0) {
     // حالة الساعات الزوجية فقط (مثل 6 ساعات)
