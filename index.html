@@ -79,7 +79,7 @@
         <div class="college-logo"><img src="IMG_1800.png" alt="Logo"></div>
         <div class="header-text">
             <h1>حاسبة الغياب الذكية</h1>
-            <span class="system-badge">نظام المؤسسة (20% غياب)</span>
+            <span class="system-badge">نظام 16 أسبوعًا (20% حرمان)</span>
         </div>
     </header>
 
@@ -131,14 +131,14 @@
             if (percent >= 20) { 
                 statusClass = 'danger-bg'; statusColor = 'var(--danger)'; msg = '🚫 حالة حرمان'; 
             } else if (percent >= 15) { 
-                statusClass = 'warning-bg'; statusColor = 'var(--orange)'; msg = '🟠 تنبيه: اقتربتِ من الحرمان'; 
+                statusClass = 'warning-bg'; statusColor = 'var(--orange)'; msg = '🟠 تنبيه: اقتربت من الحرمان'; 
             } else if (percent >= 10) { 
-                statusClass = 'warning-bg'; statusColor = 'var(--warning)'; msg = '🟡 انتباه: بدأ رصيدكِ بالنقصان'; 
+                statusClass = 'warning-bg'; statusColor = 'var(--warning)'; msg = '🟡 انتباه: بدأ رصيدك بالنقصان'; 
             }
 
             let advice = percent < 20 
-                ? `<div class="advice-box">متبقي لكِ <b>${Math.floor(remaining)}</b> ساعة (أو <b>${Math.floor(remaining/2)}</b> محاضرة كاملة) قبل الحرمان</div>` 
-                : `<div class="advice-box" style="color:var(--danger); font-weight:bold;">لقد تجاوزتِ الحد المسموح به (20%)</div>`;
+                ? `<div class="advice-box">متبقي لك <b>${Math.floor(remaining)}</b> ساعة (أو <b>${Math.floor(remaining/2)}</b> محاضرة مدتها ساعتين) قبل الحرمان</div>` 
+                : `<div class="advice-box" style="color:var(--danger); font-weight:bold;">لقد تجاوزت الحد المسموح به (20%)</div>`;
 
             const card = document.createElement('div');
             card.className = 'course-card';
@@ -154,13 +154,13 @@
                         </select>
                     </div>
                     <div class="input-group">
-                        <label>غياب (ساعة واحدة)</label>
+                        <label>غياب (محاضرة مدتها ساعة)</label>
                         <input type="text" inputmode="numeric" value="${course.absent1}" placeholder="0" oninput="handleInput(${course.id}, 'absent1', this)">
                     </div>
                 </div>
 
                 <div class="input-group" style="margin-bottom:15px;">
-                    <label>غياب (ساعتين / محاضرة كاملة)</label>
+                    <label>غياب (محاضرة مدتها ساعتين)</label>
                     <input type="text" inputmode="numeric" value="${course.absent2}" placeholder="0" oninput="handleInput(${course.id}, 'absent2', this)">
                 </div>
 
