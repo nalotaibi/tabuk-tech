@@ -12,26 +12,31 @@
     }
 
     body {
-        margin: 0;
-        padding: 20px 0; /* إضافة مساحة لتبدو البطاقة وكأنها تسبح في الخلفية */
-        font-family: 'Segoe UI', Tahoma, sans-serif;
-        background: linear-gradient(135deg, #f0f7f6 0%, #dbece9 100%);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-        direction: rtl;
-    }
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    /* لون هادئ جداً مستوحى من خلفية الشعار البيضاء المائلة للرمادي الأخضر */
+    background-color: #f7faf9; 
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* يبدأ من الأعلى ليكون مناسباً للجوال */
+    min-height: 100vh;
+    direction: rtl;
+}
 
-    .glass-card {
-        background: #ffffff; 
-        border-radius: 32px;
-        padding: 25px;
-        width: 88%; /* تقليل العرض قليلاً لإظهار الخلفية على الجوانب */
-        max-width: 400px;
-        box-shadow: 0 15px 40px rgba(29, 92, 65, 0.12);
-        border: 1px solid rgba(38, 171, 164, 0.2);
-    }
+
+.glass-card {
+    background: #ffffff; 
+    border-radius: 0; /* إزالة الزوايا الدائرية الكبيرة ليمر بسلاسة مع الشاشة */
+    padding: 30px 20px;
+    width: 100%; /* ملء العرض كاملاً */
+    max-width: 500px; /* ليظل متناسقاً إذا فُتح من كمبيوتر */
+    min-height: 100vh; /* ليغطي طول الشاشة بالكامل */
+    box-shadow: none; 
+    border: none;
+    box-sizing: border-box;
+}
+
 
     .college-logo img { 
         width: 170px; /* حجم متناسق وفخم */
