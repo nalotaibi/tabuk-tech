@@ -114,7 +114,7 @@
         renderCourses();
     }
 
-    function renderCourses() {
+        function renderCourses() {
         const list = document.getElementById('coursesList');
         list.innerHTML = '';
         
@@ -126,14 +126,19 @@
             const percent = totalSemHours > 0 ? (currentAbsent / totalSemHours) * 100 : 0;
             const remaining = limit - currentAbsent;
 
-            let statusClass = 'safe-bg', statusColor = 'var(--safe)', msg = '🟢 وضعك آمن';
-            if (percent >= 20) { statusClass = 'danger-bg'; statusColor = 'var(--danger)'; msg = '🚫 حالة حرمان'; }
-            else if (percent >= 15) { statusClass = 'warning-bg'; statusColor = 'var(--orange)'; msg = '🟠 اقتربتِ من الحرمان'; }
-            else if (percent >= 10) { statusClass = 'warning-bg'; statusColor = 'var(--warning)'; msg = '🟡 تنبيه رصيد متبقي'; }
+            // تحديد الحالة واللون والرسالة النصية
+            let statusClass = 'safe-bg', statusColor = 'var(--safe)', msg = '🟢 وضعك آمن ومستقر';
+            if (percent >= 20) { 
+                statusClass = 'danger-bg'; statusColor = 'var(--danger)'; msg = '🚫 حالة حرمان'; 
+            } else if (percent >= 15) { 
+                statusClass = 'warning-bg'; statusColor = 'var(--orange)'; msg = '🟠 تنبيه: اقتربتِ من الحرمان'; 
+            } else if (percent >= 10) { 
+                statusClass = 'warning-bg'; statusColor = 'var(--warning)'; msg = '🟡 انتباه: بدأ رصيدكِ بالنقصان'; 
+            }
 
             let advice = percent < 20 
-                ? `<div class="advice-box">متبقي لكِ <b>${Math.floor(remaining)}</b> ساعة (أو <b>${Math.floor(remaining/2)}</b> محاضرة كاملة)</div>` 
-                : `<div class="advice-box" style="color:var(--danger)">تجاوزتِ الحد المسموح (20%)</div>`;
+                ? `<div class="advice-box">متبقي لكِ <b>${Math.floor(remaining)}</b> ساعة (أو <b>${Math.floor(remaining/2)}</b> محاضرة كاملة) قبل الحرمان</div>` 
+                : `<div class="advice-box" style="color:var(--danger); font-weight:bold;">لقد تجاوزتِ الحد المسموح به (20%)</div>`;
 
             const card = document.createElement('div');
             card.className = 'course-card';
@@ -160,6 +165,10 @@
                 </div>
 
                 <div class="result-area ${statusClass}">
+                    <div style="font-size:0.95rem; font-weight:800; color:${statusColor}; margin-bottom:10px; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom:8px;">
+                        ${msg}
+                    </div>
+
                     <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px;">
                         <span style="font-size:1.8rem; font-weight:900; color:var(--primary);">${percent.toFixed(1)}%</span>
                         <span style="font-size:0.85rem; color:#718096; font-weight:600;">من الحد المسموح (20%)</span>
@@ -180,6 +189,7 @@
         });
         localStorage.setItem('myCourses', JSON.stringify(courses));
     }
+
 
     function handleInput(id, field, el) {
         el.value = fixNumbers(el.value); // تحويل الأرقام فوراً
