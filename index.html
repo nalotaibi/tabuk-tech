@@ -68,8 +68,6 @@
 
         .advice-box { margin-top: 12px; padding-top: 12px; border-top: 1px dashed rgba(0,0,0,0.1); font-size: 0.85rem; color: #444; line-height: 1.5; }
         .advice-box b { color: var(--primary); }
-        
-        .prediction-box { background: rgba(29, 92, 65, 0.05); border-radius: 12px; padding: 10px; margin-top: 10px; font-size: 0.8rem; border: 1px solid rgba(29, 92, 65, 0.1); }
 
         .footer-note { text-align: center; font-size: 0.85rem; color: #718096; margin-top: 40px; border-top: 1px solid #d1d9e6; padding-top: 20px; }
     </style>
@@ -96,7 +94,7 @@
         <p style="font-weight: bold; color: var(--primary); margin-bottom: 5px;">إعداد وتصميم: أ. نورة القثامي</p>
         <p style="margin: 2px 0;">الكلية التقنية الرقمية للبنات بتبوك</p>
         <div style="margin-top: 15px;">
-             <a href="https://www.freecounterstat.com"><img src="https://counter1.optistats.ovh/private/freecounterstat.php?c=pt4x3lgqdkek5gqe8qd7ekhfb1ezkp4m" border="0"></a>
+            <a href="https://www.freecounterstat.com"><img src="https://counter1.optistats.ovh/private/freecounterstat.php?c=pt4x3lgqdkek5gqe8qd7ekhfb1ezkp4m" border="0"></a>
         </div>
     </footer>
 </div>
@@ -104,6 +102,7 @@
 <script>
     let courses = JSON.parse(localStorage.getItem('myCourses')) || [];
 
+    // دالة تحويل الأرقام العربية إلى إنجليزية
     function fixNumbers(str) {
         return str.replace(/[٠-٩]/g, function(d) {
             return d.charCodeAt(0) - 1632;
@@ -111,35 +110,30 @@
     }
 
     function addNewCourse() {
-        courses.push({ id: Date.now(), name: 'مقرر جديد', weeklyHours: 4, absent1: '', absent2: '', weeksLeft: 10 });
+        courses.push({ id: Date.now(), name: 'مقرر جديد', weeklyHours: 4, absent1: '', absent2: '' });
         renderCourses();
     }
 
-    function renderCourses() {
+        function renderCourses() {
         const list = document.getElementById('coursesList');
         list.innerHTML = '';
         
         courses.forEach(course => {
             const weeklyH = parseFloat(course.weeklyHours) || 0;
-            const weeksLeft = parseFloat(course.weeksLeft) || 1;
             const totalSemHours = weeklyH * 16;
             const limit = totalSemHours * 0.20;
             const currentAbsent = (parseFloat(course.absent1) || 0) + ((parseFloat(course.absent2) || 0) * 2);
             const percent = totalSemHours > 0 ? (currentAbsent / totalSemHours) * 100 : 0;
             const remaining = limit - currentAbsent;
 
+            // تحديد الحالة واللون والرسالة النصية
             let statusClass = 'safe-bg', statusColor = 'var(--safe)', msg = '🟢 وضعك آمن ومستقر';
-            if (percent >= 20) { statusClass = 'danger-bg'; statusColor = 'var(--danger)'; msg = '🚫 حالة حرمان'; }
-            else if (percent >= 15) { statusClass = 'warning-bg'; statusColor = 'var(--orange)'; msg = '🟠 اقتربتِ من الحرمان'; }
-            else if (percent >= 10) { statusClass = 'warning-bg'; statusColor = 'var(--warning)'; msg = '🟡 انتباه: رصيدك يتناقص'; }
-
-            // حساب التنبؤ الذكي
-            let predictionMsg = "";
-            if (remaining > 0 && weeksLeft > 0) {
-                const maxPerWeek = (remaining / weeksLeft).toFixed(1);
-                predictionMsg = `<div class="prediction-box">
-                    💡 <b>خطة الانضباط:</b> لتجنب الحرمان، يمكنكِ الغياب بمعدل أقصاه <b>${maxPerWeek}</b> ساعة كل أسبوع فيما تبقى من الفصل.
-                </div>`;
+            if (percent >= 20) { 
+                statusClass = 'danger-bg'; statusColor = 'var(--danger)'; msg = '🚫 حالة حرمان'; 
+            } else if (percent >= 15) { 
+                statusClass = 'warning-bg'; statusColor = 'var(--orange)'; msg = '🟠 تنبيه: اقتربتِ من الحرمان'; 
+            } else if (percent >= 10) { 
+                statusClass = 'warning-bg'; statusColor = 'var(--warning)'; msg = '🟡 انتباه: بدأ رصيدكِ بالنقصان'; 
             }
 
             let advice = percent < 20 
@@ -152,11 +146,6 @@
                 <button class="delete-course" onclick="deleteCourse(${course.id})">✕</button>
                 <input type="text" class="course-title" value="${course.name}" onchange="updateCourse(${course.id}, 'name', this.value)">
                 
-                <div class="input-group" style="margin-bottom:12px;">
-                    <label>📅 عدد الأسابيع المتبقية في الفصل</label>
-                    <input type="text" inputmode="numeric" value="${course.weeksLeft}" oninput="handleInput(${course.id}, 'weeksLeft', this)">
-                </div>
-
                 <div class="grid-inputs">
                     <div class="input-group">
                         <label>الساعات الأسبوعية</label>
@@ -182,7 +171,7 @@
 
                     <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px;">
                         <span style="font-size:1.8rem; font-weight:900; color:var(--primary);">${percent.toFixed(1)}%</span>
-                        <span style="font-size:0.85rem; color:#718096; font-weight:600;">من أصل 20%</span>
+                        <span style="font-size:0.85rem; color:#718096; font-weight:600;">من الحد المسموح (20%)</span>
                     </div>
 
                     <div class="progress-bar">
@@ -190,11 +179,10 @@
                     </div>
 
                     <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:#555; font-weight:bold;">
-                        <span>إجمالي غيابك: ${currentAbsent} س</span>
-                        <span>رصيدك الكلي: ${limit.toFixed(0)} س</span>
+                        <span>إجمالي الغياب: ${currentAbsent} س</span>
+                        <span>حد الحرمان: ${limit.toFixed(0)} س</span>
                     </div>
                     ${advice}
-                    ${predictionMsg}
                 </div>
             `;
             list.appendChild(card);
@@ -202,8 +190,9 @@
         localStorage.setItem('myCourses', JSON.stringify(courses));
     }
 
+
     function handleInput(id, field, el) {
-        el.value = fixNumbers(el.value);
+        el.value = fixNumbers(el.value); // تحويل الأرقام فوراً
         updateCourse(id, field, el.value);
     }
 
