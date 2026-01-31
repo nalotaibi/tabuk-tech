@@ -104,7 +104,7 @@
                 <h1>منبه الغياب الذكي</h1>
                 <p class="header-description">رؤية ذكية لحضورك الأكاديمي</p>
                 <div class="badge-container">
-                    <span class="system-badge">نظام الـ 16 أسبوعاً (20%)</span>
+                    <span class="system-badge">نظام 16 أسبوعاً (20%)</span>
                 </div>
             </div>
         </header>
@@ -232,13 +232,13 @@ function calculate() {
     if(percent >= 20){
         color="var(--danger)"; mode="danger-mode";
         leftRes.innerText="🚫 حرمان";
-        msg="<span style='color:var(--danger); font-weight:bold;'>تجاوزتِ الحد المسموح.</span>";
+        msg="<span style='color:var(--danger); font-weight:bold;'>تجاوزت الحد المسموح.</span>";
     }
     else{
         leftRes.innerText=remaining.toFixed(1)+" ساعة متبقية";
         if(percent >= 15){ color="var(--orange)"; mode="warning-mode"; msg="🟠 اقتربت من حد الحرمان"; }
-        else if(percent >= 10){ color="var(--warning)"; mode="warning-mode"; msg="🟡 تنبيه: بدأتِ في منطقة القلق"; }
-        else{ color="var(--safe)"; mode="safe-mode"; msg="🟢 وضعك مطمئن، حافظي على حضورك"; }
+        else if(percent >= 10){ color="var(--warning)"; mode="warning-mode"; msg="🟡 تنبيه"; }
+        else{ color="var(--safe)"; mode="safe-mode"; msg="🟢 وضعك مطمئن، حافظ على حضورك"; }
     }
 
     progressBar.style.background=color;
@@ -246,7 +246,7 @@ function calculate() {
 
     if(percent < 20) {
         extraInfo.innerHTML=`${msg}<br>
-        يمكنكِ الغياب <b>${Math.floor(remaining)}</b> محاضرة (ساعة واحدة)<br>
+        يمكنك الغياب <b>${Math.floor(remaining)}</b> محاضرة (ساعة واحدة)<br>
         أو <b>${Math.floor(remaining/2)}</b> محاضرة (ساعتين)`;
     } else { extraInfo.innerHTML=msg; }
 }
