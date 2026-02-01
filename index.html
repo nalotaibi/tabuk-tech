@@ -65,22 +65,23 @@
         .flex-inputs > div { flex: 1; }
         .input-sub-label { font-size: 0.7rem; color: #666; margin-bottom: 4px; display: block; font-weight: 600; text-align: center; }
 
-        /* تنسيق أيقونة المعلومة */
         .info-icon {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 15px;
-            height: 15px;
+            width: 16px;
+            height: 16px;
             background: #cbd5e0;
             color: white;
             border-radius: 50%;
-            font-size: 0.7rem;
-            margin-right: 4px;
-            cursor: help;
+            font-size: 0.75rem;
+            margin-right: 5px;
+            cursor: pointer;
             font-weight: bold;
             vertical-align: middle;
+            transition: background 0.3s;
         }
+        .info-icon:hover { background: var(--primary); }
 
         .result-area { border-radius: 20px; padding: 15px; margin-top: 15px; text-align: center; }
         .safe-bg { background: #f0fdf4; border: 1px solid #dcfce7; }
@@ -167,7 +168,6 @@
             if (currentAbsent <= limit) {
                 const remHours = Math.floor(remaining); 
                 let detail = "";
-
                 if (weeklyH === 1 || weeklyH === 2 || weeklyH === 4) {
                     const unit = (weeklyH === 1) ? 1 : 2;
                     const count = Math.floor(remHours / unit);
@@ -193,7 +193,6 @@
 
             const card = document.createElement('div');
             card.className = 'course-card';
-
             const isSingleType = (weeklyH === 1 || weeklyH === 2 || weeklyH === 4 || weeklyH === 6);
             const showAbsent2 = (weeklyH >= 2); 
             const showAbsent1 = (weeklyH === 1 || weeklyH === 3 || weeklyH === 5);
@@ -201,45 +200,31 @@
             card.innerHTML = `
                 <button class="delete-course" onclick="deleteCourse(${course.id})">✕</button>
                 <input type="text" class="course-title" value="${course.name}" onchange="updateCourse(${course.id}, 'name', this.value)">
-                
                 <div class="input-group">
                     <label>عدد الساعات الأسبوعية للمقرر</label>
                     <select onchange="updateCourse(${course.id}, 'weeklyHours', this.value)">
                         ${[1,2,3,4,5,6].map(h => `<option value="${h}" ${course.weeklyHours == h ? 'selected' : ''}>${h} ساعات</option>`).join('')}
                     </select>
                 </div>
-
                 <div class="input-group">
                     <label> عدد مرات الغياب </label>
                     <div class="flex-inputs">
-                        ${showAbsent2 ? `
-                        <div>
-                            ${isSingleType ? '' : '<span class="input-sub-label">(محاضرة فئة ساعتين)</span>'}
-                            <input type="text" inputmode="numeric" value="${course.absent2}" placeholder="0" oninput="handleInput(${course.id}, 'absent2', this)">
-                        </div>
-                        ` : ''}
-                        ${showAbsent1 ? `
-                        <div>
-                            ${isSingleType ? '' : '<span class="input-sub-label">(محاضرة فئة ساعة)</span>'}
-                            <input type="text" inputmode="numeric" value="${course.absent1}" placeholder="0" oninput="handleInput(${course.id}, 'absent1', this)">
-                        </div>
-                        ` : ''}
+                        ${showAbsent2 ? `<div>${isSingleType ? '' : '<span class="input-sub-label">(محاضرة فئة ساعتين)</span>'}<input type="text" inputmode="numeric" value="${course.absent2}" placeholder="0" oninput="handleInput(${course.id}, 'absent2', this)"></div>` : ''}
+                        ${showAbsent1 ? `<div>${isSingleType ? '' : '<span class="input-sub-label">(محاضرة فئة ساعة)</span>'}<input type="text" inputmode="numeric" value="${course.absent1}" placeholder="0" oninput="handleInput(${course.id}, 'absent1', this)"></div>` : ''}
                     </div>
                 </div>
-
                 <div class="result-area ${statusClass}">
                     <div style="font-size:0.95rem; font-weight:800; color:${statusColor}; margin-bottom:10px;">${msg}</div>
-                    
                     <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:5px;">
                         <span style="font-size:1.8rem; font-weight:900; color:var(--primary);">${percent.toFixed(1)}%</span>
                         <span style="font-size:0.85rem; color:#718096; font-weight:bold;">من أصل 20%</span>
                     </div>
-
                     <div class="progress-bar"><div class="progress-fill" style="width:${Math.min((percent/20)*100, 100)}%; background:${statusColor}"></div></div>
-                    
                     <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#555; font-weight:700; margin-top:5px;">
                         <span>غيابك الحالي: ${currentAbsent} ساعة</span>
-                        <span>حد الحرمان: ${limit.toFixed(1)} ساعة <span class="info-icon" title="المعادلة: (${weeklyH} ساعات × 16 أسبوع) × 20% = ${limit.toFixed(1)}">i</span></span>
+                        <span>حد الحرمان: ${limit.toFixed(1)} ساعة 
+                            <span class="info-icon" onclick="alert('📘 طريقة حساب ساعات الحرمان لهذا المقرر:\\n(${weeklyH} ساعات أسبوعياً × 16 أسبوع) × 20% = ${limit.toFixed(1)} ساعة')">i</span>
+                        </span>
                     </div>
                     ${advice}
                 </div>
