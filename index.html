@@ -187,12 +187,12 @@
                     <label> عدد مرات الغياب </label>
                     <div class="flex-inputs">
                         <div>
-                            <span class="input-sub-label">(ساعتين)</span>
+                            <span class="input-sub-label">(محاضرة فئة ساعتين)</span>
                             <input type="text" inputmode="numeric" value="${course.absent2}" placeholder="0" oninput="handleInput(${course.id}, 'absent2', this)">
                         </div>
                         ${isOdd ? `
                         <div>
-                            <span class="input-sub-label">(ساعة)</span>
+                            <span class="input-sub-label">(محاضرة فئة ساعة)</span>
                             <input type="text" inputmode="numeric" value="${course.absent1}" placeholder="0" oninput="handleInput(${course.id}, 'absent1', this)">
                         </div>
                         ` : ''}
@@ -210,7 +210,7 @@
                     <div class="progress-bar"><div class="progress-fill" style="width:${Math.min((percent/20)*100, 100)}%; background:${statusColor}"></div></div>
                     
                     <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:#555; font-weight:600; margin-top:5px;">
-                        <span>غيابك: ${currentAbsent} ساعة</span>
+                        <span>غيابك الحالي: ${currentAbsent} ساعة</span>
                         <span>حد الحرمان: ${limit.toFixed(1)} ساعة</span>
                     </div>
 
