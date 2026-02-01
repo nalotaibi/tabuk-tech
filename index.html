@@ -55,7 +55,7 @@
         select, input { 
             width: 100%; padding: 10px; border-radius: 12px; 
             border: 1.5px solid #edf2f1; font-family: inherit; text-align: center;
-            font-size: 0.9rem; outline: none; box-sizing: border-box;
+            font-size: 0.95rem; outline: none; box-sizing: border-box;
             transition: all 0.3s;
         }
         
@@ -63,7 +63,7 @@
 
         .flex-inputs { display: flex; gap: 8px; align-items: flex-end; }
         .flex-inputs > div { flex: 1; }
-        .input-sub-label { font-size: 0.7rem; color: #666; margin-bottom: 4px; display: block; font-weight: 600; }
+        .input-sub-label { font-size: 0.7rem; color: #666; margin-bottom: 4px; display: block; font-weight: 600; text-align: center; }
 
         .result-area { border-radius: 20px; padding: 15px; margin-top: 15px; text-align: center; }
         .safe-bg { background: #f0fdf4; border: 1px solid #dcfce7; }
@@ -73,7 +73,7 @@
         .progress-bar { height: 8px; background: #e5e7eb; border-radius: 4px; margin: 10px 0; overflow: hidden; }
         .progress-fill { height: 100%; width: 0%; transition: 0.8s ease-in-out; }
 
-        .advice-box { margin-top: 10px; padding-top: 10px; border-top: 1px dashed rgba(0,0,0,0.1); font-size: 0.8rem; color: #444; line-height: 1.4; }
+        .advice-box { margin-top: 10px; padding-top: 10px; border-top: 1px dashed rgba(0,0,0,0.1); font-size: 0.85rem; color: #444; line-height: 1.4; }
         .advice-box b { color: var(--primary); }
 
         .footer-note { text-align: center; font-size: 0.8rem; color: #718096; margin-top: 40px; border-top: 1px solid #d1d9e6; padding-top: 20px; }
@@ -170,10 +170,10 @@
 
             const card = document.createElement('div');
             card.className = 'course-card';
-            
-            // شروط عرض الخانات بناءً على عدد الساعات
+
+            // المنطق المعدل: الزوجي يظهر فقط فئة ساعتين، الفردي يظهر الاثنين
             const showAbsent2 = (weeklyH >= 2); 
-            const showAbsent1 = (weeklyH === 1 || weeklyH >= 3);
+            const showAbsent1 = (weeklyH === 1 || weeklyH === 3 || weeklyH === 5);
 
             card.innerHTML = `
                 <button class="delete-course" onclick="deleteCourse(${course.id})">✕</button>
@@ -206,16 +206,16 @@
                 </div>
 
                 <div class="result-area ${statusClass}">
-                    <div style="font-size:0.9rem; font-weight:800; color:${statusColor}; margin-bottom:10px;">${msg}</div>
+                    <div style="font-size:0.95rem; font-weight:800; color:${statusColor}; margin-bottom:10px;">${msg}</div>
                     
                     <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:5px;">
-                        <span style="font-size:1.6rem; font-weight:900; color:var(--primary);">${percent.toFixed(1)}%</span>
-                        <span style="font-size:0.8rem; color:#718096; font-weight:bold;">من أصل 20%</span>
+                        <span style="font-size:1.8rem; font-weight:900; color:var(--primary);">${percent.toFixed(1)}%</span>
+                        <span style="font-size:0.85rem; color:#718096; font-weight:bold;">من أصل 20%</span>
                     </div>
 
                     <div class="progress-bar"><div class="progress-fill" style="width:${Math.min((percent/20)*100, 100)}%; background:${statusColor}"></div></div>
                     
-                    <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:#555; font-weight:600; margin-top:5px;">
+                    <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#555; font-weight:700; margin-top:5px;">
                         <span>غيابك الحالي: ${currentAbsent} ساعة</span>
                         <span>حد الحرمان: ${limit.toFixed(1)} ساعة</span>
                     </div>
