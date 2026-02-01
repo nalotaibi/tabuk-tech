@@ -171,7 +171,8 @@
             const card = document.createElement('div');
             card.className = 'course-card';
 
-            // المنطق المعدل: الزوجي يظهر فقط فئة ساعتين، الفردي يظهر الاثنين
+            // المنطق البرمجي الجديد:
+            const isSingleType = (weeklyH === 1 || weeklyH === 2 || weeklyH === 4 || weeklyH === 6);
             const showAbsent2 = (weeklyH >= 2); 
             const showAbsent1 = (weeklyH === 1 || weeklyH === 3 || weeklyH === 5);
 
@@ -191,14 +192,14 @@
                     <div class="flex-inputs">
                         ${showAbsent2 ? `
                         <div>
-                            <span class="input-sub-label">(محاضرة فئة ساعتين)</span>
+                            ${isSingleType ? '' : '<span class="input-sub-label">(محاضرة فئة ساعتين)</span>'}
                             <input type="text" inputmode="numeric" value="${course.absent2}" placeholder="0" oninput="handleInput(${course.id}, 'absent2', this)">
                         </div>
                         ` : ''}
                         
                         ${showAbsent1 ? `
                         <div>
-                            <span class="input-sub-label">(محاضرة فئة ساعة)</span>
+                            ${isSingleType ? '' : '<span class="input-sub-label">(محاضرة فئة ساعة)</span>'}
                             <input type="text" inputmode="numeric" value="${course.absent1}" placeholder="0" oninput="handleInput(${course.id}, 'absent1', this)">
                         </div>
                         ` : ''}
