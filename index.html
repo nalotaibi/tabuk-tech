@@ -4,7 +4,7 @@
     <link rel="apple-touch-icon" href="IMG_1813.png">
     <link rel="icon" href="IMG_1813.png">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>حاسبة الغياب الذكية</title>
     <style>
         :root {
@@ -25,66 +25,73 @@
             min-height: 100vh;
         }
 
-        /* نافذة التعليمات (Modal) - تم تعديل المحاذاة هنا */
+        /* إصلاح بوكس التعليمات ليكون متوازناً تماماً */
         .modal-overlay {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7);
-            z-index: 1000;
+            background: rgba(0,0,0,0.75);
+            z-index: 9999;
             justify-content: center;
             align-items: center;
-            padding: 20px;
         }
+
         .modal-content {
             background: white;
-            padding: 25px;
-            border-radius: 24px;
-            max-width: 340px;
-            width: 90%;
+            padding: 30px 20px;
+            border-radius: 28px;
+            width: 85%; /* عرض مرن */
+            max-width: 340px; /* حد أقصى للعرض */
+            box-sizing: border-box; /* يضمن توازن الحواف */
             position: relative;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-            text-align: center; /* ضمان توسط المحتوى */
+            text-align: center;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            margin: auto;
         }
+
         .modal-header { 
             font-weight: 800; 
             color: var(--primary); 
-            margin-bottom: 20px; 
-            font-size: 1.1rem;
+            margin-bottom: 25px; 
+            font-size: 1.15rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 10px;
         }
+
         .guide-item { 
-            margin-bottom: 20px; 
-            font-size: 0.9rem; 
-            line-height: 1.6; 
+            margin-bottom: 22px; 
+            font-size: 0.92rem; 
+            line-height: 1.7; 
             color: #333;
             text-align: center;
         }
+
         .guide-item b { 
             color: var(--primary); 
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 5px;
-            margin-bottom: 8px; 
-            font-size: 1rem;
+            gap: 8px;
+            margin-bottom: 6px; 
+            font-size: 1.05rem;
         }
+
         .close-modal {
             background: var(--primary);
             color: white;
             border: none;
-            padding: 12px;
-            border-radius: 12px;
+            padding: 14px;
+            border-radius: 15px;
             width: 100%;
-            margin-top: 10px;
             cursor: pointer;
             font-weight: bold;
+            font-size: 1rem;
+            margin-top: 10px;
         }
 
-        /* شريط التثبيت المصغر والأنيق */
+        /* شريط التثبيت العلوي الأنيق */
         .install-banner {
             background: #ffffff;
             border: 1px solid #e1e9e7;
@@ -95,54 +102,60 @@
             align-items: center;
             justify-content: space-between;
             box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            max-width: 450px;
+            margin-left: auto;
+            margin-right: auto;
         }
-        .install-text { font-weight: 600; color: var(--primary); font-size: 0.82rem; }
+        .install-text { font-weight: 700; color: var(--primary); font-size: 0.85rem; }
         .install-btn {
             background: var(--primary);
             color: white;
             border: none;
             padding: 6px 14px;
             border-radius: 10px;
-            font-size: 0.78rem;
+            font-size: 0.8rem;
             font-weight: bold;
             cursor: pointer;
-            white-space: nowrap;
         }
 
-        /* باقي تنسيقات التطبيق */
         .app-container { max-width: 450px; margin: 0 auto; }
-        .header-section { text-align: center; margin-bottom: 20px; }
-        .college-logo img { width: 180px; margin-bottom: 10px; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.1)); }
-        .header-text h1 { margin: 0; font-size: 1.6rem; color: var(--primary); font-weight: 800; }
-        .system-badge { display: inline-block; margin-top: 8px; padding: 4px 12px; background: #e8f5e9; color: #2e7d32; border-radius: 20px; font-size: 0.75rem; font-weight: bold; }
+        .header-section { text-align: center; margin-bottom: 25px; }
+        .college-logo img { width: 200px; margin-bottom: 12px; }
+        .header-text h1 { margin: 0; font-size: 1.7rem; color: var(--primary); font-weight: 800; }
+        .system-badge { display: inline-block; margin-top: 10px; padding: 5px 15px; background: #e8f5e9; color: #2e7d32; border-radius: 20px; font-size: 0.8rem; font-weight: bold; }
 
-        .action-bars { display: flex; gap: 10px; margin: 20px 0; }
-        .add-btn { flex: 2; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 16px; font-weight: bold; cursor: pointer; font-size: 1rem; box-shadow: 0 4px 12px rgba(29,92,65,0.2); }
-        .reset-all { flex: 1; padding: 14px; background: #fff; color: var(--primary); border: 1px solid var(--primary); border-radius: 16px; cursor: pointer; font-weight: bold; }
+        .action-bars { display: flex; gap: 10px; margin: 25px 0; }
+        .add-btn { flex: 2; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 18px; font-weight: bold; cursor: pointer; font-size: 1.05rem; }
+        .reset-all { flex: 1; padding: 15px; background: #fff; color: var(--primary); border: 1.5px solid var(--primary); border-radius: 18px; cursor: pointer; font-weight: bold; }
 
-        .course-card { background: white; border-radius: 28px; padding: 22px; margin-bottom: 20px; box-shadow: 0 12px 30px rgba(0,0,0,0.06); border: 1px solid #e1e9e7; position: relative; }
-        .delete-course { position: absolute; top: 18px; left: 18px; background: #fee2e2; color: #ef4444; border: none; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .course-title { width: 85%; border: none; border-bottom: 2px solid #f0f0f0; font-size: 1.1rem; font-weight: bold; color: var(--primary); margin-bottom: 15px; padding: 5px; outline: none; background: transparent; }
-        .input-group { margin-bottom: 12px; }
-        .input-group label { display: block; font-size: 0.8rem; color: #444; margin-bottom: 6px; font-weight: 700; background: #f8faf9; padding: 4px 10px; border-right: 3px solid var(--primary); }
-        select, input { width: 100%; padding: 10px; border-radius: 12px; border: 1.5px solid #edf2f1; text-align: center; font-size: 0.95rem; outline: none; box-sizing: border-box; }
-        .flex-inputs { display: flex; gap: 8px; }
-        .flex-inputs > div { flex: 1; }
-        .info-icon { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; background: #cbd5e0; color: white; border-radius: 50%; font-size: 0.75rem; margin-right: 5px; cursor: pointer; vertical-align: middle; }
+        .course-card { background: white; border-radius: 30px; padding: 25px; margin-bottom: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.07); border: 1px solid #e1e9e7; position: relative; }
+        .delete-course { position: absolute; top: 20px; left: 20px; background: #fee2e2; color: #ef4444; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-weight: bold; }
+        .course-title { width: 80%; border: none; border-bottom: 2px solid #f0f0f0; font-size: 1.2rem; font-weight: bold; color: var(--primary); margin-bottom: 20px; padding: 5px; outline: none; background: transparent; }
         
-        .result-area { border-radius: 20px; padding: 15px; margin-top: 15px; text-align: center; }
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; font-size: 0.85rem; color: #444; margin-bottom: 8px; font-weight: 800; background: #f8faf9; padding: 6px 12px; border-right: 4px solid var(--primary); border-radius: 4px; }
+        
+        select, input { width: 100%; padding: 12px; border-radius: 14px; border: 1.5px solid #edf2f1; text-align: center; font-size: 1rem; outline: none; box-sizing: border-box; }
+        .flex-inputs { display: flex; gap: 10px; }
+        .flex-inputs > div { flex: 1; }
+        
+        .result-area { border-radius: 22px; padding: 20px; margin-top: 20px; text-align: center; }
         .safe-bg { background: #f0fdf4; border: 1px solid #dcfce7; }
         .warning-bg { background: #fffbeb; border: 1px solid #fef3c7; }
         .danger-bg { background: #fef2f2; border: 1px solid #fee2e2; }
-        .progress-bar { height: 8px; background: #e5e7eb; border-radius: 4px; margin: 10px 0; overflow: hidden; }
+        
+        .progress-bar { height: 10px; background: #e5e7eb; border-radius: 5px; margin: 12px 0; overflow: hidden; }
         .progress-fill { height: 100%; transition: 0.8s ease-in-out; }
-        .advice-box { margin-top: 10px; padding-top: 10px; border-top: 1px dashed rgba(0,0,0,0.1); font-size: 0.85rem; color: #444; }
-        .footer-note { text-align: center; font-size: 0.8rem; color: #718096; margin-top: 40px; border-top: 1px solid #d1d9e6; padding-top: 20px; }
+        
+        .info-icon { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; background: #cbd5e0; color: white; border-radius: 50%; font-size: 0.8rem; margin-right: 6px; cursor: pointer; font-weight: bold; }
+        .advice-box { margin-top: 12px; padding-top: 12px; border-top: 1px dashed rgba(0,0,0,0.1); font-size: 0.9rem; color: #444; }
+
+        .footer-note { text-align: center; font-size: 0.85rem; color: #718096; margin-top: 50px; border-top: 1px solid #d1d9e6; padding-top: 25px; padding-bottom: 30px; }
     </style>
 </head>
 <body>
 
-<div id="guideModal" class="modal-overlay">
+<div id="guideModal" class="modal-overlay" onclick="if(event.target==this) toggleModal(false)">
     <div class="modal-content">
         <div class="modal-header">
             <span>📱</span>
@@ -152,7 +165,7 @@
             <b>🍏 لمستخدمات iPhone (Safari)</b>
             اضغطي على زر المشاركة ⎋ ثم اختاري <br> "إضافة إلى الشاشة الرئيسية"
         </div>
-        <div class="guide-item">
+        <div class="guide-item" style="margin-bottom: 5px;">
             <b>🤖 لمستخدمات Android (Chrome)</b>
             اضغطي على النقاط الثلاث ⋮ ثم اختاري <br> "إضافة إلى الشاشة الرئيسية"
         </div>
@@ -182,9 +195,9 @@
     <div id="coursesList"></div>
 
     <footer class="footer-note">
-        <p style="font-weight: bold; color: var(--primary); margin: 0;">إعداد وتصميم: أ. نورة القثامي</p>
-        <p style="margin: 5px 0;">قسم الحاسب وتقنية المعلومات | 1447هـ - 2026م</p>
-        <div style="margin-top: 10px;">
+        <p style="font-weight: 800; color: var(--primary); margin: 0; font-size: 1rem;">إعداد وتصميم: أ. نورة القثامي</p>
+        <p style="margin: 8px 0; font-weight: 600;">قسم الحاسب وتقنية المعلومات | 1447هـ - 2026م</p>
+        <div style="margin-top: 15px;">
             <a href="https://www.freecounterstat.com" target="_blank">
                 <img src="https://counter1.optistats.ovh/private/freecounterstat.php?c=pt4x3lgqdkek5gqe8qd7ekhfb1ezkp4m" border="0" title="عداد الزيارات">
             </a>
@@ -195,7 +208,10 @@
 <script>
     let courses = JSON.parse(localStorage.getItem('myCourses')) || [];
 
-    function toggleModal(show) { document.getElementById('guideModal').style.display = show ? 'flex' : 'none'; }
+    function toggleModal(show) { 
+        const modal = document.getElementById('guideModal');
+        modal.style.display = show ? 'flex' : 'none';
+    }
 
     function fixNumbers(str) { return str.replace(/[٠-٩]/g, d => d.charCodeAt(0) - 1632).replace(/[^\d.]/g, ''); }
 
@@ -220,20 +236,6 @@
             else if (percent >= 15) { statusClass = 'warning-bg'; statusColor = 'var(--orange)'; msg = '🟠 تنبيه: اقتربت من الحرمان'; }
             else if (percent >= 10) { statusClass = 'warning-bg'; statusColor = 'var(--warning)'; msg = '🟡 انتباه: بدأ رصيدك بالنقصان'; }
 
-            let advice = "";
-            if (currentAbsent <= limit) {
-                const remHours = Math.floor(remaining);
-                let detail = "";
-                if (weeklyH === 1 || weeklyH === 2 || weeklyH === 4) {
-                    const count = Math.floor(remHours / (weeklyH === 1 ? 1 : 2));
-                    detail = `<b>${count}</b> محاضرة`;
-                } else {
-                    const lec2 = Math.floor(remHours / 2); const lec1 = remHours % 2;
-                    detail = lec2 > 0 ? `<b>${lec2}</b> محاضرات (ساعتين)` : `<b>1</b> محاضرة (ساعة)`;
-                }
-                advice = `<div class="advice-box">متبقي لك <b>${remHours}</b> ساعة غياب مسموح</div>`;
-            } else { advice = `<div class="advice-box" style="color:var(--danger); font-weight:bold;">تجاوزت الحد المسموح</div>`; }
-
             const card = document.createElement('div');
             card.className = 'course-card';
             card.innerHTML = `
@@ -246,24 +248,24 @@
                     </select>
                 </div>
                 <div class="input-group">
-                    <label>عدد غياباتك</label>
+                    <label>عدد غياباتك (بالساعات)</label>
                     <div class="flex-inputs">
-                        ${weeklyH >= 2 ? `<div><input type="text" placeholder="فئة ساعتين" value="${course.absent2}" oninput="handleInput(${course.id}, 'absent2', this)"></div>` : ''}
-                        ${(weeklyH % 2 !== 0 || weeklyH === 1) ? `<div><input type="text" placeholder="فئة ساعة" value="${course.absent1}" oninput="handleInput(${course.id}, 'absent1', this)"></div>` : ''}
+                        ${weeklyH >= 2 ? `<div><input type="text" inputmode="numeric" placeholder="فئة ساعتين" value="${course.absent2}" oninput="handleInput(${course.id}, 'absent2', this)"></div>` : ''}
+                        ${(weeklyH % 2 !== 0 || weeklyH === 1) ? `<div><input type="text" inputmode="numeric" placeholder="فئة ساعة" value="${course.absent1}" oninput="handleInput(${course.id}, 'absent1', this)"></div>` : ''}
                     </div>
                 </div>
                 <div class="result-area ${statusClass}">
-                    <div style="font-weight:800; color:${statusColor}; margin-bottom:10px;">${msg}</div>
-                    <div style="display:flex; justify-content:space-between; align-items:baseline;">
-                        <span style="font-size:1.8rem; font-weight:900; color:var(--primary);">${percent.toFixed(1)}%</span>
-                        <span style="font-size:0.85rem; color:#718096;">من أصل 20%</span>
+                    <div style="font-weight:900; color:${statusColor}; margin-bottom:12px; font-size:1rem;">${msg}</div>
+                    <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:5px;">
+                        <span style="font-size:2rem; font-weight:900; color:var(--primary);">${percent.toFixed(1)}%</span>
+                        <span style="font-size:0.9rem; color:#718096; font-weight:bold;">من أصل 20%</span>
                     </div>
                     <div class="progress-bar"><div class="progress-fill" style="width:${Math.min((percent/20)*100, 100)}%; background:${statusColor}"></div></div>
-                    <div style="display:flex; justify-content:space-between; font-size:0.8rem;">
-                        <span>غيابك الحالي: ${currentAbsent} ساعة</span>
-                        <span>حد الحرمان: ${limit.toFixed(1)} <span class="info-icon" onclick="alert('الحسبة: (${weeklyH} ساعات × 16 أسبوع) × 20%')">i</span></span>
+                    <div style="display:flex; justify-content:space-between; font-size:0.85rem; font-weight:700; margin-top:8px;">
+                        <span>غيابك: ${currentAbsent} ساعة</span>
+                        <span>الحد الأقصى: ${limit.toFixed(1)} <span class="info-icon" onclick="alert('طريقة الحسبة:\\n(${weeklyH} ساعات × 16 أسبوع) × 20% = ${limit.toFixed(1)} ساعة')">i</span></span>
                     </div>
-                    ${advice}
+                    <div class="advice-box">${remaining > 0 ? `متبقي لك <b>${remaining.toFixed(1)}</b> ساعة غياب مسموح` : 'لقد تجاوزت الحد المسموح به'}</div>
                 </div>
             `;
             list.appendChild(card);
