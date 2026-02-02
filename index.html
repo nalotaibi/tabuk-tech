@@ -25,7 +25,6 @@
             min-height: 100vh;
         }
 
-        /* الطبقة الشفافة - التعديل الجذري للتوسيط */
         .modal-overlay {
             display: none; 
             position: fixed;
@@ -101,9 +100,7 @@
         .flex-inputs > div { flex: 1; }
         .input-sub-label { font-size: 0.7rem; color: #666; margin-bottom: 4px; display: block; font-weight: 600; text-align: center; }
 
-        /* أيقونة التعجب الجديدة */
         .hint-icon { display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; background: #e2e8f0; color: #4a5568; border-radius: 50%; font-size: 0.65rem; margin-right: 4px; cursor: pointer; font-weight: bold; vertical-align: middle; }
-
         .info-icon { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; background: #cbd5e0; color: white; border-radius: 50%; font-size: 0.75rem; margin-right: 5px; cursor: pointer; font-weight: bold; vertical-align: middle; }
 
         .result-area { border-radius: 20px; padding: 15px; margin-top: 15px; text-align: center; }
@@ -129,7 +126,6 @@
         <div class="guide-item">
             <b>🍏 لمستخدمي iPhone (Safari)</b>
             اضغط على أيقونة المشاركة ⬆️ <br>
-            (المربع الذي به سهم للأعلى) <br>
             ثم اختار <b>"إضافة إلى الصفحة الرئيسية"</b>
         </div>
         <div class="guide-item">
@@ -243,7 +239,9 @@
 
             const card = document.createElement('div');
             card.className = 'course-card';
-            const isSingleType = (weeklyH === 1 || weeklyH === 2 || weeklyH === 4 || weeklyH === 6);
+            
+            // تحديد متى تظهر جملة الشرح (فقط للساعات الفردية 3 و 5)
+            const isComplexType = (weeklyH === 3 || weeklyH === 5);
             const showAbsent2 = (weeklyH >= 2); 
             const showAbsent1 = (weeklyH === 1 || weeklyH === 3 || weeklyH === 5);
 
@@ -260,17 +258,19 @@
                     <label> عدد مرات الغياب </label>
                     <div class="flex-inputs">
                         ${showAbsent2 ? `<div>
+                            ${isComplexType ? `
                             <span class="input-sub-label">
                                 <span class="hint-icon" onclick="alert('💡 محاضرة فئة ساعتين:\\nيُقصد بها المحاضرات الطويلة التي تُحسب بـساعتين غياب عند التغيب عنها مرة واحدة.')">?</span>
                                 (محاضرة فئة ساعتين)
-                            </span>
+                            </span>` : ''}
                             <input type="text" inputmode="numeric" value="${course.absent2}" placeholder="0" oninput="handleInput(${course.id}, 'absent2', this)">
                         </div>` : ''}
                         ${showAbsent1 ? `<div>
+                            ${isComplexType ? `
                             <span class="input-sub-label">
                                 <span class="hint-icon" onclick="alert('💡 محاضرة فئة ساعة:\\nيُقصد بها المحاضرات القصيرة التي تُحسب بـساعة غياب واحدة فقط.')">?</span>
                                 (محاضرة فئة ساعة)
-                            </span>
+                            </span>` : ''}
                             <input type="text" inputmode="numeric" value="${course.absent1}" placeholder="0" oninput="handleInput(${course.id}, 'absent1', this)">
                         </div>` : ''}
                     </div>
