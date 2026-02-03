@@ -188,7 +188,7 @@
         .info-icon:hover { filter: brightness(1.05); }
         .info-icon:active { transform: translateY(1px) scale(0.98); }
 
-        /* تغيير لون الأيقونة حسب الحالة (اختياري لكنه جميل) */
+        /* تغيير لون الأيقونة حسب الحالة */
         .info-icon.warn { background: var(--orange); box-shadow: 0 6px 14px rgba(251,146,60,0.25); }
         .info-icon.danger { background: var(--danger); box-shadow: 0 6px 14px rgba(239,68,68,0.25); }
 
@@ -276,6 +276,7 @@
             line-height: 1.7;
         }
 
+        /* ✅ المعادلة من اليمين لليسار */
         .info-formula{
             margin-top: 10px;
             background: rgba(255,255,255,0.06);
@@ -285,24 +286,13 @@
             color: var(--info-modal-text);
             font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
             font-size: 0.86rem;
-            direction: ltr;
+
+            direction: rtl;
+            unicode-bidi: isolate-override;
             text-align: center;
+
             white-space: nowrap;
             overflow-x: auto;
-        }
-
-        .info-extra{
-            margin-top: 10px;
-            padding: 10px 12px;
-            border-radius: 14px;
-            background: rgba(14,165,233,0.10);
-            border: 1px solid rgba(14,165,233,0.18);
-            color: var(--info-modal-text);
-            font-size: 0.9rem;
-        }
-
-        .info-extra b{
-            color: var(--info-modal-accent);
         }
 
         .info-modal-footer{
@@ -363,7 +353,6 @@
         <div class="info-modal-body">
             <div id="infoText"></div>
             <div id="infoFormula" class="info-formula" style="display:none;"></div>
-            <div id="infoExtra" class="info-extra" style="display:none;"></div>
         </div>
 
         <div class="info-modal-footer">
@@ -429,7 +418,7 @@
     }
 
     /* ===== Info Modal Functions ===== */
-    function openInfoModal({title='معلومة', text='', formula='', extra=''}) {
+    function openInfoModal({title='معلومة', text='', formula=''}) {
         document.getElementById('infoTitle').textContent = title;
         document.getElementById('infoText').innerHTML = text;
 
@@ -442,15 +431,6 @@
             f.textContent = '';
         }
 
-        const e = document.getElementById('infoExtra');
-        if (extra && extra.trim() !== '') {
-            e.style.display = 'block';
-            e.innerHTML = extra;
-        } else {
-            e.style.display = 'none';
-            e.innerHTML = '';
-        }
-
         document.getElementById('infoOverlay').style.display = 'flex';
     }
 
@@ -458,41 +438,14 @@
         document.getElementById('infoOverlay').style.display = 'none';
     }
 
-    // تحويل ساعات الحد إلى "تقريبًا كم محاضرة"
-    function approxLectureText(limitHours) {
-        if (!isFinite(limitHours) || limitHours <= 0) return '';
-
-        // تقريب للعرض (نقرب لأقرب 0.5 ساعة)
-        const rounded = Math.round(limitHours * 2) / 2;
-
-        const twoHrCount = Math.floor(rounded / 2);
-        const remainder = rounded - (twoHrCount * 2);
-
-        let parts = [];
-        if (twoHrCount > 0) {
-            const word = (twoHrCount === 1) ? 'محاضرة (ساعتين)' :
-                         (twoHrCount === 2) ? 'محاضرتين (ساعتين)' : `${twoHrCount} محاضرات (ساعتين)`;
-            parts.push(word);
-        }
-
-        if (remainder > 0) {
-            if (remainder === 1) parts.push('محاضرة (ساعة)');
-            else parts.push('نصف محاضرة (≈ نصف ساعة)');
-        }
-
-        if (parts.length === 0) parts.push('نصف محاضرة (≈ نصف ساعة)');
-
-        return `يعادل تقريبًا: <b>${parts.join(' + ')}</b>`;
-    }
-
     function openLimitInfo(weeklyH, limit) {
-        const formula = `(${weeklyH} ساعات أسبوعياً × 16 أسبوع) × 20% = ${Number(limit).toFixed(1)} ساعة`;
-        const extra = approxLectureText(Number(limit));
+        // ✅ صياغة عربية تُقرأ RTL
+        const formula = `( ${weeklyH} ساعات أسبوعياً × 16 أسبوع ) × 20% = ${Number(limit).toFixed(1)} ساعة`;
+
         openInfoModal({
             title: 'طريقة الحساب',
             text: '📘 طريقة حساب ساعات الحرمان لهذا المقرر:',
-            formula: formula,
-            extra: extra
+            formula: formula
         });
     }
 
@@ -509,7 +462,7 @@
             const remaining = limit - currentAbsent;
 
             let statusClass = 'safe-bg', statusColor = 'var(--safe)', msg = '🟢 وضعك آمن ومستقر';
-            let infoIconClass = ''; // لتلوين أيقونة i حسب الحالة
+            let infoIconClass = '';
 
             if (currentAbsent > limit) {
                 statusClass = 'danger-bg';
@@ -610,7 +563,6 @@
                     ${advice}
                 </div>
             `;
-
             list.appendChild(card);
         });
 
