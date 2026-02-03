@@ -7,7 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>حاسبة الغياب</title>
 
-    <!-- ✅ خط عربي احترافي (اختياري) -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800&display=swap" rel="stylesheet">
 
     <style>
@@ -23,13 +22,11 @@
 
             --bg-gradient: linear-gradient(135deg, #e6f4f8 0%, #ffffff 100%);
 
-            /* Info modal (فاتح) */
             --info-modal-bg: #ffffff;
             --info-modal-text: #1f2937;
             --info-modal-accent: #0EA5E9;
         }
 
-        /* ✅ تثبيت اتجاه الأرقام داخل النص العربي */
         .num{
             direction: ltr;
             unicode-bidi: isolate;
@@ -37,7 +34,6 @@
             font-weight: 800;
         }
 
-        /* ✅ سطر المعادلة نفسه RTL لكن الأرقام LTR */
         .formula-line{
             direction: rtl;
             unicode-bidi: isolate-override;
@@ -54,31 +50,29 @@
             min-height: 100vh;
         }
 
-       .install-banner {
-    background: #ffffff;
-    border: 1px solid #e1e9e7;
-    padding: 4px 12px;      /* ✅ أصغر */
-    border-radius: 14px;   /* أنعم */
-    margin-bottom: 14px;   /* أقل ارتفاع */
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.03);
-}
-
+        .install-banner {
+            background: #ffffff;
+            border: 1px solid #e1e9e7;
+            padding: 4px 12px;
+            border-radius: 14px;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.03);
+        }
 
         .install-text {
-    font-weight: 600;        /* أخف شوي */
-    color: var(--primary);
-    font-size: 0.78rem;     /* أصغر بنسبة بسيطة */
-}
-
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 0.78rem;
+        }
 
         .install-btn {
             background: var(--secondary);
             color: white;
             border: none;
-            padding: 4px 12px; 
+            padding: 4px 12px;
             border-radius: 10px;
             font-size: 0.72rem;
             font-weight: bold;
@@ -87,23 +81,20 @@
 
         .app-container { max-width: 450px; margin: 0 auto; }
         .header-section { text-align: center; margin-bottom: 20px; }
+
         .college-logo img {
-    width: clamp(220px, 60vw, 300px);
-    margin-bottom: 4px;   /* ✅ تقليل المسافة */
-    filter: drop-shadow(0 3px 6px rgba(0,0,0,0.12));
-}
+            width: clamp(220px, 60vw, 300px);
+            margin-bottom: 4px;
+            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.12));
+        }
 
-
-
-  .header-text h1 {
-    margin: 0;
-    font-size: clamp(1.9rem, 4.8vw, 2.5rem); /* ✅ يكبر حسب حجم الشاشة */
-    font-weight: 800;
-    color: var(--primary);
-    letter-spacing: 0.3px;
-}
-
-
+        .header-text h1 {
+            margin: 0;
+            font-size: clamp(1.9rem, 4.8vw, 2.5rem);
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: 0.3px;
+        }
 
         .system-badge {
             display: inline-block;
@@ -209,35 +200,34 @@
         .flex-inputs > div { flex: 1; }
 
         .input-sub-label {
-    font-size: 0.8rem;
-    color: #666;
-    margin-bottom: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 2px;
-    font-weight: 600;
-}
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            font-weight: 600;
+        }
 
         .hint-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 16px;
-    height: 16px;
-    background: #0EA5E9;
-    color: white;
-    border-radius: 50%;
-    font-size: 0.75rem;
-    margin-right: 6px;
-    cursor: pointer;
-    font-weight: 900;
-    vertical-align: middle;
-    box-shadow: 0 6px 14px rgba(14,165,233,0.22);
-    transition: transform 0.15s ease;
-
-    order: 2;   /* 👈 أضيفي هذا */
-}
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            background: #0EA5E9;
+            color: white;
+            border-radius: 50%;
+            font-size: 0.75rem;
+            margin-right: 6px;
+            cursor: pointer;
+            font-weight: 900;
+            vertical-align: middle;
+            box-shadow: 0 6px 14px rgba(14,165,233,0.22);
+            transition: transform 0.15s ease;
+            order: 2;
+        }
         .hint-icon:active { transform: translateY(1px) scale(0.98); }
 
         .info-icon {
@@ -289,7 +279,6 @@
             padding-top: 20px;
         }
 
-        /* ===== Info Modal (موحّد للجميع) ===== */
         .info-overlay{
             display:none;
             position:fixed;
@@ -381,7 +370,7 @@
 
 <body>
 
-<!-- ✅ Guide Modal (مصحح: إغلاق divs + إضافة Android + محاذاة وسط + خط أصغر) -->
+<!-- Guide Modal -->
 <div id="guideModal" class="info-overlay" onclick="toggleModal(false)">
     <div class="info-modal" onclick="event.stopPropagation()">
         <div class="info-modal-header">
@@ -412,7 +401,7 @@
                 ثم اختر<br>
                 <b style="color:var(--info-modal-accent)">إضافة إلى الصفحة الرئيسية</b>
             </div>
-        </div> <!-- ✅ إغلاق body -->
+        </div>
 
         <div class="info-modal-footer">
             <button class="info-ok" onclick="toggleModal(false)">فهمت</button>
@@ -420,7 +409,7 @@
     </div>
 </div>
 
-<!-- ✅ Info Modal موحّد -->
+<!-- Info Modal -->
 <div id="infoOverlay" class="info-overlay" onclick="closeInfoModal()">
     <div class="info-modal" onclick="event.stopPropagation()">
         <div class="info-modal-header">
@@ -465,38 +454,76 @@
 
     <footer class="footer-note">
         <div style="display:flex; flex-direction:column; align-items:center; justify-content:center;">
-            <p style="font-weight:bold; color:var(--primary); margin:0;">
-تصميم وتطوير: أ. نورة القثامي
-</p>
+            <p style="font-weight:bold; color:var(--primary); margin:0;">تصميم وتطوير: أ. نورة القثامي</p>
 
-<p style="margin:4px 0; font-size:0.75rem; color:#555;">
-الكلية التقنية الرقمية للبنات بتبوك — قسم الحاسب وتقنية المعلومات
-</p>
-<p style="margin:2px 0; font-size:0.7rem; color:#777;">
-1447هـ | 2026م
-</p>
+            <p style="margin:4px 0; font-size:0.75rem; color:#555;">
+                الكلية التقنية الرقمية للبنات بتبوك — قسم الحاسب وتقنية المعلومات
+            </p>
 
-<a href="mailto:norah.a@tvtc.gov.sa"
-   style="text-decoration:none; color:#006699; font-size:0.8rem; cursor:pointer;">
-📧 norah.a@tvtc.gov.sa
-</a>
+            <p style="margin:2px 0; font-size:0.7rem; color:#777;">1447هـ | 2026م</p>
+
+            <a href="mailto:norah.a@tvtc.gov.sa"
+               style="text-decoration:none; color:#006699; font-size:0.8rem; cursor:pointer;">
+                📧 norah.a@tvtc.gov.sa
+            </a>
         </div>
     </footer>
 </div>
 
 <script>
     let courses = JSON.parse(localStorage.getItem('myCourses')) || [];
+
+    /* ========= قواعدك (ساعة/ساعات) + (محاضرة/محاضرات) ========= */
+    function normalizeNumber(x){
+        const n = Number(x);
+        return isNaN(n) ? 0 : n;
+    }
+
+    // ساعة/ساعات حسب قواعدك:
+    // 1 و 2 => ساعة
+    // 3-10 => ساعات
+    // 11+ => ساعة
+    // الكسور => ساعة
     function hourWord(n){
-    return (n === 1 || n === 2) ? "ساعة" : "ساعات";
-}
+        const v = Math.abs(normalizeNumber(n));
+        if (!Number.isFinite(v)) return "ساعة";
+        if (v % 1 !== 0) return "ساعة"; // كسور
+        const i = v;
+        if (i === 1 || i === 2) return "ساعة";
+        if (i >= 3 && i <= 10) return "ساعات";
+        return "ساعة"; // 11+
+    }
+
+    // محاضرة/محاضرات حسب قواعدك:
+    // 1 و 2 => محاضرة
+    // 3-10 => محاضرات
+    // 11+ => محاضرة
+    function lectureWord(n){
+        const i = Math.abs(parseInt(n,10)) || 0;
+        if (i === 1 || i === 2) return "محاضرة";
+        if (i >= 3 && i <= 10) return "محاضرات";
+        return "محاضرة"; // 0 أو 11+
+    }
+
+    // عبارة موحّدة: "2 محاضرة" بدل "محاضرتين" وبدون "محاضرة واحدة"
+    function lecturePhrase(n){
+        const i = Math.abs(parseInt(n,10)) || 0;
+        return `${i} ${lectureWord(i)}`;
+    }
+
+    // ساعات (1 و 2 ساعة) في القائمة المنسدلة للساعات الأسبوعية
+    function weeklyHourLabel(h){
+        return (h === 1 || h === 2) ? "ساعة" : "ساعات";
+    }
+
     function toggleModal(show) {
         const modal = document.getElementById('guideModal');
         modal.style.display = show ? 'flex' : 'none';
     }
 
     function fixNumbers(str) {
-        return str
-            .replace(/[٠-٩]/g, function(d) { return d.charCodeAt(0) - 1632; })
+        return String(str)
+            .replace(/[٠-٩]/g, d => d.charCodeAt(0) - 1632)
             .replace(/[^\d.]/g, '');
     }
 
@@ -504,17 +531,6 @@
         courses.push({ id: Date.now(), name: 'اسم المقرر', weeklyHours: 4, absent1: '', absent2: '' });
         renderCourses();
     }
-    
-    function getHourLabel(n) {
-  return (n === 1 || n === 2) ? "ساعة" : "ساعات";
-}
-
-function getLectureText(n) {
-  if (n === 0) return "";
-  if (n === 1) return "محاضرة واحدة";
-  if (n === 2) return "محاضرتين";
-  return `${n} محاضرات`;
-}
 
     function openInfoModal({title='معلومة', text='', formula='', badge='i'}) {
         document.getElementById('infoTitle').textContent = title;
@@ -522,7 +538,7 @@ function getLectureText(n) {
         document.getElementById('infoBadge').textContent = badge;
 
         const f = document.getElementById('infoFormula');
-        if (formula && formula.trim() !== '') {
+        if (formula && String(formula).trim() !== '') {
             f.style.display = 'block';
             f.textContent = formula;
         } else {
@@ -569,12 +585,17 @@ function getLectureText(n) {
         list.innerHTML = '';
 
         courses.forEach(course => {
-            const weeklyH = parseFloat(course.weeklyHours) || 0;
+            const weeklyH = normalizeNumber(course.weeklyHours) || 0;
             const totalHours = weeklyH * 16;
             const limit = totalHours * 0.20;
-            const currentAbsent = (parseFloat(course.absent1) || 0) + ((parseFloat(course.absent2) || 0) * 2);
-            const percent = (currentAbsent / totalHours) * 100 || 0;
-            const remaining = limit - currentAbsent;
+
+            // غيابك الحالي (قد يكون رقم كسري لو المستخدم كتب كسور)
+            const a1 = normalizeNumber(course.absent1);
+            const a2 = normalizeNumber(course.absent2);
+            const currentAbsent = a1 + (a2 * 2);
+
+            const percent = totalHours ? (currentAbsent / totalHours) * 100 : 0;
+            const remainingRaw = limit - currentAbsent;
 
             let statusClass = 'safe-bg', statusColor = 'var(--safe)', msg = '🟢 وضعك آمن ومستقر';
             let infoIconClass = '';
@@ -596,50 +617,85 @@ function getLectureText(n) {
                 infoIconClass = 'warn';
             }
 
+            /* ========= المتبقي (بناء نص واضح) ========= */
             let advice = "";
+
             if (currentAbsent <= limit) {
-                const remHours = Math.floor(remaining);
-                const hourLabel = getHourLabel(remHours);
-                let detail = "";
-                if (weeklyH === 1 || weeklyH === 2 || weeklyH === 4) {
-                    const unit = (weeklyH === 1) ? 1 : 2;
-const count = Math.floor(remHours / unit);
-detail = getLectureText(count);
+                // لو المتبقي كسري (مثل 0.6) نخليه يظهر كـ 0.6 بدل ما يصير 0
+                const hasFraction = Math.abs(remainingRaw) % 1 !== 0;
+                const remainingDisplay = hasFraction ? Number(remainingRaw).toFixed(1) : Math.floor(remainingRaw);
+                const remainingNumber = normalizeNumber(remainingRaw);
+
+                // لو ما بقى شيء أو بالسالب
+                if (remainingNumber <= 0) {
+                    advice = `<div class="advice-box" style="color:var(--danger); font-weight:900;">لم يتبقَّ لك رصيد غياب</div>`;
                 } else {
-                    const lec2 = Math.floor(remHours / 2);
-                    const lec1 = remHours % 2;
-                    if (lec2 > 0 && lec1 > 0) {
-                        let w2 = (lec2 >= 3) ? "محاضرات" : (lec2 === 2) ? "محاضرتين" : "محاضرة واحدة";
-                        detail = `<b>${lec2}</b> ${w2} (ساعتين) و <b>1</b> محاضرة (ساعة)`;
-                    } else if (lec2 > 0) {
-                        let w = (lec2 >= 3 && lec2 <= 10) ? "محاضرات" : (lec2 === 2) ? "محاضرتين" : "محاضرة واحدة";
-                        detail = `<b>${lec2}</b> ${w} (ساعتين)`;
-                    } else if (lec1 > 0) {
-                        detail = `<b>1</b> محاضرة (ساعة)`;
-                    } else {
+                    // إن كان أقل من ساعة -> تنبيه واضح (مثل حالة 0.6)
+                    if (remainingNumber < 1) {
                         advice = `
-<div class="advice-box" style="color:var(--danger); font-weight:900;">
-⚠️ أي غياب قادم (ساعة أو ساعتين) سيؤدي إلى الحرمان
-</div>`;
+                            <div class="advice-box">
+                                متبقي لك <b>${remainingDisplay}</b> ${hourWord(remainingDisplay)} (أقل من ساعة)
+                                <div style="margin-top:6px; color:var(--danger); font-weight:900;">
+                                    ⚠️ أي غياب قادم (ساعة أو ساعتين) سيؤدي إلى الحرمان
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        // نبني "يعادل كم محاضرة" حسب نوع المقرر
+                        const remInt = Math.floor(remainingNumber); // للمحاضرات نستخدم ساعات كاملة
+                        let detailParts = [];
+
+                        const isComplexType = (weeklyH === 3 || weeklyH === 5);
+                        if (weeklyH === 1) {
+                            // كل مرة = ساعة
+                            const count = Math.floor(remInt / 1);
+                            detailParts.push(`${lecturePhrase(count)} (ساعة)`);
+                        } else if (weeklyH === 2 || weeklyH === 4) {
+                            // كل مرة = ساعتين
+                            const count = Math.floor(remInt / 2);
+                            detailParts.push(`${lecturePhrase(count)} (ساعتين)`);
+                            if (remainingNumber < 2) {
+                                // أقل من ساعتين لكن النظام فعلياً ما يقبل نصف محاضرة
+                                detailParts.push(`متبقي أقل من محاضرة (ساعتين)`);
+                            }
+                        } else if (isComplexType) {
+                            // 3 أو 5: عندك فئة ساعتين + فئة ساعة
+                            const lec2 = Math.floor(remInt / 2);
+                            const lec1 = remInt % 2;
+
+                            if (lec2 > 0) detailParts.push(`${lecturePhrase(lec2)} (ساعتين)`);
+                            if (lec1 > 0) detailParts.push(`${lecturePhrase(lec1)} (ساعة)`);
+
+                            // لو المتبقي بين 1 و <2: غياب ساعتين يحرّم، ساعة قد لا
+                            if (remainingNumber < 2 && remainingNumber >= 1) {
+                                detailParts.push(`<span style="color:var(--danger); font-weight:900;">⚠️ غياب (ساعتين) سيؤدي إلى الحرمان</span>`);
+                            }
+                        } else {
+                            // احتياط لأي قيم ثانية
+                            const lec2 = Math.floor(remInt / 2);
+                            const lec1 = remInt % 2;
+                            if (lec2 > 0) detailParts.push(`${lecturePhrase(lec2)} (ساعتين)`);
+                            if (lec1 > 0) detailParts.push(`${lecturePhrase(lec1)} (ساعة)`);
+                        }
+
+                        const hourLabel = hourWord(hasFraction ? remainingDisplay : remInt);
+                        const detail = detailParts.filter(Boolean).join(' و ');
+
+                        advice = `
+                            <div class="advice-box">
+                                متبقي لك <b>${hasFraction ? remainingDisplay : remInt}</b> ${hourLabel}
+                                ${detail ? `: ${detail}` : ''}
+                            </div>
+                        `;
                     }
                 }
-                if (remHours <= 0) {
-  advice = `<div class="advice-box" style="color:var(--danger); font-weight:900;">لم يتبقَّ لك رصيد غياب</div>`;
-} else {
-  // هنا detail عندك غالباً يحتوي "محاضرة/محاضرتين/محاضرات" مع رقم
-  // بنحوّد الجملة بحيث ما يصير: 2 محاضرتين
-
-  // نحاول استخراج رقم المحاضرات من detail إذا كان detail يبدأ برقم (اختياري)
-  // الأفضل: نخلي detail نص بدون رقم، أو نعيد بناءه من remHours حسب نظامك.
-  advice = `<div class="advice-box">متبقي لك <b>${remHours}</b> ${hourLabel}: ${detail}</div>`;
-}
             } else {
-                advice = `<div class="advice-box" style="color:var(--danger); font-weight:bold;">تجاوزت الحد المسموح (${limit.toFixed(1)} ساعة)</div>`;
+                advice = `<div class="advice-box" style="color:var(--danger); font-weight:bold;">تجاوزت الحد المسموح (${Number(limit).toFixed(1)} ساعة)</div>`;
             }
 
-            const isComplexType = (weeklyH === 3 || weeklyH === 5);
             const showAbsent2 = (weeklyH >= 2);
             const showAbsent1 = (weeklyH === 1 || weeklyH === 3 || weeklyH === 5);
+            const isComplexType = (weeklyH === 3 || weeklyH === 5);
 
             const card = document.createElement('div');
             card.className = 'course-card';
@@ -654,10 +710,9 @@ detail = getLectureText(count);
                 <div class="input-group">
                     <label>عدد الساعات الأسبوعية للمقرر</label>
                     <select onchange="updateCourse(${course.id}, 'weeklyHours', this.value)">
-                       ${[1,2,3,4,5,6].map(h => {
-  const label = (h <= 2) ? "ساعة" : "ساعات";
-  return `<option value="${h}" ${course.weeklyHours == h ? 'selected' : ''}>${h} ${label}</option>`;
-}).join('')}
+                        ${[1,2,3,4,5,6].map(h => {
+                            return `<option value="${h}" ${course.weeklyHours == h ? 'selected' : ''}>${h} ${weeklyHourLabel(h)}</option>`;
+                        }).join('')}
                     </select>
                 </div>
 
@@ -693,7 +748,7 @@ detail = getLectureText(count);
                     <div style="font-size:0.95rem; font-weight:800; color:${statusColor}; margin-bottom:10px;">${msg}</div>
 
                     <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:5px;">
-                        <span style="font-size:1.8rem; font-weight:900; color:var(--primary);">${percent.toFixed(1)}%</span>
+                        <span style="font-size:1.8rem; font-weight:900; color:var(--primary);">${Number(percent).toFixed(1)}%</span>
                         <span style="font-size:0.85rem; color:#718096; font-weight:bold;">من أصل 20%</span>
                     </div>
 
@@ -702,11 +757,12 @@ detail = getLectureText(count);
                     </div>
 
                     <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#555; font-weight:700; margin-top:5px;">
-                        <span>غيابك الحالي: ${currentAbsent} ${hourWord(currentAbsent)}</span>
-                      <span>
-    حد الحرمان: ${limit.toFixed(1)} ${hourWord(Number(limit.toFixed(1)))}
-    <span class="info-icon ${infoIconClass}" onclick="openLimitInfo(${weeklyH}, ${limit})">i</span>
-</span>
+                        <span>غيابك الحالي: ${Number(currentAbsent).toFixed(1).replace(/\.0$/, '')} ${hourWord(Number(currentAbsent).toFixed(1))}</span>
+
+                        <span>
+                            حد الحرمان: ${Number(limit).toFixed(1)} ${hourWord(Number(limit).toFixed(1))}
+                            <span class="info-icon ${infoIconClass}" onclick="openLimitInfo(${weeklyH}, ${limit})">i</span>
+                        </span>
                     </div>
 
                     ${advice}
@@ -728,6 +784,8 @@ detail = getLectureText(count);
         const index = courses.findIndex(c => c.id === id);
         if (index !== -1) {
             courses[index][field] = value;
+
+            // تنظيف المدخلات عند تغيير الساعات الأسبوعية
             if (field === 'weeklyHours') {
                 courses[index].absent1 = '';
                 courses[index].absent2 = '';
