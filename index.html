@@ -167,21 +167,30 @@
 
         .hint-icon { display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; background: var(--secondary); color: white; border-radius: 50%; font-size: 0.65rem; margin-right: 4px; cursor: pointer; font-weight: bold; vertical-align: middle; }
 
+        /* ===== Info icon (مُحسّن) ===== */
         .info-icon {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 16px;
-            height: 16px;
-            background: #cbd5e0;
+            width: 18px;
+            height: 18px;
+            background: var(--info-modal-accent);
             color: white;
-            border-radius: 50%;
-            font-size: 0.75rem;
-            margin-right: 5px;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            margin-right: 6px;
             cursor: pointer;
-            font-weight: bold;
+            font-weight: 900;
             vertical-align: middle;
+            box-shadow: 0 6px 14px rgba(14,165,233,0.25);
+            transition: transform 0.15s ease, filter 0.15s ease, background 0.2s ease;
         }
+        .info-icon:hover { filter: brightness(1.05); }
+        .info-icon:active { transform: translateY(1px) scale(0.98); }
+
+        /* تغيير لون الأيقونة حسب الحالة (اختياري لكنه جميل) */
+        .info-icon.warn { background: var(--orange); box-shadow: 0 6px 14px rgba(251,146,60,0.25); }
+        .info-icon.danger { background: var(--danger); box-shadow: 0 6px 14px rgba(239,68,68,0.25); }
 
         .result-area { border-radius: 20px; padding: 15px; margin-top: 15px; text-align: center; }
         .safe-bg { background: #f0fdf4; border: 1px solid #dcfce7; }
@@ -450,7 +459,6 @@
     }
 
     // تحويل ساعات الحد إلى "تقريبًا كم محاضرة"
-    // ملاحظة: الحد قد يكون كسري (مثل 3.2) لذلك نعرضها بطريقة تقريبية
     function approxLectureText(limitHours) {
         if (!isFinite(limitHours) || limitHours <= 0) return '';
 
@@ -458,7 +466,7 @@
         const rounded = Math.round(limitHours * 2) / 2;
 
         const twoHrCount = Math.floor(rounded / 2);
-        const oneHrRemainder = rounded - (twoHrCount * 2);
+        const remainder = rounded - (twoHrCount * 2);
 
         let parts = [];
         if (twoHrCount > 0) {
@@ -467,16 +475,12 @@
             parts.push(word);
         }
 
-        if (oneHrRemainder > 0) {
-            // remainder قد يكون 0.5 أو 1
-            if (oneHrRemainder === 1) parts.push('محاضرة (ساعة)');
+        if (remainder > 0) {
+            if (remainder === 1) parts.push('محاضرة (ساعة)');
             else parts.push('نصف محاضرة (≈ نصف ساعة)');
         }
 
-        if (parts.length === 0) {
-            // مثل لو rounded = 0.5
-            parts.push('نصف محاضرة (≈ نصف ساعة)');
-        }
+        if (parts.length === 0) parts.push('نصف محاضرة (≈ نصف ساعة)');
 
         return `يعادل تقريبًا: <b>${parts.join(' + ')}</b>`;
     }
@@ -505,12 +509,23 @@
             const remaining = limit - currentAbsent;
 
             let statusClass = 'safe-bg', statusColor = 'var(--safe)', msg = '🟢 وضعك آمن ومستقر';
+            let infoIconClass = ''; // لتلوين أيقونة i حسب الحالة
+
             if (currentAbsent > limit) {
-                statusClass = 'danger-bg'; statusColor = 'var(--danger)'; msg = '🔴 حالة حرمان';
+                statusClass = 'danger-bg';
+                statusColor = 'var(--danger)';
+                msg = '🔴 حالة حرمان';
+                infoIconClass = 'danger';
             } else if (percent >= 15) {
-                statusClass = 'warning-bg'; statusColor = 'var(--orange)'; msg = '🟠 تنبيه: اقتربت من الحرمان';
+                statusClass = 'warning-bg';
+                statusColor = 'var(--orange)';
+                msg = '🟠 تنبيه: اقتربت من الحرمان';
+                infoIconClass = 'warn';
             } else if (percent >= 10) {
-                statusClass = 'warning-bg'; statusColor = 'var(--warning)'; msg = '🟡 انتباه: بدأ رصيدك بالنقصان';
+                statusClass = 'warning-bg';
+                statusColor = 'var(--warning)';
+                msg = '🟡 انتباه: بدأ رصيدك بالنقصان';
+                infoIconClass = 'warn';
             }
 
             let advice = "";
@@ -542,12 +557,12 @@
                 advice = `<div class="advice-box" style="color:var(--danger); font-weight:bold;">تجاوزت الحد المسموح (${limit.toFixed(1)} ساعة)</div>`;
             }
 
-            const card = document.createElement('div');
-            card.className = 'course-card';
-
             const isComplexType = (weeklyH === 3 || weeklyH === 5);
             const showAbsent2 = (weeklyH >= 2);
             const showAbsent1 = (weeklyH === 1 || weeklyH === 3 || weeklyH === 5);
+
+            const card = document.createElement('div');
+            card.className = 'course-card';
 
             card.innerHTML = `
                 <button class="delete-course" onclick="deleteCourse(${course.id})">✕</button>
@@ -589,12 +604,13 @@
                     <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#555; font-weight:700; margin-top:5px;">
                         <span>غيابك الحالي: ${currentAbsent} ساعة</span>
                         <span>حد الحرمان: ${limit.toFixed(1)} ساعة
-                            <span class="info-icon" onclick="openLimitInfo(${weeklyH}, ${limit})">i</span>
+                            <span class="info-icon ${infoIconClass}" onclick="openLimitInfo(${weeklyH}, ${limit})">i</span>
                         </span>
                     </div>
                     ${advice}
                 </div>
             `;
+
             list.appendChild(card);
         });
 
