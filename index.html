@@ -28,6 +28,22 @@
             --info-modal-text: #F8FAFC;
             --info-modal-accent: #0EA5E9;
         }
+        /* ✅ تثبيت اتجاه الأرقام داخل النص العربي */
+.num{
+    direction: ltr;
+    unicode-bidi: isolate;
+    display: inline-block;
+    font-weight: 800;
+}
+
+/* ✅ سطر المعادلة نفسه RTL لكن الأرقام LTR */
+.formula-line{
+    direction: rtl;
+    unicode-bidi: isolate-override;
+    text-align: center;
+    white-space: nowrap;
+}
+
 
         body {
             margin: 0;
@@ -578,18 +594,22 @@
     function openLimitInfo(weeklyH, limit) {
     const fixed = Number(limit).toFixed(1);
 
-    // المعادلة كنص ثابت بنفس الشكل المطلوب
     const text = `
-        📘 طريقة حساب ساعات الحرمان لهذا المقرر:<br><br>
-        (<span class="num">${weeklyH}</span> ساعات أسبوعياً × <span class="num">16</span> أسبوع) × <span class="num">20%</span>
-        = <span class="num">${fixed}</span> ساعة
+        <div>📘 طريقة حساب ساعات الحرمان لهذا المقرر:</div>
+        <div class="formula-line" style="margin-top:10px;">
+            ( <span class="num">${weeklyH}</span> ساعات أسبوعياً × <span class="num">16</span> أسبوع ) × <span class="num">20%</span>
+            = <span class="num">${fixed}</span> ساعة
+        </div>
     `;
 
     openInfoModal({
         title: 'طريقة الحساب',
-        text: text
+        text: text,
+        badge: 'i',
+        formula: ''   // تأكيد إخفاء خانة formula القديمة
     });
 }
+
 
 
 
@@ -721,7 +741,8 @@
                         <span>غيابك الحالي: ${currentAbsent} ساعة</span>
                         <span>
                             حد الحرمان: ${limit.toFixed(1)} ساعة
-                            <span class="info-icon ${infoIconClass}" onclick="openLimitInfo()">i</span>
+                            <span class="info-icon ${infoIconClass}" onclick="openLimitInfo(${weeklyH}, ${limit})">i</span>
+
                         </span>
                     </div>
 
