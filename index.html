@@ -499,16 +499,13 @@ function closeInfoModal() {
 
 /* ✅ نافذة طريقة الحساب كنص ثابت + الأرقام LTR داخل spans */
 function openLimitInfo(weeklyH, limit) {
-    const total = weeklyH * 16;
     const fixed = Number(limit).toFixed(1);
 
+    // المعادلة كنص ثابت بنفس الشكل المطلوب
     const text = `
         📘 طريقة حساب ساعات الحرمان لهذا المقرر:<br><br>
-        • مجموع ساعات المقرر خلال 16 أسبوع =
-        <span class="num">${weeklyH}</span> × <span class="num">16</span> =
-        <span class="num">${total}</span> ساعة<br>
-        • حد الحرمان = <span class="num">20%</span> من مجموع الساعات<br>
-        • إذن حد الحرمان = <span class="num">${fixed}</span> ساعة
+        (<span class="num">${weeklyH}</span> ساعات أسبوعياً × <span class="num">16</span> أسبوع) × <span class="num">20%</span>
+        = <span class="num">${fixed}</span> ساعة
     `;
 
     openInfoModal({
