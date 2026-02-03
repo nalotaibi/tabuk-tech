@@ -575,14 +575,22 @@
         });
     }
 
-    function openLimitInfo() {
+    function openLimitInfo(weeklyH, limit) {
+    const fixed = Number(limit).toFixed(1);
+
+    // المعادلة كنص ثابت بنفس الشكل المطلوب
+    const text = `
+        📘 طريقة حساب ساعات الحرمان لهذا المقرر:<br><br>
+        (<span class="num">${weeklyH}</span> ساعات أسبوعياً × <span class="num">16</span> أسبوع) × <span class="num">20%</span>
+        = <span class="num">${fixed}</span> ساعة
+    `;
+
     openInfoModal({
         title: 'طريقة الحساب',
-        text: '📘 طريقة حساب ساعات الحرمان لهذا المقرر:',
-        formula: '20% × (الساعات الأسبوعية × 16 أسبوع) = حدّ الحرمان بالساعات',
-        badge: 'i'
+        text: text
     });
 }
+
 
 
     function renderCourses() {
