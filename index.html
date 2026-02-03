@@ -703,10 +703,10 @@ detail = getLectureText(count);
 
                     <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#555; font-weight:700; margin-top:5px;">
                         <span>غيابك الحالي: ${currentAbsent} ${hourWord(currentAbsent)}</span>
-                        <span>
-                        حد الحرمان: ${limit.toFixed(1)} ${hourWord(Number(limit.toFixed(1)))}حد الحرمان: ${limit.toFixed(1)} ساعة
-                            <span class="info-icon ${infoIconClass}" onclick="openLimitInfo(${weeklyH}, ${limit})">i</span>
-                        </span>
+                      <span>
+    حد الحرمان: ${limit.toFixed(1)} ${hourWord(Number(limit.toFixed(1)))}
+    <span class="info-icon ${infoIconClass}" onclick="openLimitInfo(${weeklyH}, ${limit})">i</span>
+</span>
                     </div>
 
                     ${advice}
