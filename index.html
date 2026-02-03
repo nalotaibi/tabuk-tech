@@ -601,9 +601,8 @@ function getLectureText(n) {
                 let detail = "";
                 if (weeklyH === 1 || weeklyH === 2 || weeklyH === 4) {
                     const unit = (weeklyH === 1) ? 1 : 2;
-                    const count = Math.floor(remHours / unit);
-                    const word = (count >= 3 && count <= 10) ? "محاضرات" : (count === 2) ? "محاضرتين" : "محاضرة";
-                    detail = `<b>${count}</b> ${word}`;
+const count = Math.floor(remHours / unit);
+detail = getLectureText(count);
                 } else {
                     const lec2 = Math.floor(remHours / 2);
                     const lec1 = remHours % 2;
