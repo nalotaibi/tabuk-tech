@@ -238,7 +238,7 @@
             justify-content: center;
             width: 14px;
             height: 14px;
-            background: var(--secondary);
+            background: #0EA5E9;
             color: white;
             border-radius: 50%;
             font-size: 0.65rem;
@@ -601,7 +601,7 @@ function renderCourses() {
                     ${showAbsent2 ? `<div>
                         ${isComplexType ? `
                         <span class="input-sub-label">
-                            <span class="hint-icon" onclick="alert('💡 محاضرة فئة ساعتين:\\nيُقصد بها المحاضرات الطويلة التي تُحسب بـساعتين غياب عند التغيب عنها مرة واحدة.')">?</span>
+                            <span class="hint-icon" onclick="alert('💡 محاضرة فئة ساعتين:\\nيُقصد بها المحاضرات الطويلة التي تُحسب كساعتين غياب عند التغيب عنها مرة واحدة.')">?</span>
                             (محاضرة فئة ساعتين)
                         </span>` : ''}
                         <input type="text" inputmode="numeric" value="${course.absent2}" placeholder="0" oninput="handleInput(${course.id}, 'absent2', this)">
@@ -610,7 +610,7 @@ function renderCourses() {
                     ${showAbsent1 ? `<div>
                         ${isComplexType ? `
                         <span class="input-sub-label">
-                            <span class="hint-icon" onclick="alert('💡 محاضرة فئة ساعة:\\nيُقصد بها المحاضرات القصيرة التي تُحسب بـساعة غياب واحدة فقط.')">?</span>
+                            <span class="hint-icon" onclick="alert('💡 محاضرة فئة ساعة:\\nيُقصد بها المحاضرات القصيرة التي تُحسب كساعة غياب واحدة فقط.')">?</span>
                             (محاضرة فئة ساعة)
                         </span>` : ''}
                         <input type="text" inputmode="numeric" value="${course.absent1}" placeholder="0" oninput="handleInput(${course.id}, 'absent1', this)">
