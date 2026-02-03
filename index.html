@@ -563,12 +563,7 @@ function getLectureText(n) {
         `;
         openInfoModal({ title: 'طريقة الحساب', text, badge: 'i', formula: '' });
     }
-    function minAbsUnit(weeklyH){
-  // إذا المقرر فيه إدخال "فئة ساعة" (1 أو 3 أو 5) => أصغر وحدة = 1
-  // غير كذا (2 أو 4 أو 6) => أصغر وحدة = 2 لأن الغياب يُحسب بساعتين
-  return (weeklyH === 1 || weeklyH === 3 || weeklyH === 5) ? 1 : 2;
-}
-    
+
     function renderCourses() {
         const list = document.getElementById('coursesList');
         list.innerHTML = '';
@@ -601,64 +596,31 @@ function getLectureText(n) {
                 infoIconClass = 'warn';
             }
 
-            /* ========= المتبقي (بناء نص واضح) ========= */
-let advice = "";
-
-if (currentAbsent <= limit) {
-
-  const remainingRaw = limit - currentAbsent;
-  const remainingNumber = normalizeNumber(remainingRaw);
-
-  // ✅ أصغر وحدة غياب ممكنة حسب نوع المقرر
-  const minUnit = minAbsUnit(weeklyH);
-
-  // ✅ إذا المتبقي أقل من أصغر وحدة (مثل 1.2 في مقرر 6 ساعات) نعتبره 0
-  if (remainingNumber < minUnit) {
-    advice = `
-      <div class="advice-box" style="color:var(--danger); font-weight:900;">
-        لم يتبقَّ لك رصيد غياب
-      </div>
-      <div class="advice-box" style="color:var(--danger); font-weight:900;">
-        ⚠️ أي غياب قادم (ساعة أو ساعتين) سيؤدي إلى الحرمان
-      </div>
-    `;
-  } else {
-
-    const hasFraction = (Math.abs(remainingNumber) % 1 !== 0);
-    const remainingDisplay = hasFraction ? Number(remainingNumber).toFixed(1) : Math.floor(remainingNumber);
-    const remInt = Math.floor(remainingNumber); // للمحاضرات نعتمد الساعات الكاملة
-
-    let detailParts = [];
-    const isComplexType = (weeklyH === 3 || weeklyH === 5);
-
-    if (weeklyH === 1) {
-      const count = Math.floor(remInt / 1);
-      detailParts.push(`${lecturePhrase(count)} (ساعة)`);
-    } else if (weeklyH === 2 || weeklyH === 4 || weeklyH === 6) {
-      const count = Math.floor(remInt / 2);
-      detailParts.push(`${lecturePhrase(count)} (ساعتين)`);
-    } else if (isComplexType) {
-      const lec2 = Math.floor(remInt / 2);
-      const lec1 = remInt % 2;
-
-      if (lec2 > 0) detailParts.push(`${lecturePhrase(lec2)} (ساعتين)`);
-      if (lec1 > 0) detailParts.push(`${lecturePhrase(lec1)} (ساعة)`);
-    }
-
-    const hourLabel = hourWord(hasFraction ? Number(remainingDisplay) : remInt);
-    const detail = detailParts.filter(Boolean).join(' و ');
-
-    advice = `
-      <div class="advice-box">
-        متبقي لك <b>${remainingDisplay}</b> ${hourLabel}
-        ${detail ? `: ${detail}` : ''}
-      </div>
-    `;
-  }
-
-} else {
-  advice = `<div class="advice-box" style="color:var(--danger); font-weight:bold;">تجاوزت الحد المسموح (${Number(limit).toFixed(1)} ساعة)</div>`;
-}
+            let advice = "";
+            if (currentAbsent <= limit) {
+                const remHours = Math.floor(remaining);
+                const hourLabel = getHourLabel(remHours);
+                let detail = "";
+                if (weeklyH === 1 || weeklyH === 2 || weeklyH === 4) {
+                    const unit = (weeklyH === 1) ? 1 : 2;
+const count = Math.floor(remHours / unit);
+detail = getLectureText(count);
+                } else {
+                    const lec2 = Math.floor(remHours / 2);
+                    const lec1 = remHours % 2;
+                    if (lec2 > 0 && lec1 > 0) {
+                        let w2 = (lec2 >= 3) ? "محاضرات" : (lec2 === 2) ? "محاضرتين" : "محاضرة واحدة";
+                        detail = `<b>${lec2}</b> ${w2} (ساعتين) و <b>1</b> محاضرة (ساعة)`;
+                    } else if (lec2 > 0) {
+                        let w = (lec2 >= 3 && lec2 <= 10) ? "محاضرات" : (lec2 === 2) ? "محاضرتين" : "محاضرة واحدة";
+                        detail = `<b>${lec2}</b> ${w} (ساعتين)`;
+                    } else if (lec1 > 0) {
+                        detail = `<b>1</b> محاضرة (ساعة)`;
+                    } else {
+                        advice = `
+<div class="advice-box" style="color:var(--danger); font-weight:900;">
+⚠️ أي غياب قادم (ساعة أو ساعتين) سيؤدي إلى الحرمان
+</div>`;
                     }
                 }
                 if (remHours <= 0) {
