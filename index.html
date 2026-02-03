@@ -82,10 +82,11 @@
         .app-container { max-width: 450px; margin: 0 auto; }
         .header-section { text-align: center; margin-bottom: 20px; }
         .college-logo img {
-    width: 260px;          /* ✅ كبرنا الشعار */
-    margin-bottom: 12px;
+    width: clamp(220px, 60vw, 300px);
+    margin-bottom: 4px;   /* ✅ تقليل المسافة */
     filter: drop-shadow(0 3px 6px rgba(0,0,0,0.12));
 }
+
 
 
   .header-text h1 {
