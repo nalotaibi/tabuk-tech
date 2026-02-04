@@ -323,6 +323,56 @@
     font-weight: 900;
 }
 
+        /* صندوق اختيار النظام */
+.weeks-select {
+    padding: 6px 12px;
+    border-radius: 12px;
+    border: 1px solid #cfe3ea;
+    font-weight: 800;
+    color: var(--primary);
+    background: #ffffff;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding-left: 34px;   /* مساحة للسهم */
+}
+
+/* غلاف السهم */
+.weeks-wrap {
+    display: inline-block;
+    position: relative;
+}
+
+.weeks-wrap::after {
+    content: "▾";
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-weight: 900;
+    pointer-events: none;
+    color: inherit;
+}
+
+/* ألوان النظامين */
+.system-16 {
+    background: #e0f2fe;
+    color: #0369a1;
+    border-color: #7dd3fc;
+}
+
+.system-15 {
+    background: #ecfdf5;
+    color: #047857;
+    border-color: #86efac;
+}
+
+/* ألوان الخيارات داخل القائمة */
+.weeks-select option {
+    color: #0f172a;
+    background: #ffffff;
+}
+
 
         /* ===== Info Modal (موحّد للجميع) ===== */
         .info-overlay{
@@ -487,14 +537,13 @@
         <div class="college-logo"><img src="TVTC_identity.png" alt="Logo"></div>
         <div class="header-text">
             <h1>حاسبة الغياب الذكية</h1>
-            <div style="margin-top:10px;">
-    <select id="weeksSelect" onchange="changeWeeks(this.value)"
-        style="padding:6px 12px;border-radius:12px;border:1px solid #cfe3ea;font-weight:800;color:#006699;">
+            <div class="weeks-wrap" style="margin-top:10px;">
+    <select id="weeksSelect" class="weeks-select" onchange="changeWeeks(this.value)">
         <option value="16" selected>نظام 16 أسبوعًا</option>
         <option value="15">نظام 15 أسبوعًا</option>
     </select>
-
 </div>
+
 
         </div>
     </header>
@@ -592,6 +641,7 @@
 
     renderCourses();
 }
+
 
 
     function openInfoModal({title='معلومة', text='', formula='', badge='i'}) {
@@ -868,6 +918,7 @@ if (currentAbsent + EPS >= limit) {
     if (sel) sel.value = selectedWeeks;
     changeWeeks(selectedWeeks);
 };
+
 </script>
 </body>
 </html>
