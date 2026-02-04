@@ -570,156 +570,228 @@
     }
 
     function renderCourses() {
-        const list = document.getElementById('coursesList');
-        list.innerHTML = '';
+    const list = document.getElementById('coursesList');
+    list.innerHTML = '';
 
-        courses.forEach(course => {
-            const weeklyH = parseFloat(course.weeklyHours) || 0;
-            const totalHours = weeklyH * 16;
-            const limit = totalHours * 0.20;
-            const currentAbsent = (parseFloat(course.absent1) || 0) + ((parseFloat(course.absent2) || 0) * 2);
-            const percent = (currentAbsent / totalHours) * 100 || 0;
-            const remaining = limit - currentAbsent;
+    const EPS = 1e-9; // لتفادي مشاكل الكسور العشرية
 
-            let statusClass = 'safe-bg', statusColor = 'var(--safe)', msg = '🟢 وضعك آمن ومستقر';
-            let infoIconClass = '';
+    // تنسيق رقم: 18 -> "18" ، 19.2 -> "19.2"
+    function fmt(n, digits = 1) {
+        const x = Number(n);
+        if (!Number.isFinite(x)) return '0';
+        return x.toFixed(digits).replace(/\.0+$/, '');
+    }
 
-            if (currentAbsent >= limit) {
-                statusClass = 'danger-bg'; statusColor = 'var(--danger)'; msg = '🔴 حالة حرمان'; infoIconClass = 'danger';
-            } else if (percent >= 15) {
-                statusClass = 'warning-bg'; statusColor = 'var(--orange)'; msg = '🟠 تنبيه: اقتربت من الحرمان'; infoIconClass = 'warn';
-            } else if (percent >= 10) {
-                statusClass = 'warning-bg'; statusColor = 'var(--warning)'; msg = '🟡 انتباه: بدأ رصيدك بالنقصان'; infoIconClass = 'warn';
+    courses.forEach(course => {
+        const weeklyH = parseFloat(course.weeklyHours) || 0;
+        const totalHours = weeklyH * 16;
+        const limit = totalHours * 0.20;
+
+        const a1 = parseFloat(course.absent1) || 0;     // (ساعة)
+        const a2 = parseFloat(course.absent2) || 0;     // (ساعتين)
+        const currentAbsent = a1 + (a2 * 2);
+
+        const percent = totalHours ? (currentAbsent / totalHours) * 100 : 0;
+        const remainingRaw = limit - currentAbsent; // قد يكون 1.2 مثلاً
+
+        // ===== الحالة العامة =====
+        let statusClass = 'safe-bg',
+            statusColor = 'var(--safe)',
+            msg = '🟢 وضعك آمن ومستقر',
+            infoIconClass = '';
+
+        // ✅ حرمان مباشرة عند 20% أو أكثر
+        if (currentAbsent + EPS >= limit) {
+            statusClass = 'danger-bg';
+            statusColor = 'var(--danger)';
+            msg = '🔴 حالة حرمان';
+            infoIconClass = 'danger';
+        } else if (percent >= 15) {
+            statusClass = 'warning-bg';
+            statusColor = 'var(--orange)';
+            msg = '🟠 تنبيه: اقتربت من الحرمان';
+            infoIconClass = 'warn';
+        } else if (percent >= 10) {
+            statusClass = 'warning-bg';
+            statusColor = 'var(--warning)';
+            msg = '🟡 انتباه: بدأ رصيدك بالنقصان';
+            infoIconClass = 'warn';
+        }
+
+        // ===== منطق التحذير القادم =====
+        // في (2/4/6) الغياب المسجل يكون "ساعتين" عادةً
+        // في (1/3/5) يوجد غياب "ساعة" أيضاً
+        let nextStep = 1;            // أقل غياب قادم
+        let nextStepLabel = '(ساعة أو ساعتين)';
+
+        if (weeklyH === 2 || weeklyH === 4 || weeklyH === 6) {
+            nextStep = 2;
+            nextStepLabel = '(ساعتين)';
+        } else if (weeklyH === 1) {
+            nextStep = 1;
+            nextStepLabel = '(ساعة)';
+        } else {
+            // 3 أو 5
+            nextStep = 1;
+            nextStepLabel = '(ساعة أو ساعتين)';
+        }
+
+        // ===== بناء نص "متبقي لك" =====
+        let advice = '';
+
+        // لو حرمان: نعرض رسالة واحدة فقط واضحة
+        if (currentAbsent + EPS >= limit) {
+            advice = `<div class="advice-box" style="color:var(--danger); font-weight:900;">
+                        تجاوزتِ الحد المسموح (${fmt(limit,1)} ${hourWord(limit)})
+                      </div>`;
+        } else {
+            // ما زال تحت الحرمان
+            const remInt = Math.max(0, Math.floor(remainingRaw)); // ساعات صحيحة للعرض
+            let detail = '';
+
+            // ===== توزيع التفاصيل حسب نوع المقرر =====
+
+            // 1 ساعة: كل ساعة = محاضرة
+            if (weeklyH === 1) {
+                detail = getLectureText(remInt);
+
+            // 2 أو 4 أو 6 ساعات: (ساعتين)
+            } else if (weeklyH === 2 || weeklyH === 4 || weeklyH === 6) {
+                const lec2 = Math.floor(remInt / 2);
+                const extra1 = remInt % 2;
+
+                if (lec2 > 0) detail = `${getLectureText(lec2)} (ساعتين)`;
+                // لو بقيت ساعة "حسابياً" نعرضها كساعة (بدون محاضرة) لأنها لا تُسجّل كمحاضرة غالباً
+                if (extra1 > 0) {
+                    detail = detail ? `${detail} و <b>1</b> ساعة` : `<b>1</b> ساعة`;
+                }
+
+            // 3 أو 5 ساعات: (ساعتين + ساعة) مثل بعض
+            } else if (weeklyH === 3 || weeklyH === 5) {
+                const lec2 = Math.floor(remInt / 2);
+                const lec1 = remInt % 2;
+
+                if (lec2 > 0 && lec1 > 0) {
+                    detail = `${getLectureText(lec2)} (ساعتين) و ${getLectureText(lec1)} (ساعة)`;
+                } else if (lec2 > 0) {
+                    detail = `${getLectureText(lec2)} (ساعتين)`;
+                } else if (lec1 > 0) {
+                    detail = `${getLectureText(lec1)} (ساعة)`;
+                } else {
+                    detail = '';
+                }
+
+            } else {
+                // احتياط
+                detail = '';
             }
 
-            let advice = "";
-let detail = ""; // ✅ مهم جداً: تعريف detail قبل استخدامه
+            // ===== رسائل المتبقي / التحذير =====
+            // لا يوجد رصيد فعلي
+            if (remainingRaw <= EPS) {
+                advice = `<div class="advice-box" style="color:var(--danger); font-weight:900;">
+                            لم يتبقَّ لك رصيد غياب
+                          </div>`;
 
-if (currentAbsent < limit) {
+            // ✅ الحالة المطلوبة: المتبقي أقل من أقل غياب قادم (مثلاً 1.2 في 6 ساعات)
+            } else if (remainingRaw < nextStep - EPS) {
+                advice = `
+                    <div class="advice-box">
+                        متبقي لك <b>${fmt(remInt,0)}</b> ${hourWord(remInt)}${detail ? `: ${detail}` : ''}
+                        <div style="margin-top:6px; color:var(--danger); font-weight:900;">
+                            ⚠️ أي غياب قادم ${nextStepLabel} سيؤدي إلى الحرمان
+                        </div>
+                    </div>
+                `;
 
-    // ✅ المتبقي الحقيقي (قد يكون 0.2 مثلًا)
-    const remainingRaw = limit - currentAbsent;
-
-    // ✅ للتعامل مع 19.2 => نخليها 19 (ساعات كاملة) في التحويل لمحاضرات
-    const remHours = Math.floor(remainingRaw);
-
-    const hourLabel = hourWord(remHours);
-
-    // ===== توزيع المتبقي حسب نوع المقرر =====
-
-    // ✅ 6 ساعات → مثل 2/4 (محاضرات ساعتين فقط) + لو بقى 1 ساعة نضيفها
-    if (weeklyH === 6) {
-        const lec2 = Math.floor(remHours / 2);
-        const lec1 = remHours % 2;
-
-        if (lec2 > 0 && lec1 > 0) {
-            detail = `${getLectureText(lec2)} (ساعتين) و ${getLectureText(lec1)} (ساعة)`;
-        } else if (lec2 > 0) {
-            detail = `${getLectureText(lec2)} (ساعتين)`;
-        } else if (lec1 > 0) {
-            detail = `${getLectureText(lec1)} (ساعة)`;
-        } else {
-            detail = "";
+            // طبيعي: يوجد رصيد كافي
+            } else {
+                advice = `<div class="advice-box">
+                            متبقي لك <b>${fmt(remInt,0)}</b> ${hourWord(remInt)}${detail ? `: ${detail}` : ''}
+                          </div>`;
+            }
         }
 
-    // ✅ 5 ساعات → مثل 3 ساعات (ساعتين + ساعة)
-    } else if (weeklyH === 5 || weeklyH === 3) {
-        const lec2 = Math.floor(remHours / 2);
-        const lec1 = remHours % 2;
+        const isComplexType = (weeklyH === 3 || weeklyH === 5);
+        const showAbsent2 = (weeklyH >= 2);
+        const showAbsent1 = (weeklyH === 1 || weeklyH === 3 || weeklyH === 5);
 
-        if (lec2 > 0 && lec1 > 0) {
-            detail = `${getLectureText(lec2)} (ساعتين) و ${getLectureText(lec1)} (ساعة)`;
-        } else if (lec2 > 0) {
-            detail = `${getLectureText(lec2)} (ساعتين)`;
-        } else if (lec1 > 0) {
-            detail = `${getLectureText(lec1)} (ساعة)`;
-        } else {
-            detail = "";
-        }
+        const card = document.createElement('div');
+        card.className = 'course-card';
 
-    // ✅ 1 ساعة → محاضرات ساعة
-    } else if (weeklyH === 1) {
-        detail = getLectureText(remHours);
+        card.innerHTML = `
+            <button class="delete-course" onclick="deleteCourse(${course.id})">✕</button>
 
-    // ✅ 2 أو 4 ساعات → محاضرات ساعتين فقط
-    } else if (weeklyH === 2 || weeklyH === 4) {
-        const count = Math.floor(remHours / 2);
-        detail = `${getLectureText(count)} (ساعتين)`;
-    }
+            <input type="text" class="course-title"
+                value="${course.name}"
+                onchange="updateCourse(${course.id}, 'name', this.value)">
 
-    // ===== نص الرسالة =====
-    if (remainingRaw <= 0) {
-        // ✅ إذا وصل 0 أو أقل: ما فيه رصيد
-        advice = `<div class="advice-box" style="color:var(--danger); font-weight:900;">لم يتبقَّ لك رصيد غياب</div>`;
-    } else if (remainingRaw < 1) {
-        // ✅ أقل من ساعة: تحذير مباشر
-        advice = `
-            <div class="advice-box">
-                متبقي لك <b>${remainingRaw.toFixed(1)}</b> ساعة (أقل من ساعة)
-                <div style="margin-top:6px; color:var(--danger); font-weight:900;">
-                    ⚠️ أي غياب قادم (ساعة أو ساعتين) سيؤدي إلى الحرمان
+            <div class="input-group">
+                <label>عدد الساعات الأسبوعية للمقرر</label>
+                <select onchange="updateCourse(${course.id}, 'weeklyHours', this.value)">
+                    ${[1,2,3,4,5,6].map(h => {
+                        const label = (h <= 2) ? 'ساعة' : 'ساعات';
+                        return `<option value="${h}" ${course.weeklyHours == h ? 'selected' : ''}>${h} ${label}</option>`;
+                    }).join('')}
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>عدد مرات الغياب <small style="color:#777;">(المُسجّلة بنظام رايات)</small></label>
+
+                <div class="flex-inputs">
+                    ${showAbsent2 ? `<div>
+                        ${isComplexType ? `<span class="input-sub-label">
+                            <span class="hint-icon" onclick="openHintTwoHours()">?</span>
+                            محاضرة (فئة ساعتين)
+                        </span>` : ''}
+                        <input type="text" inputmode="numeric"
+                            value="${course.absent2}" placeholder="0"
+                            oninput="handleInput(${course.id}, 'absent2', this)">
+                    </div>` : ''}
+
+                    ${showAbsent1 ? `<div>
+                        ${isComplexType ? `<span class="input-sub-label">
+                            <span class="hint-icon" onclick="openHintOneHour()">?</span>
+                            محاضرة (فئة ساعة)
+                        </span>` : ''}
+                        <input type="text" inputmode="numeric"
+                            value="${course.absent1}" placeholder="0"
+                            oninput="handleInput(${course.id}, 'absent1', this)">
+                    </div>` : ''}
                 </div>
             </div>
+
+            <div class="result-area ${statusClass}">
+                <div style="font-size:0.95rem; font-weight:800; color:${statusColor}; margin-bottom:10px;">${msg}</div>
+
+                <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:5px;">
+                    <span style="font-size:1.8rem; font-weight:900; color:var(--primary);">${fmt(percent,1)}%</span>
+                    <span style="font-size:0.85rem; color:#718096; font-weight:bold;">من أصل 20%</span>
+                </div>
+
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width:${Math.min((percent/20)*100, 100)}%; background:${statusColor}"></div>
+                </div>
+
+                <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#555; font-weight:700; margin-top:5px;">
+                    <span>غيابك الحالي: ${fmt(currentAbsent,1)} ${hourWord(currentAbsent)}</span>
+
+                    <span>
+                        حد الحرمان: ${fmt(limit,1)} ${hourWord(limit)}
+                        <span class="info-icon ${infoIconClass}" onclick="openLimitInfo(${weeklyH}, ${limit})">i</span>
+                    </span>
+                </div>
+
+                ${advice}
+            </div>
         `;
-    } else {
-        // ✅ عادي
-        advice = `<div class="advice-box">متبقي لك <b>${remHours}</b> ${hourLabel}${detail ? `: ${detail}` : ''}</div>`;
-    }
 
-} else {
-    advice = `<div class="advice-box" style="color:var(--danger); font-weight:bold;">تجاوزت الحد المسموح (${limit.toFixed(1)} ساعة)</div>`;
+        list.appendChild(card);
+    });
+
+    localStorage.setItem('myCourses', JSON.stringify(courses));
 }
-
-            const isComplexType = (weeklyH === 3 || weeklyH === 5);
-            const showAbsent2 = (weeklyH >= 2);
-            const showAbsent1 = (weeklyH === 1 || weeklyH === 3 || weeklyH === 5);
-
-            const card = document.createElement('div');
-            card.className = 'course-card';
-            card.innerHTML = `
-                <button class="delete-course" onclick="deleteCourse(${course.id})">✕</button>
-                <input type="text" class="course-title" value="${course.name}" onchange="updateCourse(${course.id}, 'name', this.value)">
-                <div class="input-group">
-                    <label>عدد الساعات الأسبوعية للمقرر</label>
-                    <select onchange="updateCourse(${course.id}, 'weeklyHours', this.value)">
-                       ${[1,2,3,4,5,6].map(h => `<option value="${h}" ${course.weeklyHours == h ? 'selected' : ''}>${h} ${h <= 2 ? 'ساعة' : 'ساعات'}</option>`).join('')}
-                    </select>
-                </div>
-                <div class="input-group">
-                    <label>عدد مرات الغياب <small style="color:#777;">(المُسجّلة بنظام رايات)</small></label>
-                    <div class="flex-inputs">
-                        ${showAbsent2 ? `<div>
-                            ${isComplexType ? `<span class="input-sub-label"><span class="hint-icon" onclick="openHintTwoHours()">?</span>محاضرة (ساعتين)</span>` : ''}
-                            <input type="text" inputmode="numeric" value="${course.absent2}" placeholder="0" oninput="handleInput(${course.id}, 'absent2', this)">
-                        </div>` : ''}
-                        ${showAbsent1 ? `<div>
-                            ${isComplexType ? `<span class="input-sub-label"><span class="hint-icon" onclick="openHintOneHour()">?</span>محاضرة (ساعة)</span>` : ''}
-                            <input type="text" inputmode="numeric" value="${course.absent1}" placeholder="0" oninput="handleInput(${course.id}, 'absent1', this)">
-                        </div>` : ''}
-                    </div>
-                </div>
-                <div class="result-area ${statusClass}">
-                    <div style="font-size:0.95rem; font-weight:800; color:${statusColor}; margin-bottom:10px;">${msg}</div>
-                    <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:5px;">
-                        <span style="font-size:1.8rem; font-weight:900; color:var(--primary);">${percent.toFixed(1)}%</span>
-                        <span style="font-size:0.85rem; color:#718096; font-weight:bold;">من أصل 20%</span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width:${Math.min((percent/20)*100, 100)}%; background:${statusColor}"></div>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#555; font-weight:700; margin-top:5px;">
-                        <span>غيابك الحالي: ${currentAbsent} ${hourWord(currentAbsent)}</span>
-                        <span>حد الحرمان: ${limit.toFixed(1)} ${hourWord(limit)} 
-                            <span class="info-icon ${infoIconClass}" onclick="openLimitInfo(${weeklyH}, ${limit})">i</span>
-                        </span>
-                    </div>
-                    ${advice}
-                </div>
-            `;
-            list.appendChild(card);
-        });
-        localStorage.setItem('myCourses', JSON.stringify(courses));
-    }
 
     function handleInput(id, field, el) { el.value = fixNumbers(el.value); updateCourse(id, field, el.value); }
     function updateCourse(id, field, value) {
