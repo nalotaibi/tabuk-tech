@@ -670,12 +670,27 @@
 let detail = '';
 
 if (weeklyH === 1) {
-    // 1 ساعة: كل ساعة = محاضرة
+    // 1 ساعة → محاضرات فقط
     detail = getLectureText(remInt);
-} else {
-    // 2 / 3 / 4 / 5 / 6 : كل محاضرة = ساعتين (محاضرات آمنة قبل الحرمان)
-    const safeLectures = Math.floor(remInt / 2);
-    detail = getLectureText(safeLectures);
+
+} else if (weeklyH === 2 || weeklyH === 4 || weeklyH === 6) {
+    // 2 / 4 / 6 → رقم واحد فقط
+    const lectures = Math.floor(remInt / 2);
+    detail = getLectureText(lectures);
+
+} else if (weeklyH === 3) {
+    // 3 ساعات → 4 محاضرات (ساعتين) + 1 محاضرة (ساعة)
+    const twoH = Math.min(4, Math.floor(remInt / 2));
+    const oneH = (remInt - twoH * 2 >= 1) ? 1 : 0;
+
+    detail = `${getLectureText(twoH)}${oneH ? ` و ${oneH} محاضرة` : ''}`;
+
+} else if (weeklyH === 5) {
+    // 5 ساعات → 7 محاضرات (ساعتين) + 1 محاضرة (ساعة)
+    const twoH = Math.min(7, Math.floor(remInt / 2));
+    const oneH = (remInt - twoH * 2 >= 1) ? 1 : 0;
+
+    detail = `${getLectureText(twoH)}${oneH ? ` و ${oneH} محاضرة` : ''}`;
 }
 
                 // ===== رسائل المتبقي / التحذير =====
