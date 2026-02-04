@@ -757,8 +757,9 @@ if (currentAbsent + EPS >= limit) {
             const twoH = Math.min(7, Math.floor(remInt / 2));
             const oneH = (remInt - twoH * 2 >= 1) ? 1 : 0;
             detail = oneH > 0
-                ? `${twoH} محاضرات (ساعتين) + ${oneH} محاضرة (ساعة)`
-                : `${twoH} محاضرات (ساعتين)`;
+    ? `<b class="primary-num">${twoH}</b> محاضرات (ساعتين) + <b class="primary-num">${oneH}</b> محاضرة (ساعة)`
+    : `<b class="primary-num">${twoH}</b> محاضرات (ساعتين)`;
+
         }
 
         advice = `
