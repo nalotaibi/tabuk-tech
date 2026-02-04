@@ -318,6 +318,11 @@
     color: #888;
 }
 
+        .primary-num {
+    color: var(--primary);
+    font-weight: 900;
+}
+
 
         /* ===== Info Modal (موحّد للجميع) ===== */
         .info-overlay{
@@ -543,13 +548,13 @@
 
     //  تحديث دالة صيغة كلمة (محاضرة/محاضرات)
     function getLectureText(n) {
-        let v = Math.abs(n);
-        if (v === 0) return "";
-        if (v === 1) return "1 محاضرة";
-        if (v === 2) return "2 محاضرة";
-        if (v >= 3 && v <= 10) return `${v} محاضرات`;
-        return `${v} محاضرة`;
-    }
+    let v = Math.abs(n);
+    if (v === 0) return "";
+    if (v === 1) return `<b class="primary-num">1</b> محاضرة`;
+    if (v === 2) return `<b class="primary-num">2</b> محاضرة`;
+    if (v >= 3 && v <= 10) return `<b class="primary-num">${v}</b> محاضرات`;
+    return `<b class="primary-num">${v}</b> محاضرة`;
+}
 
     function lectureRangeText(minL, maxL) {
         minL = Math.max(0, Math.floor(minL));
