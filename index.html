@@ -672,12 +672,12 @@
                     // كل ساعة = محاضرة
                     detail = getLectureText(remInt);
 
-                } else if (weeklyH === 2 || weeklyH === 4 || weeklyH === 6) {
-                    // محاضرات كتلة ساعتين: 16 ساعة => 8 محاضرات
-                    const lectures = Math.floor(remInt / 2);
-                    detail = getLectureText(lectures);
-
                 } else if (weeklyH === 3 || weeklyH === 5) {
+    // ✅ نحسب فقط المحاضرات الآمنة قبل الحرمان
+    // كل محاضرة = ساعتين، وأي ساعة مفردة لا تُحتسب كمحاضرة كاملة
+    const safeLectures = Math.floor(remInt / 2);
+    detail = getLectureText(safeLectures);
+} else if (weeklyH === 3 || weeklyH === 5) {
                     // قد تكون محاضرات 1 ساعة أو 2 ساعة -> نعرض نطاق محاضرات بدون ذكر النوع
                     const minLectures = Math.floor(remInt / 2);
                     const maxLectures = remInt;
