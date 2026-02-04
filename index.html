@@ -683,14 +683,14 @@ if (weeklyH === 1) {
     const twoH = Math.min(4, Math.floor(remInt / 2));
     const oneH = (remInt - twoH * 2 >= 1) ? 1 : 0;
 
-    detail = `${getLectureText(twoH)}${oneH ? ` و ${oneH} محاضرة` : ''}`;
+    detail = `${twoH} محاضرات (ساعتين)${oneH ? ` + ${oneH} محاضرة (ساعة)` : ''}`;
 
 } else if (weeklyH === 5) {
     // 5 ساعات → 7 محاضرات (ساعتين) + 1 محاضرة (ساعة)
     const twoH = Math.min(7, Math.floor(remInt / 2));
     const oneH = (remInt - twoH * 2 >= 1) ? 1 : 0;
 
-    detail = `${getLectureText(twoH)}${oneH ? ` و ${oneH} محاضرة` : ''}`;
+    detail = `${twoH} محاضرات (ساعتين)${oneH ? ` + ${oneH} محاضرة (ساعة)` : ''}`;
 }
 
                 // ===== رسائل المتبقي / التحذير =====
