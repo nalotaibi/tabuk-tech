@@ -13,61 +13,64 @@
     <link rel="icon" href="1024.png">
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>حاسبة الغياب الذكية</title>
+    <title>حاسبة الغياب</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --primary: #006699; --secondary: #00aed9; --text-dark: #2c3e50;
-            --safe: #22c55e; --warning: #facc15; --orange: #fb923c; --danger: #ef4444;
+            --primary: #006699;
+            --secondary: #00aed9;
+            --text-dark: #2c3e50;
+            --safe: #22c55e;
+            --warning: #facc15;
+            --orange: #fb923c;
+            --danger: #ef4444;
             --bg-gradient: linear-gradient(135deg, #e6f4f8 0%, #ffffff 100%);
-            --info-modal-bg: #ffffff; --info-modal-text: #1f2937; --info-modal-accent: #0EA5E9;
+            --info-modal-bg: #ffffff;
+            --info-modal-text: #1f2937;
+            --info-modal-accent: #0EA5E9;
         }
 
-        .num { direction: ltr; unicode-bidi: isolate; display: inline-block; font-weight: 800; }
-        .formula-line { direction: rtl; unicode-bidi: isolate-override; text-align: center; white-space: nowrap; margin-top:10px; }
+        .num{ direction: ltr; unicode-bidi: isolate; display: inline-block; font-weight: 800; }
+        .formula-line{ direction: rtl; unicode-bidi: isolate-override; text-align: center; white-space: nowrap; }
 
         body { margin: 0; font-family: 'Cairo', sans-serif; background: var(--bg-gradient); padding: 20px 10px; direction: rtl; min-height: 100vh; }
-        
-        .app-container { max-width: 450px; margin: 0 auto; }
-        
-        .install-banner {
-            background: #ffffff; border: 1px solid #e1e9e7; padding: 6px 12px;
-            border-radius: 14px; margin-bottom: 14px; display: flex;
-            align-items: center; justify-content: space-between; box-shadow: 0 3px 8px rgba(0,0,0,0.03);
-        }
+
+        .install-banner { background: #ffffff; border: 1px solid #e1e9e7; padding: 4px 12px; border-radius: 14px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 3px 8px rgba(0,0,0,0.03); }
         .install-text { font-weight: 600; color: var(--primary); font-size: 0.78rem; }
-        .install-btn { background: var(--secondary); color: white; border: none; padding: 4px 12px; border-radius: 10px; font-size: 0.72rem; cursor: pointer; }
+        .install-btn { background: var(--secondary); color: white; border: none; padding: 4px 12px; border-radius: 10px; font-size: 0.72rem; font-weight: bold; cursor: pointer; }
 
-        .header-section { text-align: center; margin-bottom: 15px; }
-        .college-logo img { width: clamp(220px, 60vw, 300px); margin-bottom: 4px; }
-        .header-text h1 { margin: 0; font-size: clamp(1.8rem, 4.8vw, 2.3rem); font-weight: 800; color: var(--primary); }
+        .app-container { max-width: 450px; margin: 0 auto; }
+        .header-section { text-align: center; margin-bottom: 20px; }
+        .college-logo img { width: clamp(220px, 60vw, 300px); margin-bottom: 4px; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.12)); }
+        .header-text h1 { margin: 0; font-size: clamp(1.9rem, 4.8vw, 2.5rem); font-weight: 800; color: var(--primary); }
 
-        /* تصفيف نظام الأسابيع الجديد */
-        .system-config {
-            background: white; border-radius: 18px; padding: 12px; margin-bottom: 15px;
-            border: 2px solid var(--secondary); display: flex; align-items: center; justify-content: space-between;
-        }
-        .system-config label { font-weight: 800; color: var(--primary); font-size: 0.9rem; }
-        .system-config select { width: auto; padding: 5px 15px; background: #f0f9ff; border-color: var(--secondary); color: var(--primary); font-weight: 800; }
+        .system-badge { display: inline-block; margin-top: 8px; padding: 4px 12px; background: #e0f2f1; color: #00796b; border-radius: 20px; font-size: 0.75rem; font-weight: bold; }
 
-        .action-bars { display: flex; gap: 10px; margin-bottom: 20px; }
-        .add-btn { flex: 2; padding: 14px; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white; border: none; border-radius: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 12px rgba(0, 102, 153, 0.2); }
+        /* ستايل اختيار الأسابيع الجديد بنفس روح الكود */
+        .weeks-selector { margin: 15px 0; text-align: center; background: #fff; padding: 10px; border-radius: 15px; border: 1px solid #d1e2e8; }
+        .weeks-selector label { font-weight: 800; color: var(--primary); font-size: 0.85rem; margin-left: 8px; }
+        .weeks-selector select { width: auto; padding: 5px 10px; border-radius: 8px; border: 1.5px solid var(--secondary); font-weight: bold; color: var(--primary); }
+
+        .action-bars { display: flex; gap: 10px; margin: 20px 0; }
+        .add-btn { flex: 2; padding: 14px; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white; border: none; border-radius: 16px; font-weight: bold; cursor: pointer; font-size: 1.05rem; box-shadow: 0 4px 12px rgba(0, 102, 153, 0.2); }
         .reset-all { flex: 1; padding: 12px; background: #fff; color: var(--primary); border: 1px solid var(--primary); border-radius: 16px; cursor: pointer; font-weight: bold; }
 
         .course-card { background: white; border-radius: 28px; padding: 22px; margin-bottom: 20px; box-shadow: 0 12px 30px rgba(0,0,0,0.06); border: 1px solid #d1e2e8; position: relative; }
         .delete-course { position: absolute; top: 18px; left: 18px; background: #fee2e2; color: #ef4444; border: none; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .course-title { width: 85%; border: none; border-bottom: 2px solid #f0f0f0; font-size: 1.1rem; font-weight: bold; color: var(--primary); margin-bottom: 15px; outline: none; }
+        .course-title { width: 85%; border: none; border-bottom: 2px solid #f0f0f0; font-size: 1.1rem; font-weight: bold; color: var(--primary); margin-bottom: 15px; padding: 5px; outline: none; background: transparent; }
 
         .input-group { margin-bottom: 12px; }
         .input-group label { display: block; font-size: 0.9rem; color: #334155; margin-bottom: 6px; font-weight: 800; background: #f0f7f9; padding: 6px 12px; border-right: 3px solid var(--secondary); }
-        
-        select, input { width: 100%; padding: 10px; border-radius: 12px; border: 1.5px solid #edf2f1; font-family: inherit; text-align: center; outline: none; }
-        .flex-inputs { display: flex; gap: 8px; }
-        .flex-inputs > div { flex: 1; }
 
-        .hint-icon, .info-icon { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; background: var(--info-modal-accent); color: white; border-radius: 50%; font-size: 0.75rem; cursor: pointer; font-weight: 900; }
+        select, input { width: 100%; padding: 10px; border-radius: 12px; border: 1.5px solid #edf2f1; font-family: inherit; text-align: center; font-size: 0.95rem; outline: none; box-sizing: border-box; }
+
+        .flex-inputs { display: flex; gap: 8px; align-items: flex-end; }
+        .flex-inputs > div { flex: 1; }
+        .input-sub-label { font-size: 0.8rem; color: #666; margin-bottom: 4px; display: flex; align-items: center; justify-content: center; gap: 2px; font-weight: 600; }
+
+        .hint-icon, .info-icon { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; background: #0EA5E9; color: white; border-radius: 50%; font-size: 0.75rem; cursor: pointer; font-weight: 900; }
         .info-icon.warn { background: var(--orange); }
         .info-icon.danger { background: var(--danger); }
 
@@ -77,30 +80,29 @@
         .danger-bg { background: #fef2f2; border: 1px solid #fee2e2; }
 
         .progress-bar { height: 8px; background: #e5e7eb; border-radius: 4px; margin: 10px 0; overflow: hidden; }
-        .progress-fill { height: 100%; transition: 0.8s ease-in-out; }
-        .advice-box { margin-top: 10px; padding-top: 10px; border-top: 1px dashed rgba(0,0,0,0.1); font-size: 0.85rem; color: #444; }
+        .progress-fill { height: 100%; width: 0%; transition: 0.8s ease-in-out; }
 
-        .info-overlay { display:none; position:fixed; inset:0; background: rgba(15, 23, 42, 0.55); z-index: 10000; justify-content:center; align-items:center; padding: 14px; }
-        .info-modal { width: 92%; max-width: 360px; background: white; border-radius: 20px; box-shadow: 0 18px 45px rgba(0,0,0,0.25); overflow: hidden; }
-        .info-modal-header { display:flex; align-items:center; justify-content:space-between; padding: 14px 16px; border-bottom: 1px solid #eee; }
-        .info-modal-body { padding: 16px; font-size: 0.92rem; line-height: 1.7; }
-        .info-ok { width:100%; background: var(--info-modal-accent); color: white; border: none; border-radius: 14px; padding: 12px; font-weight: 900; cursor: pointer; margin-top:10px;}
+        .advice-box { margin-top: 10px; padding-top: 10px; border-top: 1px dashed rgba(0,0,0,0.1); font-size: 0.85rem; color: #444; line-height: 1.4; }
         
+        .info-overlay{ display:none; position:fixed; inset:0; background: rgba(15, 23, 42, 0.55); z-index: 10000; justify-content:center; align-items:center; padding: 14px; }
+        .info-modal{ width: 92%; max-width: 360px; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 18px 45px rgba(0,0,0,0.25); }
+        .info-modal-header{ display:flex; align-items:center; justify-content:space-between; padding: 14px 16px; border-bottom: 1px solid #eee; }
+        .info-ok{ width:100%; background: var(--info-modal-accent); color: white; border: none; border-radius: 14px; padding: 12px; font-weight: 900; cursor: pointer; margin-top: 10px;}
+
         .footer-note { text-align: center; font-size: 0.8rem; color: #718096; margin-top: 40px; border-top: 1px solid #d1d9e6; padding-top: 20px; }
     </style>
 </head>
-
 <body>
 
 <div id="guideModal" class="info-overlay" onclick="toggleModal(false)">
     <div class="info-modal" onclick="event.stopPropagation()">
         <div class="info-modal-header">
-            <div style="font-weight:900;">📱 إضافة الحاسبة للهاتف</div>
+            <div style="font-weight:900;">📱 إضافة الحاسبة</div>
             <button style="background:none; border:none; cursor:pointer;" onclick="toggleModal(false)">✕</button>
         </div>
-        <div class="info-modal-body">
-            <b>🍏 iPhone:</b> اضغط مشاركة ⬆️ ثم "إضافة للشاشة الرئيسية".<br><br>
-            <b>🤖 Android:</b> اضغط ⋮ ثم "إضافة إلى الشاشة الرئيسية".
+        <div class="info-modal-body" style="padding:15px; text-align:center;">
+            <b>iPhone:</b> مشاركة ⬆️ ثم "إضافة للشاشة الرئيسية"<br><br>
+            <b>Android:</b> خيارات ⋮ ثم "إضافة للشاشة الرئيسية"
             <button class="info-ok" onclick="toggleModal(false)">فهمت</button>
         </div>
     </div>
@@ -112,9 +114,9 @@
             <div id="infoTitle" style="font-weight:900;">معلومة</div>
             <button style="background:none; border:none; cursor:pointer;" onclick="closeInfoModal()">✕</button>
         </div>
-        <div class="info-modal-body">
+        <div class="info-modal-body" style="padding:15px;">
             <div id="infoText"></div>
-            <div id="infoFormula" class="formula-line" style="display:none; background:#f8fafc; padding:10px; border-radius:10px;"></div>
+            <div id="infoFormula" class="formula-line" style="display:none; background:#f0f7f9; padding:10px; border-radius:10px; margin-top:10px;"></div>
             <button class="info-ok" onclick="closeInfoModal()">فهمت</button>
         </div>
     </div>
@@ -133,9 +135,9 @@
         </div>
     </header>
 
-    <div class="system-config">
-        <label>ترم تدريبي بنظام:</label>
-        <select id="weeksSystem" onchange="changeWeeks(this.value)">
+    <div class="weeks-selector">
+        <label>نظام الفصل الدراسي:</label>
+        <select id="weeksNum" onchange="updateWeeks(this.value)">
             <option value="16">16 أسبوعاً</option>
             <option value="15">15 أسبوعاً</option>
         </select>
@@ -150,27 +152,28 @@
 
     <footer class="footer-note">
         <p style="font-weight:bold; color:var(--primary); margin:0;">تصميم وتطوير: أ. نورة القثامي</p>
-        <p style="margin:4px 0;">الكلية التقنية الرقمية للبنات بتبوك</p>
-        <a href="mailto:norah.a@tvtc.gov.sa" style="text-decoration:none; color:#006699;">📧 norah.a@tvtc.gov.sa</a>
+        <p style="margin:4px 0; font-size:0.75rem;">الكلية التقنية الرقمية للبنات بتبوك</p>
+        <a href="mailto:norah.a@tvtc.gov.sa" style="text-decoration:none; color:#006699; font-size:0.8rem;">📧 norah.a@tvtc.gov.sa</a>
     </footer>
 </div>
 
 <script>
     let courses = JSON.parse(localStorage.getItem('myCourses')) || [];
-    let currentWeeks = localStorage.getItem('termWeeks') || "16";
+    let termWeeks = localStorage.getItem('termWeeks') || "16";
+    document.getElementById('weeksNum').value = termWeeks;
 
-    // تحديث النظام عند البداية
-    document.getElementById('weeksSystem').value = currentWeeks;
-
-    function changeWeeks(val) {
-        currentWeeks = val;
+    function updateWeeks(val) {
+        termWeeks = val;
         localStorage.setItem('termWeeks', val);
         renderCourses();
     }
 
     function hourWord(n) {
         let v = Math.abs(parseFloat(n));
-        return (v === 0) ? "ساعة" : (v >= 1 && v <= 2) ? "ساعة" : (v >= 3 && v <= 10) ? "ساعات" : "ساعة";
+        if (v === 0) return "ساعة";
+        if (v >= 1 && v <= 2) return "ساعة";
+        if (v >= 3 && v <= 10) return "ساعات";
+        return "ساعة";
     }
 
     function getLectureText(n) {
@@ -178,84 +181,87 @@
         if (v === 0) return "";
         if (v === 1) return "1 محاضرة";
         if (v === 2) return "2 محاضرة";
-        return (v >= 3 && v <= 10) ? `${v} محاضرات` : `${v} محاضرة`;
+        return `${v} محاضرات`;
     }
 
     function toggleModal(show) { document.getElementById('guideModal').style.display = show ? 'flex' : 'none'; }
     function closeInfoModal() { document.getElementById('infoOverlay').style.display = 'none'; }
+    function fixNumbers(str) { return str.replace(/[٠-٩]/g, d => d.charCodeAt(0) - 1632).replace(/[^\d.]/g, ''); }
 
     function openLimitInfo(weeklyH, limit) {
-        const text = `📘 طريقة الحساب لهذا المقرر (نظام ${currentWeeks} أسبوع):`;
-        const formula = `( ${weeklyH} × ${currentWeeks} ) × 20% = ${Number(limit).toFixed(1)} ساعة`;
+        const text = `📘 حساب ساعات الحرمان (نظام ${termWeeks} أسبوع):`;
+        const formula = `(${weeklyH} × ${termWeeks}) × 20% = ${limit.toFixed(1)} ساعة`;
         document.getElementById('infoTitle').textContent = 'طريقة الحساب';
         document.getElementById('infoText').innerHTML = text;
         const f = document.getElementById('infoFormula');
-        f.style.display = 'block';
-        f.textContent = formula;
+        f.style.display = 'block'; f.textContent = formula;
         document.getElementById('infoOverlay').style.display = 'flex';
     }
 
     function renderCourses() {
         const list = document.getElementById('coursesList');
         list.innerHTML = '';
-        const EPS = 1e-9;
-        const W = parseInt(currentWeeks);
+        const W = parseInt(termWeeks);
 
         courses.forEach(course => {
             const weeklyH = parseFloat(course.weeklyHours) || 0;
-            const totalHours = weeklyH * W;
-            const limit = totalHours * 0.20;
+            const limit = (weeklyH * W) * 0.20;
             const currentAbsent = (parseFloat(course.absent1) || 0) + ((parseFloat(course.absent2) || 0) * 2);
-            const percent = totalHours ? (currentAbsent / totalHours) * 100 : 0;
+            const percent = (currentAbsent / (weeklyH * W)) * 100 || 0;
             const remaining = limit - currentAbsent;
 
             let statusClass = 'safe-bg', statusColor = 'var(--safe)', msg = '🟢 وضعك آمن ومستقر';
-            if (currentAbsent + EPS >= limit) { statusClass = 'danger-bg'; statusColor = 'var(--danger)'; msg = '🔴 حالة حرمان'; }
+            if (currentAbsent >= limit - 0.01) { statusClass = 'danger-bg'; statusColor = 'var(--danger)'; msg = '🔴 حالة حرمان'; }
             else if (percent >= 15) { statusClass = 'warning-bg'; statusColor = 'var(--orange)'; msg = '🟠 تنبيه: اقتربت من الحرمان'; }
             else if (percent >= 10) { statusClass = 'warning-bg'; statusColor = 'var(--warning)'; msg = '🟡 انتباه: بدأ رصيدك بالنقصان'; }
 
-            let advice = '';
-            if (currentAbsent + EPS >= limit) {
-                advice = `<div class="advice-box" style="color:var(--danger); font-weight:900;">تجاوزت الحد المسموح (${limit.toFixed(1)} ${hourWord(limit)})</div>`;
+            let advice = "";
+            if (currentAbsent < limit - 0.01) {
+                const remHours = Math.floor(remaining);
+                let detail = "";
+                if (weeklyH === 3 || weeklyH === 5) {
+                    const l2 = Math.floor(remHours / 2), l1 = remHours % 2;
+                    if (l2 > 0 && l1 > 0) detail = `${getLectureText(l2)} (ساعتين) و ${getLectureText(l1)} (ساعة)`;
+                    else if (l2 > 0) detail = `${getLectureText(l2)} (ساعتين)`;
+                    else if (l1 > 0) detail = `${getLectureText(l1)} (ساعة)`;
+                } else if (weeklyH === 1) {
+                    detail = `${getLectureText(remHours)} (ساعة)`;
+                } else {
+                    detail = `${getLectureText(Math.floor(remHours / 2))} (ساعتين)`;
+                }
+                advice = `<div class="advice-box">متبقي لك <b>${remHours}</b> ${hourWord(remHours)}: ${detail}</div>`;
+                if (remaining < (weeklyH === 1 ? 1 : 2)) advice += `<div style="color:var(--danger); font-size:0.7rem; font-weight:bold;">⚠️ أي غياب قادم سيؤدي للحرمان</div>`;
             } else {
-                const remInt = Math.max(0, Math.floor(remaining));
-                let detail = '';
-                if (weeklyH === 1) detail = getLectureText(remInt) + " (ساعة)";
-                else if ([2, 4, 6].includes(weeklyH)) detail = getLectureText(Math.floor(remInt / 2)) + " (ساعتين)";
-                else {
-                    const l2 = Math.floor(remInt / 2), l1 = remInt % 2;
-                    detail = (l2 > 0 ? getLectureText(l2) + " (ساعتين) " : "") + (l1 > 0 ? (l2 > 0 ? "و " : "") + "1 محاضرة (ساعة)" : "");
-                }
-                advice = `<div class="advice-box">متبقي لك <b>${remInt}</b> ${hourWord(remInt)}: ${detail}</div>`;
-                if (remaining < (weeklyH === 1 ? 1 : 2) - EPS) {
-                    advice += `<div style="color:var(--danger); font-weight:700; font-size:0.7rem;">⚠️ أي غياب قادم سيؤدي إلى الحرمان</div>`;
-                }
+                advice = `<div class="advice-box" style="color:var(--danger); font-weight:bold;">تجاوزت الحد المسموح</div>`;
             }
 
+            const isComplex = (weeklyH === 3 || weeklyH === 5);
             const card = document.createElement('div');
             card.className = 'course-card';
             card.innerHTML = `
                 <button class="delete-course" onclick="deleteCourse(${course.id})">✕</button>
                 <input type="text" class="course-title" value="${course.name}" onchange="updateCourse(${course.id}, 'name', this.value)">
-                <div class="input-group"><label>الساعات الأسبوعية</label>
+                <div class="input-group">
+                    <label>الساعات الأسبوعية</label>
                     <select onchange="updateCourse(${course.id}, 'weeklyHours', this.value)">
-                        ${[1,2,3,4,5,6].map(h => `<option value="${h}" ${course.weeklyHours == h ? 'selected' : ''}>${h} ساعة</option>`).join('')}
+                        ${[1,2,3,4,5,6].map(h => `<option value="${h}" ${weeklyH==h?'selected':''}>${h} ساعة</option>`).join('')}
                     </select>
                 </div>
-                <div class="input-group"><label>مرات الغياب (نظام رايات)</label>
+                <div class="input-group">
+                    <label>مرات الغياب</label>
                     <div class="flex-inputs">
-                        ${weeklyH >= 2 ? `<div><span style="font-size:0.7rem;">ساعتين</span><input type="text" value="${course.absent2}" oninput="updateCourse(${course.id}, 'absent2', this.value)"></div>` : ''}
-                        ${(weeklyH === 1 || weeklyH === 3 || weeklyH === 5) ? `<div><span style="font-size:0.7rem;">ساعة</span><input type="text" value="${course.absent1}" oninput="updateCourse(${course.id}, 'absent1', this.value)"></div>` : ''}
+                        ${weeklyH >= 2 ? `<div>${isComplex?'<span class="input-sub-label">ساعتين</span>':''}<input type="text" value="${course.absent2}" oninput="handleInput(${course.id}, 'absent2', this)"></div>` : ''}
+                        ${(weeklyH==1||isComplex) ? `<div>${isComplex?'<span class="input-sub-label">ساعة</span>':''}<input type="text" value="${course.absent1}" oninput="handleInput(${course.id}, 'absent1', this)"></div>` : ''}
                     </div>
                 </div>
                 <div class="result-area ${statusClass}">
-                    <div style="font-weight:800; color:${statusColor};">${msg}</div>
-                    <div style="display:flex; justify-content:space-between; margin:10px 0;">
-                        <span style="font-size:1.8rem; font-weight:900;">${percent.toFixed(1)}%</span>
-                        <span style="font-size:0.8rem;">من أصل 20%</span>
+                    <div style="font-weight:800; color:${statusColor}; margin-bottom:10px;">${msg}</div>
+                    <div style="display:flex; justify-content:space-between; align-items:baseline;">
+                        <span style="font-size:1.8rem; font-weight:900; color:var(--primary);">${percent.toFixed(1)}%</span>
+                        <span style="font-size:0.85rem; color:#718096; font-weight:bold;">من 20%</span>
                     </div>
                     <div class="progress-bar"><div class="progress-fill" style="width:${Math.min((percent/20)*100, 100)}%; background:${statusColor}"></div></div>
-                    <div style="display:flex; justify-content:space-between; font-size:0.75rem;">
+                    <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#555; font-weight:700;">
                         <span>غيابك: ${currentAbsent} ساعة</span>
                         <span>الحد: ${limit.toFixed(1)} <span class="info-icon" onclick="openLimitInfo(${weeklyH}, ${limit})">i</span></span>
                     </div>
@@ -266,13 +272,18 @@
         localStorage.setItem('myCourses', JSON.stringify(courses));
     }
 
-    function addNewCourse() { courses.push({ id: Date.now(), name: 'مقرر جديد', weeklyHours: 4, absent1: '', absent2: '' }); renderCourses(); }
-    function updateCourse(id, field, val) {
+    function handleInput(id, field, el) { el.value = fixNumbers(el.value); updateCourse(id, field, el.value); }
+    function updateCourse(id, field, value) {
         const idx = courses.findIndex(c => c.id === id);
-        if (idx !== -1) { courses[idx][field] = val; renderCourses(); }
+        if (idx !== -1) {
+            courses[idx][field] = value;
+            if (field === 'weeklyHours') { courses[idx].absent1 = ''; courses[idx].absent2 = ''; }
+            renderCourses();
+        }
     }
+    function addNewCourse() { courses.push({ id: Date.now(), name: 'مقرر جديد', weeklyHours: 4, absent1: '', absent2: '' }); renderCourses(); }
     function deleteCourse(id) { if (confirm('حذف؟')) { courses = courses.filter(c => c.id !== id); renderCourses(); } }
-    function clearEverything() { if (confirm('مسح الكل؟')) { courses = []; renderCourses(); } }
+    function clearEverything() { if (confirm('إعادة ضبط؟')) { courses = []; renderCourses(); } }
     window.onload = renderCourses;
 </script>
 </body>
