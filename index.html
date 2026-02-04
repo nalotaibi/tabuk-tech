@@ -663,6 +663,7 @@ if (currentAbsent + EPS >= limit) {
               </div>`;
 } else {
     const remainingSafeRaw = (limit - EPS) - currentAbsent;
+    const enableFinalWarning = !(selectedWeeks === 16 && (weeklyH === 2 || weeklyH === 4 || weeklyH === 6));
 
     // nextStep حسب نوع المقرر
     let nextStep = 1;
@@ -670,14 +671,18 @@ if (currentAbsent + EPS >= limit) {
     else if (weeklyH === 1 || weeklyH === 3) nextStep = 1;
     else if (weeklyH === 5) nextStep = 2;
 
-    // ✅ إذا وصلنا لمرحلة: أي غياب قادم = حرمان
-    // ✅ هنا نحذف سطر "متبقي لك 0/1" نهائيًا
-    if (remainingSafeRaw <= EPS || remainingSafeRaw < nextStep - EPS) {
-        advice = `
-            <div class="advice-box" style="color:var(--danger); font-weight:900; text-align:center;">
-                ⚠️ أي غياب قادم سيؤدي إلى الحرمان
-            </div>
-        `;
+    //  إذا وصلنا لمرحلة: أي غياب قادم = حرمان
+    //  هنا نحذف سطر "متبقي لك 0/1" نهائيًا
+    if ((remainingSafeRaw <= EPS || remainingSafeRaw < nextStep - EPS) && enableFinalWarning) {
+    //  يظهر التحذير النهائي فقط (بدون متبقي)
+    advice = `
+        <div class="advice-box" style="color:var(--danger); font-weight:900; text-align:center;">
+            ⚠️ أي غياب قادم سيؤدي إلى الحرمان
+        </div>
+    `;
+    } else if (remainingSafeRaw <= EPS || remainingSafeRaw < nextStep - EPS) {
+    //  إذا التحذير غير مفعّل (مثلاً 16 أسبوع + 2/4/6) نخفي صندوق المتبقي بالكامل
+    advice = '';
     } else {
         const remInt = Math.max(0, Math.floor(remainingSafeRaw));
 
