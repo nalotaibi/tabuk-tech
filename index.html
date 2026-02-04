@@ -553,16 +553,11 @@
     }
 
     function changeWeeks(w) {
-        selectedWeeks = parseInt(w);
+    selectedWeeks = parseInt(w);
+    localStorage.setItem('selectedWeeks', selectedWeeks);
+    renderCourses();
+}
 
-        // حفظ الاختيار
-        localStorage.setItem('selectedWeeks', selectedWeeks);
-
-        document.getElementById('systemBadge').textContent =
-            `نظام ${selectedWeeks} أسبوعًا (20% حرمان)`;
-
-        renderCourses();
-    }
 
     function openInfoModal({title='معلومة', text='', formula='', badge='i'}) {
         document.getElementById('infoTitle').textContent = title;
