@@ -692,12 +692,20 @@
                     } else if (weeklyH === 3) {
                         const twoH = Math.min(4, Math.floor(remInt / 2));
                         const oneH = (remInt - twoH * 2 >= 1) ? 1 : 0;
-                        detail = `${twoH} محاضرات (ساعتين) + ${oneH} محاضرة (ساعة)`;
+
+                     detail = oneH > 0
+                     ? `${twoH} محاضرات (ساعتين) + ${oneH} محاضرة (ساعة)`
+                     : `${twoH} محاضرات `;
+
                     } else if (weeklyH === 5) {
-                        const twoH = Math.min(7, Math.floor(remInt / 2));
-                        const oneH = (remInt - twoH * 2 >= 1) ? 1 : 0;
-                        detail = `${twoH} محاضرات (ساعتين) + ${oneH} محاضرة (ساعة)`;
+                      const twoH = Math.min(7, Math.floor(remInt / 2));
+                      const oneH = (remInt - twoH * 2 >= 1) ? 1 : 0;
+
+                    detail = oneH > 0
+                    ? `${twoH} محاضرات (ساعتين) + ${oneH} محاضرة (ساعة)`
+                    : `${twoH} محاضرات (ساعتين)`;
                     }
+
 
                     advice = `
                         <div class="advice-box">
