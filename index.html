@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
+    <head>
 
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-35NPHCGB93"></script>
@@ -8,6 +9,7 @@
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
+
   gtag('config', 'G-35NPHCGB93');
 </script>
 
@@ -65,22 +67,24 @@
         }
 
        .install-banner {
-            background: #ffffff;
-            border: 1px solid #e1e9e7;
-            padding: 4px 12px;      /* ✅ أصغر */
-            border-radius: 14px;   /* أنعم */
-            margin-bottom: 14px;   /* أقل ارتفاع */
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.03);
-        }
+    background: #ffffff;
+    border: 1px solid #e1e9e7;
+    padding: 4px 12px;      /* ✅ أصغر */
+    border-radius: 14px;   /* أنعم */
+    margin-bottom: 14px;   /* أقل ارتفاع */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.03);
+}
+
 
         .install-text {
-            font-weight: 600;        /* أخف شوي */
-            color: var(--primary);
-            font-size: 0.78rem;     /* أصغر بنسبة بسيطة */
-        }
+    font-weight: 600;        /* أخف شوي */
+    color: var(--primary);
+    font-size: 0.78rem;     /* أصغر بنسبة بسيطة */
+}
+
 
         .install-btn {
             background: var(--secondary);
@@ -96,18 +100,22 @@
         .app-container { max-width: 450px; margin: 0 auto; }
         .header-section { text-align: center; margin-bottom: 20px; }
         .college-logo img {
-            width: clamp(220px, 60vw, 300px);
-            margin-bottom: 4px;   /* ✅ تقليل المسافة */
-            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.12));
-        }
+    width: clamp(220px, 60vw, 300px);
+    margin-bottom: 4px;   /* ✅ تقليل المسافة */
+    filter: drop-shadow(0 3px 6px rgba(0,0,0,0.12));
+}
 
-        .header-text h1 {
-            margin: 0;
-            font-size: clamp(1.9rem, 4.8vw, 2.5rem); /* ✅ يكبر حسب حجم الشاشة */
-            font-weight: 800;
-            color: var(--primary);
-            letter-spacing: 0.3px;
-        }
+
+
+  .header-text h1 {
+    margin: 0;
+    font-size: clamp(1.9rem, 4.8vw, 2.5rem); /* ✅ يكبر حسب حجم الشاشة */
+    font-weight: 800;
+    color: var(--primary);
+    letter-spacing: 0.3px;
+}
+
+
 
         .system-badge {
             display: inline-block;
@@ -186,15 +194,16 @@
 
         .input-group { margin-bottom: 12px; }
         .input-group label {
-            display: block;
-            font-size: 0.9rem;          /* ⬅️ كان 0.8 */
-            color: #334155;
-            margin-bottom: 6px;
-            font-weight: 800;          /* أوضح */
-            background: #f0f7f9;
-            padding: 6px 12px;         /* أكبر شوي */
-            border-right: 3px solid var(--secondary);
-        }
+    display: block;
+    font-size: 0.9rem;          /* ⬅️ كان 0.8 */
+    color: #334155;
+    margin-bottom: 6px;
+    font-weight: 800;          /* أوضح */
+    background: #f0f7f9;
+    padding: 6px 12px;         /* أكبر شوي */
+    border-right: 3px solid var(--secondary);
+}
+
 
         select, input {
             width: 100%;
@@ -214,35 +223,35 @@
         .flex-inputs > div { flex: 1; }
 
         .input-sub-label {
-            font-size: 0.8rem;
-            color: #666;
-            margin-bottom: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 2px;
-            font-weight: 600;
-        }
+    font-size: 0.8rem;
+    color: #666;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    font-weight: 600;
+}
 
         .hint-icon {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 16px;
-            height: 16px;
-            background: #0EA5E9;
-            color: white;
-            border-radius: 50%;
-            font-size: 0.75rem;
-            margin-right: 6px;
-            cursor: pointer;
-            font-weight: 900;
-            vertical-align: middle;
-            box-shadow: 0 6px 14px rgba(14,165,233,0.22);
-            transition: transform 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    background: #0EA5E9;
+    color: white;
+    border-radius: 50%;
+    font-size: 0.75rem;
+    margin-right: 6px;
+    cursor: pointer;
+    font-weight: 900;
+    vertical-align: middle;
+    box-shadow: 0 6px 14px rgba(14,165,233,0.22);
+    transition: transform 0.15s ease;
 
-            order: 2;   /* 👈 أضيفي هذا */
-        }
+    order: 2;   /* 👈 أضيفي هذا */
+}
         .hint-icon:active { transform: translateY(1px) scale(0.98); }
 
         .info-icon {
@@ -457,21 +466,7 @@
         <div class="college-logo"><img src="TVTC_identity.png" alt="Logo"></div>
         <div class="header-text">
             <h1>حاسبة الغياب الذكية</h1>
-
-            <!-- ✅ نظام 15/16 أسبوع -->
-            <div class="system-badge" style="display:flex; gap:10px; align-items:center; justify-content:center; flex-wrap:wrap;">
-                <span id="termBadgeText">نظام 16 أسبوعًا (20% حرمان)</span>
-
-                <span style="display:inline-flex; align-items:center; gap:8px; background:#ffffff; border:1px solid #cfe7ef; padding:4px 10px; border-radius:999px;">
-                    <span style="font-size:0.75rem; font-weight:900; color:var(--primary);">عدد الأسابيع</span>
-                    <select id="termWeeksSelect"
-                            onchange="setTermWeeks(this.value)"
-                            style="width:auto; padding:6px 10px; border-radius:999px; border:1px solid #dbeafe; font-weight:900; font-size:0.8rem;">
-                        <option value="16">16</option>
-                        <option value="15">15</option>
-                    </select>
-                </span>
-            </div>
+            <span class="system-badge">نظام 16 أسبوعًا (20% حرمان)</span>
         </div>
     </header>
 
@@ -485,43 +480,26 @@
     <footer class="footer-note">
         <div style="display:flex; flex-direction:column; align-items:center; justify-content:center;">
             <p style="font-weight:bold; color:var(--primary); margin:0;">
-                تصميم وتطوير: أ. نورة القثامي
-            </p>
+تصميم وتطوير: أ. نورة القثامي
+</p>
 
-            <p style="margin:4px 0; font-size:0.75rem; color:#555;">
-                الكلية التقنية الرقمية للبنات بتبوك — قسم الحاسب وتقنية المعلومات
-            </p>
-            <p style="margin:2px 0; font-size:0.7rem; color:#777;">
-                1447هـ | 2026م
-            </p>
+<p style="margin:4px 0; font-size:0.75rem; color:#555;">
+الكلية التقنية الرقمية للبنات بتبوك — قسم الحاسب وتقنية المعلومات
+</p>
+<p style="margin:2px 0; font-size:0.7rem; color:#777;">
+1447هـ | 2026م
+</p>
 
-            <a href="mailto:norah.a@tvtc.gov.sa"
-               style="text-decoration:none; color:#006699; font-size:0.8rem; cursor:pointer;">
-                📧 norah.a@tvtc.gov.sa
-            </a>
+<a href="mailto:norah.a@tvtc.gov.sa"
+   style="text-decoration:none; color:#006699; font-size:0.8rem; cursor:pointer;">
+📧 norah.a@tvtc.gov.sa
+</a>
         </div>
     </footer>
 </div>
 
 <script>
     let courses = JSON.parse(localStorage.getItem('myCourses')) || [];
-
-    // ✅ عدد أسابيع الترم (15 أو 16) مع حفظه في التخزين المحلي
-    let termWeeks = parseInt(localStorage.getItem('termWeeks') || '16', 10);
-
-    function setTermWeeks(v) {
-        termWeeks = parseInt(v, 10) || 16;
-        localStorage.setItem('termWeeks', String(termWeeks));
-        updateTermBadge();
-        renderCourses();
-    }
-
-    function updateTermBadge() {
-        const el = document.getElementById('termBadgeText');
-        const sel = document.getElementById('termWeeksSelect');
-        if (el) el.textContent = `نظام ${termWeeks} أسبوعًا (20% حرمان)`;
-        if (sel) sel.value = String(termWeeks);
-    }
 
     // ✅ تحديث دالة صيغة كلمة (ساعة/ساعات)
     function hourWord(n) {
@@ -593,13 +571,12 @@
         });
     }
 
-    // ✅ تحديث المعادلة لتستخدم termWeeks بدل 16
     function openLimitInfo(weeklyH, limit) {
         const fixed = Number(limit).toFixed(1);
         const text = `
             <div>📘 طريقة حساب ساعات الحرمان لهذا المقرر:</div>
             <div class="formula-line" style="margin-top:10px;">
-                ( <span class="num">${weeklyH}</span> ساعات أسبوعياً × <span class="num">${termWeeks}</span> أسبوع ) × <span class="num">20%</span>
+                ( <span class="num">${weeklyH}</span> ساعات أسبوعياً × <span class="num">16</span> أسبوع ) × <span class="num">20%</span>
                 = <span class="num">${fixed}</span> ساعة
             </div>
         `;
@@ -607,227 +584,228 @@
     }
 
     function renderCourses() {
-        const list = document.getElementById('coursesList');
-        list.innerHTML = '';
+    const list = document.getElementById('coursesList');
+    list.innerHTML = '';
 
-        const EPS = 1e-9; // لتفادي مشاكل الكسور العشرية
+    const EPS = 1e-9; // لتفادي مشاكل الكسور العشرية
 
-        // تنسيق رقم: 18 -> "18" ، 19.2 -> "19.2"
-        function fmt(n, digits = 1) {
-            const x = Number(n);
-            if (!Number.isFinite(x)) return '0';
-            return x.toFixed(digits).replace(/\.0+$/, '');
+    // تنسيق رقم: 18 -> "18" ، 19.2 -> "19.2"
+    function fmt(n, digits = 1) {
+        const x = Number(n);
+        if (!Number.isFinite(x)) return '0';
+        return x.toFixed(digits).replace(/\.0+$/, '');
+    }
+
+    courses.forEach(course => {
+        const weeklyH = parseFloat(course.weeklyHours) || 0;
+        const totalHours = weeklyH * 16;
+        const limit = totalHours * 0.20;
+
+        const a1 = parseFloat(course.absent1) || 0;     // (ساعة)
+        const a2 = parseFloat(course.absent2) || 0;     // (ساعتين)
+        const currentAbsent = a1 + (a2 * 2);
+
+        const percent = totalHours ? (currentAbsent / totalHours) * 100 : 0;
+        const remainingRaw = limit - currentAbsent; // قد يكون 1.2 مثلاً
+
+        // ===== الحالة العامة =====
+        let statusClass = 'safe-bg',
+            statusColor = 'var(--safe)',
+            msg = '🟢 وضعك آمن ومستقر',
+            infoIconClass = '';
+
+        // ✅ حرمان مباشرة عند 20% أو أكثر
+        if (currentAbsent + EPS >= limit) {
+            statusClass = 'danger-bg';
+            statusColor = 'var(--danger)';
+            msg = '🔴 حالة حرمان';
+            infoIconClass = 'danger';
+        } else if (percent >= 15) {
+            statusClass = 'warning-bg';
+            statusColor = 'var(--orange)';
+            msg = '🟠 تنبيه: اقتربت من الحرمان';
+            infoIconClass = 'warn';
+        } else if (percent >= 10) {
+            statusClass = 'warning-bg';
+            statusColor = 'var(--warning)';
+            msg = '🟡 انتباه: بدأ رصيدك بالنقصان';
+            infoIconClass = 'warn';
         }
 
-        courses.forEach(course => {
-            const weeklyH = parseFloat(course.weeklyHours) || 0;
+        // ===== منطق التحذير القادم =====
+        // في (2/4/6) الغياب المسجل يكون "ساعتين" عادةً
+        // في (1/3/5) يوجد غياب "ساعة" أيضاً
+        let nextStep = 1;            // أقل غياب قادم
+        let nextStepLabel = '(ساعة أو ساعتين)';
 
-            // ✅ بدل 16: استخدم termWeeks
-            const totalHours = weeklyH * termWeeks;
-            const limit = totalHours * 0.20;
+        if (weeklyH === 2 || weeklyH === 4 || weeklyH === 6) {
+            nextStep = 2;
+            nextStepLabel = '(ساعتين)';
+        } else if (weeklyH === 1) {
+            nextStep = 1;
+            nextStepLabel = '(ساعة)';
+        } else {
+            // 3 أو 5
+            nextStep = 1;
+            nextStepLabel = '(ساعة أو ساعتين)';
+        }
 
-            const a1 = parseFloat(course.absent1) || 0;     // (ساعة)
-            const a2 = parseFloat(course.absent2) || 0;     // (ساعتين)
-            const currentAbsent = a1 + (a2 * 2);
+        // ===== بناء نص "متبقي لك" =====
+        let advice = '';
 
-            const percent = totalHours ? (currentAbsent / totalHours) * 100 : 0;
-            const remainingRaw = limit - currentAbsent; // قد يكون 1.2 مثلاً
+        // لو حرمان: نعرض رسالة واحدة فقط واضحة
+        if (currentAbsent + EPS >= limit) {
+            advice = `<div class="advice-box" style="color:#dc2626; font-weight:900;">
+                        تجاوزتِ الحد المسموح (${fmt(limit,1)} ${hourWord(limit)})
+                      </div>`;
+        } else {
+            // ما زال تحت الحرمان
+            const remInt = Math.max(0, Math.floor(remainingRaw)); // ساعات صحيحة للعرض
+            let detail = '';
 
-            // ===== الحالة العامة =====
-            let statusClass = 'safe-bg',
-                statusColor = 'var(--safe)',
-                msg = '🟢 وضعك آمن ومستقر',
-                infoIconClass = '';
+            // ===== توزيع التفاصيل حسب نوع المقرر =====
 
-            // ✅ حرمان مباشرة عند 20% أو أكثر
-            if (currentAbsent + EPS >= limit) {
-                statusClass = 'danger-bg';
-                statusColor = 'var(--danger)';
-                msg = '🔴 حالة حرمان';
-                infoIconClass = 'danger';
-            } else if (percent >= 15) {
-                statusClass = 'warning-bg';
-                statusColor = 'var(--orange)';
-                msg = '🟠 تنبيه: اقتربت من الحرمان';
-                infoIconClass = 'warn';
-            } else if (percent >= 10) {
-                statusClass = 'warning-bg';
-                statusColor = 'var(--warning)';
-                msg = '🟡 انتباه: بدأ رصيدك بالنقصان';
-                infoIconClass = 'warn';
-            }
+            // 1 ساعة: كل ساعة = محاضرة
+            if (weeklyH === 1) {
+                detail = getLectureText(remInt);
 
-            // ===== منطق التحذير القادم =====
-            // في (2/4/6) الغياب المسجل يكون "ساعتين" عادةً
-            // في (1/3/5) يوجد غياب "ساعة" أيضاً
-            let nextStep = 1;            // أقل غياب قادم
-            let nextStepLabel = '(ساعة أو ساعتين)';
+            // 2 أو 4 أو 6 ساعات: (ساعتين)
+            } else if (weeklyH === 2 || weeklyH === 4 || weeklyH === 6) {
+                const lec2 = Math.floor(remInt / 2);
+                const extra1 = remInt % 2;
 
-            if (weeklyH === 2 || weeklyH === 4 || weeklyH === 6) {
-                nextStep = 2;
-                nextStepLabel = '(ساعتين)';
-            } else if (weeklyH === 1) {
-                nextStep = 1;
-                nextStepLabel = '(ساعة)';
-            } else {
-                // 3 أو 5
-                nextStep = 1;
-                nextStepLabel = '(ساعة أو ساعتين)';
-            }
+                if (lec2 > 0) detail = `${getLectureText(lec2)} (ساعتين)`;
+                // لو بقيت ساعة "حسابياً" نعرضها كساعة (بدون محاضرة) لأنها لا تُسجّل كمحاضرة غالباً
+                if (extra1 > 0) {
+                    detail = detail ? `${detail} و <b>1</b> ساعة` : `<b>1</b> ساعة`;
+                }
 
-            // ===== بناء نص "متبقي لك" =====
-            let advice = '';
+            // 3 أو 5 ساعات: (ساعتين + ساعة) مثل بعض
+            } else if (weeklyH === 3 || weeklyH === 5) {
+                const lec2 = Math.floor(remInt / 2);
+                const lec1 = remInt % 2;
 
-            // لو حرمان: نعرض رسالة واحدة فقط واضحة
-            if (currentAbsent + EPS >= limit) {
-                advice = `<div class="advice-box" style="color:#dc2626; font-weight:900;">
-                            تجاوزتِ الحد المسموح (${fmt(limit,1)} ${hourWord(limit)})
-                          </div>`;
-            } else {
-                // ما زال تحت الحرمان
-                const remInt = Math.max(0, Math.floor(remainingRaw)); // ساعات صحيحة للعرض
-                let detail = '';
-
-                // ===== توزيع التفاصيل حسب نوع المقرر =====
-
-                // 1 ساعة: كل ساعة = محاضرة
-                if (weeklyH === 1) {
-                    detail = getLectureText(remInt);
-
-                // 2 أو 4 أو 6 ساعات: (ساعتين)
-                } else if (weeklyH === 2 || weeklyH === 4 || weeklyH === 6) {
-                    const lec2 = Math.floor(remInt / 2);
-                    const extra1 = remInt % 2;
-
-                    if (lec2 > 0) detail = `${getLectureText(lec2)} (ساعتين)`;
-                    // لو بقيت ساعة "حسابياً" نعرضها كساعة (بدون محاضرة) لأنها لا تُسجّل كمحاضرة غالباً
-                    if (extra1 > 0) {
-                        detail = detail ? `${detail} و <b>1</b> ساعة` : `<b>1</b> ساعة`;
-                    }
-
-                // 3 أو 5 ساعات: (ساعتين + ساعة)
-                } else if (weeklyH === 3 || weeklyH === 5) {
-                    const lec2 = Math.floor(remInt / 2);
-                    const lec1 = remInt % 2;
-
-                    if (lec2 > 0 && lec1 > 0) {
-                        detail = `${getLectureText(lec2)} (ساعتين) و ${getLectureText(lec1)} (ساعة)`;
-                    } else if (lec2 > 0) {
-                        detail = `${getLectureText(lec2)} (ساعتين)`;
-                    } else if (lec1 > 0) {
-                        detail = `${getLectureText(lec1)} (ساعة)`;
-                    } else {
-                        detail = '';
-                    }
-
+                if (lec2 > 0 && lec1 > 0) {
+                    detail = `${getLectureText(lec2)} (ساعتين) و ${getLectureText(lec1)} (ساعة)`;
+                } else if (lec2 > 0) {
+                    detail = `${getLectureText(lec2)} (ساعتين)`;
+                } else if (lec1 > 0) {
+                    detail = `${getLectureText(lec1)} (ساعة)`;
                 } else {
-                    // احتياط
                     detail = '';
                 }
 
-                // ===== رسائل المتبقي / التحذير =====
-                if (remainingRaw <= EPS) {
-                    advice = `<div class="advice-box" style="color:var(--danger); font-weight:900;">
-                                لم يتبقَّ لك رصيد غياب
-                              </div>`;
-
-                } else if (remainingRaw < nextStep - EPS) {
-                    advice = `
-                        <div class="advice-box">
-                            متبقي لك <b>${fmt(remInt,0)}</b> ${hourWord(remInt)}${detail ? `: ${detail}` : ''}
-                            <div style="margin-top:4px; color:var(--danger); font-weight:700; font-size:0.7rem;">
-                               ⚠️ أي غياب قادم سيؤدي إلى الحرمان
-                            </div>
-                        </div>
-                    `;
-
-                } else {
-                    advice = `<div class="advice-box">
-                                متبقي لك <b>${fmt(remInt,0)}</b> ${hourWord(remInt)}${detail ? `: ${detail}` : ''}
-                              </div>`;
-                }
+            } else {
+                // احتياط
+                detail = '';
             }
 
-            const isComplexType = (weeklyH === 3 || weeklyH === 5);
-            const showAbsent2 = (weeklyH >= 2);
-            const showAbsent1 = (weeklyH === 1 || weeklyH === 3 || weeklyH === 5);
+            // ===== رسائل المتبقي / التحذير =====
+            // لا يوجد رصيد فعلي
+            if (remainingRaw <= EPS) {
+                advice = `<div class="advice-box" style="color:var(--danger); font-weight:900;">
+                            لم يتبقَّ لك رصيد غياب
+                          </div>`;
 
-            const card = document.createElement('div');
-            card.className = 'course-card';
+            // ✅ الحالة المطلوبة: المتبقي أقل من أقل غياب قادم (مثلاً 1.2 في 6 ساعات)
+            } else if (remainingRaw < nextStep - EPS) {
+                advice = `
+                    <div class="advice-box">
+                        متبقي لك <b>${fmt(remInt,0)}</b> ${hourWord(remInt)}${detail ? `: ${detail}` : ''}
+                        <div style="margin-top:4px; color:var(--danger); font-weight:700; font-size:0.7rem;">
+                           ⚠️ أي غياب قادم سيؤدي إلى الحرمان
+                        </div>
+                    </div>
+                `;
 
-            card.innerHTML = `
-                <button class="delete-course" onclick="deleteCourse(${course.id})">✕</button>
+            // طبيعي: يوجد رصيد كافي
+            } else {
+                advice = `<div class="advice-box">
+                            متبقي لك <b>${fmt(remInt,0)}</b> ${hourWord(remInt)}${detail ? `: ${detail}` : ''}
+                          </div>`;
+            }
+        }
 
-                <input type="text" class="course-title"
-                    value="${course.name}"
-                    onchange="updateCourse(${course.id}, 'name', this.value)">
+        const isComplexType = (weeklyH === 3 || weeklyH === 5);
+        const showAbsent2 = (weeklyH >= 2);
+        const showAbsent1 = (weeklyH === 1 || weeklyH === 3 || weeklyH === 5);
 
-                <div class="input-group">
-                    <label>عدد الساعات الأسبوعية للمقرر</label>
-                    <select onchange="updateCourse(${course.id}, 'weeklyHours', this.value)">
-                        ${[1,2,3,4,5,6].map(h => {
-                            const label = (h <= 2) ? 'ساعة' : 'ساعات';
-                            return `<option value="${h}" ${course.weeklyHours == h ? 'selected' : ''}>${h} ${label}</option>`;
-                        }).join('')}
-                    </select>
+        const card = document.createElement('div');
+        card.className = 'course-card';
+
+        card.innerHTML = `
+            <button class="delete-course" onclick="deleteCourse(${course.id})">✕</button>
+
+            <input type="text" class="course-title"
+                value="${course.name}"
+                onchange="updateCourse(${course.id}, 'name', this.value)">
+
+            <div class="input-group">
+                <label>عدد الساعات الأسبوعية للمقرر</label>
+                <select onchange="updateCourse(${course.id}, 'weeklyHours', this.value)">
+                    ${[1,2,3,4,5,6].map(h => {
+                        const label = (h <= 2) ? 'ساعة' : 'ساعات';
+                        return `<option value="${h}" ${course.weeklyHours == h ? 'selected' : ''}>${h} ${label}</option>`;
+                    }).join('')}
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>عدد مرات الغياب <small style="color:#777;">(المُسجّلة بنظام رايات)</small></label>
+
+                <div class="flex-inputs">
+                    ${showAbsent2 ? `<div>
+                        ${isComplexType ? `<span class="input-sub-label">
+                            <span class="hint-icon" onclick="openHintTwoHours()">?</span>
+                            محاضرة (فئة ساعتين)
+                        </span>` : ''}
+                        <input type="text" inputmode="numeric"
+                            value="${course.absent2}" placeholder="0"
+                            oninput="handleInput(${course.id}, 'absent2', this)">
+                    </div>` : ''}
+
+                    ${showAbsent1 ? `<div>
+                        ${isComplexType ? `<span class="input-sub-label">
+                            <span class="hint-icon" onclick="openHintOneHour()">?</span>
+                            محاضرة (فئة ساعة)
+                        </span>` : ''}
+                        <input type="text" inputmode="numeric"
+                            value="${course.absent1}" placeholder="0"
+                            oninput="handleInput(${course.id}, 'absent1', this)">
+                    </div>` : ''}
+                </div>
+            </div>
+
+            <div class="result-area ${statusClass}">
+                <div style="font-size:0.95rem; font-weight:800; color:${statusColor}; margin-bottom:10px;">${msg}</div>
+
+                <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:5px;">
+                    <span style="font-size:1.8rem; font-weight:900; color:var(--primary);">${fmt(percent,1)}%</span>
+                    <span style="font-size:0.85rem; color:#718096; font-weight:bold;">من أصل 20%</span>
                 </div>
 
-                <div class="input-group">
-                    <label>عدد مرات الغياب <small style="color:#777;">(المُسجّلة بنظام رايات)</small></label>
-
-                    <div class="flex-inputs">
-                        ${showAbsent2 ? `<div>
-                            ${isComplexType ? `<span class="input-sub-label">
-                                <span class="hint-icon" onclick="openHintTwoHours()">?</span>
-                                محاضرة (فئة ساعتين)
-                            </span>` : ''}
-                            <input type="text" inputmode="numeric"
-                                value="${course.absent2}" placeholder="0"
-                                oninput="handleInput(${course.id}, 'absent2', this)">
-                        </div>` : ''}
-
-                        ${showAbsent1 ? `<div>
-                            ${isComplexType ? `<span class="input-sub-label">
-                                <span class="hint-icon" onclick="openHintOneHour()">?</span>
-                                محاضرة (فئة ساعة)
-                            </span>` : ''}
-                            <input type="text" inputmode="numeric"
-                                value="${course.absent1}" placeholder="0"
-                                oninput="handleInput(${course.id}, 'absent1', this)">
-                        </div>` : ''}
-                    </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width:${Math.min((percent/20)*100, 100)}%; background:${statusColor}"></div>
                 </div>
 
-                <div class="result-area ${statusClass}">
-                    <div style="font-size:0.95rem; font-weight:800; color:${statusColor}; margin-bottom:10px;">${msg}</div>
+                <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#555; font-weight:700; margin-top:5px;">
+                    <span>غيابك الحالي: ${fmt(currentAbsent,1)} ${hourWord(currentAbsent)}</span>
 
-                    <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:5px;">
-                        <span style="font-size:1.8rem; font-weight:900; color:var(--primary);">${fmt(percent,1)}%</span>
-                        <span style="font-size:0.85rem; color:#718096; font-weight:bold;">من أصل 20%</span>
-                    </div>
-
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width:${Math.min((percent/20)*100, 100)}%; background:${statusColor}"></div>
-                    </div>
-
-                    <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#555; font-weight:700; margin-top:5px;">
-                        <span>غيابك الحالي: ${fmt(currentAbsent,1)} ${hourWord(currentAbsent)}</span>
-
-                        <span>
-                            حد الحرمان: ${fmt(limit,1)} ${hourWord(limit)}
-                            <span class="info-icon ${infoIconClass}" onclick="openLimitInfo(${weeklyH}, ${limit})">i</span>
-                        </span>
-                    </div>
-
-                    ${advice}
+                    <span>
+                        حد الحرمان: ${fmt(limit,1)} ${hourWord(limit)}
+                        <span class="info-icon ${infoIconClass}" onclick="openLimitInfo(${weeklyH}, ${limit})">i</span>
+                    </span>
                 </div>
-            `;
 
-            list.appendChild(card);
-        });
+                ${advice}
+            </div>
+        `;
 
-        localStorage.setItem('myCourses', JSON.stringify(courses));
-    }
+        list.appendChild(card);
+    });
+
+    localStorage.setItem('myCourses', JSON.stringify(courses));
+}
 
     function handleInput(id, field, el) { el.value = fixNumbers(el.value); updateCourse(id, field, el.value); }
     function updateCourse(id, field, value) {
@@ -841,11 +819,7 @@
     function deleteCourse(id) { if (confirm('حذف المقرر؟')) { courses = courses.filter(c => c.id !== id); renderCourses(); } }
     function clearEverything() { if (confirm('إعادة ضبط كافة البيانات؟')) { courses = []; localStorage.removeItem('myCourses'); renderCourses(); } }
 
-    // ✅ تشغيل الشارة + الاختيار قبل رسم المقررات
-    window.onload = () => {
-        updateTermBadge();
-        renderCourses();
-    };
+    window.onload = renderCourses;
 </script>
 </body>
 </html>
