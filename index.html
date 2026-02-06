@@ -648,10 +648,15 @@ function countDayOccurrences(dayName){
     }
 
     function fixNumbers(str) {
-        return String(str || '')
-            .replace(/[٠-٩]/g, function(d) { return d.charCodeAt(0) - 1632; })
-            .replace(/[^\d.]/g, '');
-    }
+  return String(str || '')
+    // Arabic-Indic ٠١٢٣٤٥٦٧٨٩
+    .replace(/[٠-٩]/g, d => String(d.charCodeAt(0) - 1632))
+    // Eastern Arabic-Indic ۰۱۲۳۴۵۶۷۸۹
+    .replace(/[۰-۹]/g, d => String(d.charCodeAt(0) - 1776))
+    // اترك أرقام فقط
+    .replace(/[^\d]/g, '');
+}
+
 
     function addNewCourse() {
   courses.push({
@@ -1007,11 +1012,11 @@ let detail = detailParts.join(' + ');
 
           <div>
             <div class="input-sub-label">عدد مرات الغياب</div>
-            <input type="number" min="0" step="1"
+            <input type="text" inputmode="numeric" pattern="[0-9]*"
   value="${m.absent ?? ''}" placeholder="0"
-
   oninput="this.value = fixNumbers(this.value)"
   onchange="updateMeeting(${course.id}, ${idx}, 'absent', this.value)">
+
 
 
           </div>
