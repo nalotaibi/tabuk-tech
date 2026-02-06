@@ -834,6 +834,13 @@ function updateMeeting(courseId, idx, field, value){
     const currentAbsent = cleanMeetings.reduce((s, m) => s + (m.absent * m.dur), 0);
 
     const percent = totalHours ? (currentAbsent / totalHours) * 100 : 0;
+      // عدد الغيابات (للأنظمة ذات ساعة أو ساعتين فقط)
+const is12Only = cleanMeetings.every(m => m.dur === 1 || m.dur === 2)
+               && !cleanMeetings.some(m => m.dur !== 1 && m.dur !== 2);
+
+// عدد مرات الغياب الإجمالية (بدون تحويل لساعات)
+const totalAbsences = cleanMeetings.reduce((s,m)=> s + m.absent, 0);
+
 
     // أقل غياب قادم محتمل = أقل مدة موجودة (1 أو 2)
     const minDur = cleanMeetings.length ? Math.min(...cleanMeetings.map(m => m.dur)) : 1;
@@ -847,21 +854,38 @@ function updateMeeting(courseId, idx, field, value){
       infoIconClass = '';
 
     if (currentAbsent + EPS >= limit) {
-      statusClass = 'danger-bg';
-      statusColor = 'var(--danger)';
-      msg = '🔴 حالة حرمان';
-      infoIconClass = 'danger';
-    } else if (percent >= 15 || (limit - currentAbsent) <= (minDur * 2 + EPS)) {
-      statusClass = 'warning-bg';
-      statusColor = 'var(--orange)';
-      msg = '🟠 تنبيه: اقتربت من الحرمان';
-      infoIconClass = 'warn';
-    } else if (percent >= 10) {
-      statusClass = 'warning-bg';
-      statusColor = 'var(--warning)';
-      msg = '🟡 انتباه: بدأ رصيدك بالنقصان';
-      infoIconClass = 'warn';
-    }
+  statusClass = 'danger-bg';
+  statusColor = 'var(--danger)';
+  msg = '🔴 حالة حرمان';
+  infoIconClass = 'danger';
+
+// ✅ حالة خاصة: مقررات ساعة / ساعتين
+} else if (is12Only && totalAbsences >= 3) {
+  statusClass = 'warning-bg';
+  statusColor = 'var(--orange)';
+  msg = '🟠 تنبيه: اقتربت من الحرمان';
+  infoIconClass = 'warn';
+
+} else if (is12Only && totalAbsences >= 2) {
+  statusClass = 'warning-bg';
+  statusColor = 'var(--warning)';
+  msg = '🟡 انتباه: بدأ رصيدك بالنقصان';
+  infoIconClass = 'warn';
+
+// ✅ باقي المقررات (3 و 5 وما شابه)
+} else if (percent >= 15 || (limit - currentAbsent) <= (minDur * 2 + EPS)) {
+  statusClass = 'warning-bg';
+  statusColor = 'var(--orange)';
+  msg = '🟠 تنبيه: اقتربت من الحرمان';
+  infoIconClass = 'warn';
+
+} else if (percent >= 10) {
+  statusClass = 'warning-bg';
+  statusColor = 'var(--warning)';
+  msg = '🟡 انتباه: بدأ رصيدك بالنقصان';
+  infoIconClass = 'warn';
+}
+
 
     // ==================
     // ✅ صندوق النص (متبقي/تحذير)
