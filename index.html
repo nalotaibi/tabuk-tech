@@ -972,7 +972,7 @@ function updateMeeting(courseId, idx, field, value){
           <div>
             <div class="input-sub-label">اليوم</div>
             <select onchange="updateMeeting(${course.id}, ${idx}, 'day', this.value)">
-              ${['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'].map(d =>
+              ${['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس'].map(d =>
                 `<option value="${d}" ${(m.day === d) ? 'selected' : ''}>${d}</option>`
               ).join('')}
             </select>
