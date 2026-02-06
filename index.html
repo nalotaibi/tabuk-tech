@@ -326,57 +326,6 @@
     font-weight: 900;
 }
 
-        /* صندوق اختيار النظام */
-.weeks-select {
-    padding: 6px 12px;
-    border-radius: 12px;
-    border: 1px solid #cfe3ea;
-    font-weight: 800;
-    color: var(--primary);
-    background: #ffffff;
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    padding-left: 34px;   /* مساحة للسهم */
-}
-
-/* غلاف السهم */
-.weeks-wrap {
-    display: inline-block;
-    position: relative;
-}
-
-.weeks-wrap::after {
-    content: "▾";
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-weight: 900;
-    pointer-events: none;
-    color: inherit;
-}
-
-
-.system-16 {
-    background: #ecfdf5;
-    color: #047857;
-    border-color: #86efac;
-}
-
-.system-15 {
-    background: #e0f2fe;
-    color: #0369a1;
-    border-color: #7dd3fc;
-}
-
-
-/* ألوان الخيارات داخل القائمة */
-.weeks-select option {
-    color: #0f172a;
-    background: #ffffff;
-}
-
 
         /* ===== Info Modal (موحّد للجميع) ===== */
         .info-overlay{
@@ -541,13 +490,6 @@
         <div class="college-logo"><img src="TVTC_identity.png" alt="Logo"></div>
         <div class="header-text">
             <h1>حاسبة الغياب الذكية</h1>
-            <div class="weeks-wrap" style="margin-top:10px;">
-    <select id="weeksSelect" class="weeks-select" onchange="changeWeeks(this.value)">
-        <option value="16" selected>نظام 16 أسبوعًا</option>
-        <option value="15">نظام 15 أسبوعًا</option>
-    </select>
-</div>
-
 
         </div>
     </header>
@@ -585,10 +527,81 @@
 
 <script>
     let courses = JSON.parse(localStorage.getItem('myCourses')) || [];
-    let selectedWeeks = parseInt(localStorage.getItem('selectedWeeks')) || 16;
+    const selectedWeeks = 16; // 🔒 ثابت (للتوافق فقط) — الحساب صار بالتقويم الحقيقي
 
     // مساعد: جلب عنصر بأمان
     function $(id){ return document.getElementById(id); }
+    // ==================
+// ✅ التقويم الحقيقي (ثابت)
+// ==================
+const TERM_START = parseDMY('18-1-2026');
+const TERM_END   = parseDMY('21-5-2026');
+
+// الإجازات الرسمية (تواريخ تُحذف بالكامل)
+const HOLIDAYS = new Set([
+  '22-2-2026',
+  '22-3-2026',
+  '23-3-2026',
+  '24-3-2026'
+].map(normDMYKey));
+
+// فجوة خارج التدريب (شاملة البداية والنهاية)
+const GAP_START = parseDMY('6-3-2026');
+const GAP_END   = parseDMY('21-3-2026');
+
+const WEEKDAY_INDEX = {
+  'الأحد': 0,
+  'الاثنين': 1,
+  'الثلاثاء': 2,
+  'الأربعاء': 3,
+  'الخميس': 4,
+  'الجمعة': 5,
+  'السبت': 6
+};
+
+function parseDMY(dmy){
+  // dmy: "18-1-2026" أو "18-01-2026"
+  const [d,m,y] = String(dmy).split('-').map(Number);
+  return new Date(y, (m||1)-1, d||1, 12, 0, 0); // 12:00 لتفادي مشاكل DST
+}
+
+function normDMYKey(dmy){
+  const [d,m,y] = String(dmy).split('-').map(Number);
+  return `${d}-${m}-${y}`;
+}
+
+function dateToDMYKey(dt){
+  return `${dt.getDate()}-${dt.getMonth()+1}-${dt.getFullYear()}`;
+}
+
+function inRange(dt, a, b){
+  const t = dt.getTime();
+  return t >= a.getTime() && t <= b.getTime();
+}
+
+function isExcludedDate(dt){
+  const key = dateToDMYKey(dt);
+  if (HOLIDAYS.has(key)) return true;
+  if (inRange(dt, GAP_START, GAP_END)) return true;
+  return false;
+}
+
+// عدّ كم مرة يتكرر يوم (مثل الأحد) داخل الترم فعليًا بعد حذف الإجازات والفجوة
+function countDayOccurrences(dayName){
+  const target = WEEKDAY_INDEX[dayName];
+  if (target === undefined) return 0;
+
+  let count = 0;
+  const cur = new Date(TERM_START.getTime());
+
+  // نتحرك يوم-بيوم
+  while (cur.getTime() <= TERM_END.getTime()){
+    if (cur.getDay() === target && !isExcludedDate(cur)) count++;
+    cur.setDate(cur.getDate() + 1);
+  }
+  return count;
+}
+
 
     //  تحديث دالة صيغة كلمة (ساعة/ساعات)
     function hourWord(n) {
@@ -631,21 +644,17 @@
     }
 
     function addNewCourse() {
-        courses.push({ id: Date.now(), name: 'اسم المقرر', weeklyHours: 4, absent1: '', absent2: '' });
-        renderCourses();
-    }
-
-    function changeWeeks(w) {
-    selectedWeeks = parseInt(w);
-    localStorage.setItem('selectedWeeks', selectedWeeks);
-
-    const sel = document.getElementById('weeksSelect');
-    sel.classList.remove('system-15', 'system-16');
-    sel.classList.add(selectedWeeks === 15 ? 'system-15' : 'system-16');
-
+    courses.push({
+        id: Date.now(),
+        name: 'اسم المقرر',
+        meetings: [
+            { day: 'الأحد', dur: 2 }   // لقاء افتراضي
+        ],
+        absent1: '',
+        absent2: ''
+    });
     renderCourses();
 }
-
 
 
     function openInfoModal({title='معلومة', text='', formula='', badge='i'}) {
@@ -688,17 +697,75 @@
         });
     }
 
-    function openLimitInfo(weeklyH, limit) {
-        const fixed = Number(limit).toFixed(1);
-        const text = `
-            <div>📘 طريقة حساب ساعات الحرمان لهذا المقرر:</div>
-            <div class="formula-line" style="margin-top:10px;">
-                ( <span class="num">${weeklyH}</span> ساعات أسبوعياً × <span class="num">${selectedWeeks}</span> أسبوع ) × <span class="num">20%</span>
-                = <span class="num">${fixed}</span> ساعة
-            </div>
-        `;
-        openInfoModal({ title: 'طريقة الحساب', text, badge: 'i', formula: '' });
-    }
+   function openLimitInfo(weeklyH, totalHours, limit) {
+  const fixed = Number(limit).toFixed(1);
+  const text = `
+    <div>📘 صار الحساب مرتبط بالتقويم الحقيقي:</div>
+    <div style="margin-top:8px;">
+      • مجموع الساعات الأسبوعية (من اللقاءات): <b class="num">${weeklyH}</b><br>
+      • الساعات الفعلية في الترم (بعد حذف الإجازات والفجوة): <b class="num">${Number(totalHours).toFixed(1).replace(/\.0+$/,'')}</b> ساعة
+    </div>
+    <div class="formula-line" style="margin-top:10px;">
+      ( <span class="num">${Number(totalHours).toFixed(1).replace(/\.0+$/,'')}</span> ساعة ) × <span class="num">20%</span>
+      = <span class="num">${fixed}</span> ساعة
+    </div>
+  `;
+  openInfoModal({ title: 'طريقة الحساب', text, badge: 'i', formula: '' });
+}
+
+
+    function ensureMeetings(course){
+  if (!Array.isArray(course.meetings)) course.meetings = [];
+  course.meetings = course.meetings.slice(0,3);
+  if (course.meetings.length === 0) course.meetings.push({ day:'الأحد', dur:2 });
+}
+
+function addMeeting(courseId){
+  const i = courses.findIndex(c => c.id === courseId);
+  if (i === -1) return;
+  ensureMeetings(courses[i]);
+  if (courses[i].meetings.length >= 3) return;
+  courses[i].meetings.push({ day:'الاثنين', dur:1 });
+  renderCourses();
+}
+
+function removeMeeting(courseId){
+  const i = courses.findIndex(c => c.id === courseId);
+  if (i === -1) return;
+  ensureMeetings(courses[i]);
+  if (courses[i].meetings.length <= 1) return; // لقاء واحد على الأقل
+  courses[i].meetings.pop();
+
+  // إعادة ضبط الغياب إذا اختفى أحد الأنواع
+  const m = courses[i].meetings;
+  const has1 = m.some(x => Number(x.dur) === 1);
+  const has2 = m.some(x => Number(x.dur) === 2);
+  if (!has1) courses[i].absent1 = '';
+  if (!has2) courses[i].absent2 = '';
+
+  renderCourses();
+}
+
+function updateMeeting(courseId, idx, field, value){
+  const i = courses.findIndex(c => c.id === courseId);
+  if (i === -1) return;
+  ensureMeetings(courses[i]);
+
+  const m = courses[i].meetings[idx];
+  if (!m) return;
+
+  if (field === 'day') m.day = value;
+  if (field === 'dur') m.dur = Number(value) === 1 ? 1 : 2;
+
+  // إعادة ضبط الغياب إذا تغيرت الأنواع
+  const mm = courses[i].meetings;
+  const has1 = mm.some(x => Number(x.dur) === 1);
+  const has2 = mm.some(x => Number(x.dur) === 2);
+  if (!has1) courses[i].absent1 = '';
+  if (!has2) courses[i].absent2 = '';
+
+  renderCourses();
+}
 
     function renderCourses() {
         const list = $('coursesList');
@@ -714,13 +781,44 @@
         }
 
         courses.forEach(course => {
-            const weeklyH = parseFloat(course.weeklyHours) || 0;
-            const totalHours = weeklyH * selectedWeeks;
-            const limit = totalHours * 0.20;
+            // ==================
+// ✅ اللقاءات الأسبوعية (حتى 3 لقاءات) + حساب الساعات الفعلية بالتقويم الحقيقي
+// ==================
+const meetings = Array.isArray(course.meetings) ? course.meetings.slice(0,3) : [];
 
-            const a1 = parseFloat(course.absent1) || 0;
-            const a2 = parseFloat(course.absent2) || 0;
-            const currentAbsent = a1 + (a2 * 2);
+// تنظيف/تطبيع
+const cleanMeetings = meetings
+  .filter(m => m && m.day && (Number(m.dur) === 1 || Number(m.dur) === 2))
+  .map(m => ({ day: m.day, dur: Number(m.dur) }));
+
+// مجموع الساعات الأسبوعية (للعرض فقط)
+const weeklyH = cleanMeetings.reduce((s,m)=> s + m.dur, 0);
+
+// عدّ اللقاءات الفعلية لكل يوم
+const dayCountCache = {};
+function dayCount(dayName){
+  if (dayCountCache[dayName] === undefined) dayCountCache[dayName] = countDayOccurrences(dayName);
+  return dayCountCache[dayName];
+}
+
+// الساعات الفعلية في الترم = مجموع (عدد لقاءات اليوم × مدة اللقاء)
+const totalHours = cleanMeetings.reduce((s,m)=> s + (dayCount(m.day) * m.dur), 0);
+
+// حد الحرمان 20%
+const limit = totalHours * 0.20;
+
+// الغياب من رايات حسب نوع اللقاء (ساعة/ساعتين)
+const has1 = cleanMeetings.some(m => m.dur === 1);
+const has2 = cleanMeetings.some(m => m.dur === 2);
+
+const a1 = parseFloat(course.absent1) || 0; // لقاءات (ساعة)
+const a2 = parseFloat(course.absent2) || 0; // لقاءات (ساعتين)
+
+// ساعات الغياب الفعلية
+const currentAbsent = (has1 ? a1 : 0) + (has2 ? (a2 * 2) : 0);
+
+const percent = totalHours ? (currentAbsent / totalHours) * 100 : 0;
+
 
             const percent = totalHours ? (currentAbsent / totalHours) * 100 : 0;
 
@@ -749,104 +847,105 @@
             // ===== بناء صندوق النص (advice) =====
 let advice = '';
 
-// لو حرمان: رسالة واحدة فقط
 if (currentAbsent + EPS >= limit) {
-    advice = `<div class="advice-box" style="color:#dc2626; font-weight:900;">
-                تجاوزتِ الحد المسموح (${fmt(limit,1)} ${hourWord(limit)})
-              </div>`;
+  advice = `<div class="advice-box" style="color:#dc2626; font-weight:900;">
+              تجاوزتِ الحد المسموح (${fmt(limit,1)} ${hourWord(limit)})
+            </div>`;
 } else {
-    const remainingSafeRaw = (limit - EPS) - currentAbsent;
-    const remIntSafe = Math.max(0, Math.floor(remainingSafeRaw));
-    const is246 = (weeklyH === 2 || weeklyH === 4 || weeklyH === 6);
+  const remainingSafeRaw = (limit - EPS) - currentAbsent;
 
-    // nextStep حسب نوع المقرر (بالساعات)
-    let nextStep = 1;
-    if (is246) nextStep = 2;
-    else if (weeklyH === 1 || weeklyH === 3) nextStep = 1;
-    else if (weeklyH === 5) nextStep = 2;
+  // أقل غياب قادم محتمل حسب جدول اللقاءات:
+  // إذا عنده لقاء ساعة → أقل غياب = 1
+  // إذا فقط لقاءات ساعتين → أقل غياب = 2
+  const nextStep = has1 ? 1 : 2;
 
-    // ✅ حل مشكلة 15 أسبوع فقط (للساعات 2/4/6):
-    // إذا المتبقي الصحيح أقل من ساعتين → لا نعرض "متبقي لك 1 ساعة" أبداً
-    // ونظهر فقط التحذير النهائي
-    if (selectedWeeks === 15 && is246 && remIntSafe < 2) {
-        advice = `
-            <div class="advice-box" style="color:var(--danger); font-weight:900; text-align:center;">
-                ⚠️ أي غياب قادم سيؤدي إلى الحرمان
-            </div>
-        `;
-    }
-    // ✅ قاعدة عامة: إذا وصلنا لمرحلة "أي غياب قادم = حرمان" → نعرض التحذير فقط (بدون متبقي)
-    else if (remainingSafeRaw <= EPS || remainingSafeRaw < nextStep - EPS) {
-        advice = `
-            <div class="advice-box" style="color:var(--danger); font-weight:900; text-align:center;">
-                ⚠️ أي غياب قادم سيؤدي إلى الحرمان
-            </div>
-        `;
+  if (remainingSafeRaw <= EPS || remainingSafeRaw < nextStep - EPS) {
+    advice = `
+      <div class="advice-box" style="color:var(--danger); font-weight:900; text-align:center;">
+        ⚠️ أي غياب قادم سيؤدي إلى الحرمان
+      </div>
+    `;
+  } else {
+    // المتبقي بالساعات (كعدد صحيح للعرض)
+    const remInt = Math.max(0, Math.floor(remainingSafeRaw));
+
+    // تحويل المتبقي إلى "عدد لقاءات" حسب النوع الموجود
+    const remMeet1 = has1 ? Math.floor(remainingSafeRaw / 1) : 0;
+    const remMeet2 = has2 ? Math.floor(remainingSafeRaw / 2) : 0;
+
+    let detail = '';
+    if (has1 && has2) {
+      detail = `${getLectureText(remMeet2)} (ساعتين) + ${getLectureText(remMeet1)} (ساعة)`;
+    } else if (has2) {
+      detail = `${getLectureText(remMeet2)} (ساعتين)`;
     } else {
-        // الوضع الطبيعي: نعرض "متبقي لك ..."
-        const remInt = remIntSafe;
-
-        // بناء التفاصيل (محاضرات)
-        let detail = '';
-
-        if (weeklyH === 1) {
-            // 1 ساعة: محاضرات = ساعات
-            detail = getLectureText(remInt);
-
-        } else if (is246) {
-            // 2/4/6: محاضرة = ساعتين
-            detail = getLectureText(Math.floor(remInt / 2));
-
-        } else if (weeklyH === 3) {
-            // 3 ساعات: (ساعتين + ساعة) — نخفي +0 إذا ما فيه ساعة
-            const twoH = Math.min(4, Math.floor(remInt / 2));
-            const oneH = (remInt - twoH * 2 >= 1) ? 1 : 0;
-            detail = oneH > 0
-    ? `<b class="primary-num">${twoH}</b> محاضرات (ساعتين) + <b class="primary-num">${oneH}</b> محاضرة (ساعة)`
-    : `<b class="primary-num">${twoH}</b> محاضرات (ساعتين)`;
-
-
-        } else if (weeklyH === 5) {
-            // 5 ساعات: نخفي +0 إذا ما فيه ساعة
-            const twoH = Math.min(7, Math.floor(remInt / 2));
-            const oneH = (remInt - twoH * 2 >= 1) ? 1 : 0;
-            detail = oneH > 0
-    ? `<b class="primary-num">${twoH}</b> محاضرات (ساعتين) + <b class="primary-num">${oneH}</b> محاضرة (ساعة)`
-    : `<b class="primary-num">${twoH}</b> محاضرات (ساعتين)`;
-
-        }
-
-        advice = `
-            <div class="advice-box">
-                متبقي لك <b>${fmt(remInt,0)}</b> ${hourWord(remInt)}${detail ? `: ${detail}` : ''}
-            </div>
-        `;
+      detail = `${getLectureText(remMeet1)} (ساعة)`;
     }
+
+    advice = `
+      <div class="advice-box">
+        متبقي لك <b>${fmt(remInt,0)}</b> ${hourWord(remInt)}${detail ? `: ${detail}` : ''}
+      </div>
+    `;
+  }
 }
 
-            const isComplexType = (weeklyH === 3 || weeklyH === 5);
-            const showAbsent2 = (weeklyH >= 2);
-            const showAbsent1 = (weeklyH === 1 || weeklyH === 3 || weeklyH === 5);
+            const isComplexType = (has1 && has2);
+const showAbsent1 = has1;
+const showAbsent2 = has2;
+
 
             const card = document.createElement('div');
             card.className = 'course-card';
 
             card.innerHTML = `
                 <button class="delete-course" onclick="deleteCourse(${course.id})">✕</button>
+                // تعبئة واجهة اللقاءات
+const wrap = card.querySelector(`#meetWrap-${course.id}`);
+if (wrap) {
+  wrap.innerHTML = (course.meetings || []).slice(0,3).map((m, idx) => `
+    <div class="flex-inputs" style="margin-top:8px;">
+      <div>
+        <div class="input-sub-label">اليوم</div>
+        <select onchange="updateMeeting(${course.id}, ${idx}, 'day', this.value)">
+          ${['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'].map(d =>
+            `<option value="${d}" ${(m.day===d)?'selected':''}>${d}</option>`
+          ).join('')}
+        </select>
+      </div>
+      <div>
+        <div class="input-sub-label">المدة</div>
+        <select onchange="updateMeeting(${course.id}, ${idx}, 'dur', this.value)">
+          <option value="1" ${Number(m.dur)===1?'selected':''}>ساعة</option>
+          <option value="2" ${Number(m.dur)===2?'selected':''}>ساعتين</option>
+        </select>
+      </div>
+    </div>
+  `).join('');
+}
+
 
                 <input type="text" class="course-title"
                     value="${course.name}"
                     onchange="updateCourse(${course.id}, 'name', this.value)">
 
                 <div class="input-group">
-                    <label>عدد الساعات الأسبوعية للمقرر</label>
-                    <select onchange="updateCourse(${course.id}, 'weeklyHours', this.value)">
-                        ${[1,2,3,4,5,6].map(h => {
-                            const label = (h <= 2) ? 'ساعة' : 'ساعات';
-                            return `<option value="${h}" ${course.weeklyHours == h ? 'selected' : ''}>${h} ${label}</option>`;
-                        }).join('')}
-                    </select>
-                </div>
+  <label>لقاءات المقرر الأسبوعية <small style="color:#777;">(حتى 3 لقاءات)</small></label>
+
+  <div id="meetWrap-${course.id}"></div>
+
+  <div style="display:flex; gap:8px; margin-top:10px;">
+    <button type="button" class="reset-all" style="flex:1;"
+      onclick="addMeeting(${course.id})">➕ إضافة لقاء</button>
+    <button type="button" class="reset-all" style="flex:1;"
+      onclick="removeMeeting(${course.id})">➖ حذف آخر لقاء</button>
+  </div>
+
+  <div style="margin-top:10px; font-size:0.82rem; color:#475569; font-weight:700; text-align:center;">
+    مجموع الساعات الأسبوعية: <b class="primary-num">${weeklyH}</b> ${hourWord(weeklyH)}
+  </div>
+</div>
+
 
                 <div class="input-group">
                     <label>عدد مرات الغياب <small style="color:#777;">(المُسجّلة بنظام رايات)</small></label>
@@ -891,7 +990,7 @@ if (currentAbsent + EPS >= limit) {
 
                         <span>
                             حد الحرمان: ${fmt(limit,1)} ${hourWord(limit)}
-                            <span class="info-icon ${infoIconClass}" onclick="openLimitInfo(${weeklyH}, ${limit})">i</span>
+                       <span class="info-icon ${infoIconClass}" onclick="openLimitInfo(${weeklyH}, ${totalHours}, ${limit})">i</span>
                         </span>
                     </div>
 
@@ -910,18 +1009,16 @@ if (currentAbsent + EPS >= limit) {
         const index = courses.findIndex(c => c.id === id);
         if (index !== -1) {
             courses[index][field] = value;
-            if (field === 'weeklyHours') { courses[index].absent1 = ''; courses[index].absent2 = ''; }
             renderCourses();
         }
     }
     function deleteCourse(id) { if (confirm('حذف المقرر؟')) { courses = courses.filter(c => c.id !== id); renderCourses(); } }
     function clearEverything() { if (confirm('إعادة ضبط كافة البيانات؟')) { courses = []; localStorage.removeItem('myCourses'); renderCourses(); } }
 
-    window.onload = function () {
-    const sel = document.getElementById('weeksSelect');
-    if (sel) sel.value = selectedWeeks;
-    changeWeeks(selectedWeeks);
+window.onload = function () {
+  renderCourses();
 };
+
 
 </script>
 </body>
