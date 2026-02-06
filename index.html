@@ -708,7 +708,10 @@ function countDayOccurrences(dayName){
    function openLimitInfo(weeklyH, totalHours, limit) {
   const fixed = Number(limit).toFixed(1);
   const text = `
-    <div>  حساب الحرمان بناءً على التقويم التدريبي للفصل التدريبي الثاني 1447 :</div>
+    <div style="font-weight:900; margin-bottom:6px; color:var(--primary);">
+حساب الحرمان بناءً على التقويم التدريبي للفصل التدريبي الثاني 1447 :
+</div>
+
     <div style="margin-top:8px;">
       • مجموع الساعات الأسبوعية (من عدد اللقاءات): <b class="num">${weeklyH}</b><br>
       • الساعات الفعلية في الترم (بعد حذف الإجازات الرسمية): <b class="num">${Number(totalHours).toFixed(1).replace(/\.0+$/,'')}</b> ساعة
