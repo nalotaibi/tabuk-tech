@@ -851,7 +851,7 @@ function updateMeeting(courseId, idx, field, value){
       statusColor = 'var(--danger)';
       msg = '🔴 حالة حرمان';
       infoIconClass = 'danger';
-    } else if (percent >= 15) {
+    } else if (percent >= 15 || (limit - currentAbsent) <= (minDur * 2 + EPS)) {
       statusClass = 'warning-bg';
       statusColor = 'var(--orange)';
       msg = '🟠 تنبيه: اقتربت من الحرمان';
@@ -893,7 +893,7 @@ function updateMeeting(courseId, idx, field, value){
         const remMeet2 = has2 ? Math.floor(remainingSafeRaw / 2) : 0;
 
         let detail = '';
-        if (has1 && has2) detail = `${getLectureText(remMeet2)} (ساعتين) + ${getLectureText(remMeet1)} (ساعة)`;
+        if (has1 && has2) detail = `${getLectureText(remMeet2)} (ساعتين) أو ${getLectureText(remMeet1)} (ساعة)`;
         else if (has2) detail = `${getLectureText(remMeet2)} (ساعتين)`;
         else detail = `${getLectureText(remMeet1)} (ساعة)`;
 
