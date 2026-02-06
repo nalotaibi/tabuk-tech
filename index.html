@@ -987,7 +987,7 @@ function updateMeeting(courseId, idx, field, value){
           </div>
 
           <div>
-            <div class="input-sub-label">الغياب</div>
+            <div class="input-sub-label">عدد مرات الغياب</div>
             <input type="text" inputmode="numeric"
               value="${m.absent ?? ''}" placeholder="0"
               oninput="updateMeeting(${course.id}, ${idx}, 'absent', this.value)">
