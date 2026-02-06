@@ -768,241 +768,223 @@ function updateMeeting(courseId, idx, field, value){
 }
 
     function renderCourses() {
-        const list = $('coursesList');
-        if (!list) return; // ✅ هذا هو سبب توقف التطبيق غالبًا
-        list.innerHTML = '';
+  const list = $('coursesList');
+  if (!list) return;
+  list.innerHTML = '';
 
-        const EPS = 1e-9;
+  const EPS = 1e-9;
 
-        function fmt(n, digits = 1) {
-            const x = Number(n);
-            if (!Number.isFinite(x)) return '0';
-            return x.toFixed(digits).replace(/\.0+$/, '');
+  function fmt(n, digits = 1) {
+    const x = Number(n);
+    if (!Number.isFinite(x)) return '0';
+    return x.toFixed(digits).replace(/\.0+$/, '');
+  }
+
+  courses.forEach(course => {
+    // ✅ تأكيد meetings
+    ensureMeetings(course);
+
+    // ===== حساب الساعات بالتقويم الحقيقي =====
+    const meetings = Array.isArray(course.meetings) ? course.meetings.slice(0,3) : [];
+
+    const cleanMeetings = meetings
+      .filter(m => m && m.day && (Number(m.dur) === 1 || Number(m.dur) === 2))
+      .map(m => ({ day: m.day, dur: Number(m.dur) }));
+
+    const weeklyH = cleanMeetings.reduce((s,m)=> s + m.dur, 0);
+
+    const dayCountCache = {};
+    function dayCount(dayName){
+      if (dayCountCache[dayName] === undefined) dayCountCache[dayName] = countDayOccurrences(dayName);
+      return dayCountCache[dayName];
+    }
+
+    const totalHours = cleanMeetings.reduce((s,m)=> s + (dayCount(m.day) * m.dur), 0);
+    const limit = totalHours * 0.20;
+
+    const has1 = cleanMeetings.some(m => m.dur === 1);
+    const has2 = cleanMeetings.some(m => m.dur === 2);
+
+    const a1 = parseFloat(course.absent1) || 0;
+    const a2 = parseFloat(course.absent2) || 0;
+
+    const currentAbsent = (has1 ? a1 : 0) + (has2 ? (a2 * 2) : 0);
+
+    // ✅ percent مرة واحدة فقط
+    const percent = totalHours ? (currentAbsent / totalHours) * 100 : 0;
+
+    // ===== حالة اللون =====
+    let statusClass = 'safe-bg',
+        statusColor = 'var(--safe)',
+        msg = '🟢 وضعك آمن ومستقر',
+        infoIconClass = '';
+
+    if (currentAbsent + EPS >= limit) {
+      statusClass = 'danger-bg';
+      statusColor = 'var(--danger)';
+      msg = '🔴 حالة حرمان';
+      infoIconClass = 'danger';
+    } else if (percent >= 15) {
+      statusClass = 'warning-bg';
+      statusColor = 'var(--orange)';
+      msg = '🟠 تنبيه: اقتربت من الحرمان';
+      infoIconClass = 'warn';
+    } else if (percent >= 10) {
+      statusClass = 'warning-bg';
+      statusColor = 'var(--warning)';
+      msg = '🟡 انتباه: بدأ رصيدك بالنقصان';
+      infoIconClass = 'warn';
+    }
+
+    // ===== نص المتبقي/التحذير =====
+    let advice = '';
+
+    if (currentAbsent + EPS >= limit) {
+      advice = `<div class="advice-box" style="color:#dc2626; font-weight:900;">
+                  تجاوزتِ الحد المسموح (${fmt(limit,1)} ${hourWord(limit)})
+                </div>`;
+    } else {
+      const remainingSafeRaw = (limit - EPS) - currentAbsent;
+      const nextStep = has1 ? 1 : 2;
+
+      if (remainingSafeRaw <= EPS || remainingSafeRaw < nextStep - EPS) {
+        advice = `
+          <div class="advice-box" style="color:var(--danger); font-weight:900; text-align:center;">
+            ⚠️ أي غياب قادم سيؤدي إلى الحرمان
+          </div>
+        `;
+      } else {
+        const remInt = Math.max(0, Math.floor(remainingSafeRaw));
+        const remMeet1 = has1 ? Math.floor(remainingSafeRaw / 1) : 0;
+        const remMeet2 = has2 ? Math.floor(remainingSafeRaw / 2) : 0;
+
+        let detail = '';
+        if (has1 && has2) {
+          detail = `${getLectureText(remMeet2)} (ساعتين) + ${getLectureText(remMeet1)} (ساعة)`;
+        } else if (has2) {
+          detail = `${getLectureText(remMeet2)} (ساعتين)`;
+        } else {
+          detail = `${getLectureText(remMeet1)} (ساعة)`;
         }
 
-        courses.forEach(course => {
-            // ==================
-// ✅ اللقاءات الأسبوعية (حتى 3 لقاءات) + حساب الساعات الفعلية بالتقويم الحقيقي
-// ==================
-const meetings = Array.isArray(course.meetings) ? course.meetings.slice(0,3) : [];
-
-// تنظيف/تطبيع
-const cleanMeetings = meetings
-  .filter(m => m && m.day && (Number(m.dur) === 1 || Number(m.dur) === 2))
-  .map(m => ({ day: m.day, dur: Number(m.dur) }));
-
-// مجموع الساعات الأسبوعية (للعرض فقط)
-const weeklyH = cleanMeetings.reduce((s,m)=> s + m.dur, 0);
-
-// عدّ اللقاءات الفعلية لكل يوم
-const dayCountCache = {};
-function dayCount(dayName){
-  if (dayCountCache[dayName] === undefined) dayCountCache[dayName] = countDayOccurrences(dayName);
-  return dayCountCache[dayName];
-}
-
-// الساعات الفعلية في الترم = مجموع (عدد لقاءات اليوم × مدة اللقاء)
-const totalHours = cleanMeetings.reduce((s,m)=> s + (dayCount(m.day) * m.dur), 0);
-
-// حد الحرمان 20%
-const limit = totalHours * 0.20;
-
-// الغياب من رايات حسب نوع اللقاء (ساعة/ساعتين)
-const has1 = cleanMeetings.some(m => m.dur === 1);
-const has2 = cleanMeetings.some(m => m.dur === 2);
-
-const a1 = parseFloat(course.absent1) || 0; // لقاءات (ساعة)
-const a2 = parseFloat(course.absent2) || 0; // لقاءات (ساعتين)
-
-// ساعات الغياب الفعلية
-const currentAbsent = (has1 ? a1 : 0) + (has2 ? (a2 * 2) : 0);
-
-const percent = totalHours ? (currentAbsent / totalHours) * 100 : 0;
-
-
-            const percent = totalHours ? (currentAbsent / totalHours) * 100 : 0;
-
-            let statusClass = 'safe-bg',
-                statusColor = 'var(--safe)',
-                msg = '🟢 وضعك آمن ومستقر',
-                infoIconClass = '';
-
-            if (currentAbsent + EPS >= limit) {
-                statusClass = 'danger-bg';
-                statusColor = 'var(--danger)';
-                msg = '🔴 حالة حرمان';
-                infoIconClass = 'danger';
-            } else if (percent >= 15) {
-                statusClass = 'warning-bg';
-                statusColor = 'var(--orange)';
-                msg = '🟠 تنبيه: اقتربت من الحرمان';
-                infoIconClass = 'warn';
-            } else if (percent >= 10) {
-                statusClass = 'warning-bg';
-                statusColor = 'var(--warning)';
-                msg = '🟡 انتباه: بدأ رصيدك بالنقصان';
-                infoIconClass = 'warn';
-            }
-
-            // ===== بناء صندوق النص (advice) =====
-let advice = '';
-
-if (currentAbsent + EPS >= limit) {
-  advice = `<div class="advice-box" style="color:#dc2626; font-weight:900;">
-              تجاوزتِ الحد المسموح (${fmt(limit,1)} ${hourWord(limit)})
-            </div>`;
-} else {
-  const remainingSafeRaw = (limit - EPS) - currentAbsent;
-
-  // أقل غياب قادم محتمل حسب جدول اللقاءات:
-  // إذا عنده لقاء ساعة → أقل غياب = 1
-  // إذا فقط لقاءات ساعتين → أقل غياب = 2
-  const nextStep = has1 ? 1 : 2;
-
-  if (remainingSafeRaw <= EPS || remainingSafeRaw < nextStep - EPS) {
-    advice = `
-      <div class="advice-box" style="color:var(--danger); font-weight:900; text-align:center;">
-        ⚠️ أي غياب قادم سيؤدي إلى الحرمان
-      </div>
-    `;
-  } else {
-    // المتبقي بالساعات (كعدد صحيح للعرض)
-    const remInt = Math.max(0, Math.floor(remainingSafeRaw));
-
-    // تحويل المتبقي إلى "عدد لقاءات" حسب النوع الموجود
-    const remMeet1 = has1 ? Math.floor(remainingSafeRaw / 1) : 0;
-    const remMeet2 = has2 ? Math.floor(remainingSafeRaw / 2) : 0;
-
-    let detail = '';
-    if (has1 && has2) {
-      detail = `${getLectureText(remMeet2)} (ساعتين) + ${getLectureText(remMeet1)} (ساعة)`;
-    } else if (has2) {
-      detail = `${getLectureText(remMeet2)} (ساعتين)`;
-    } else {
-      detail = `${getLectureText(remMeet1)} (ساعة)`;
+        advice = `
+          <div class="advice-box">
+            متبقي لك <b>${fmt(remInt,0)}</b> ${hourWord(remInt)}${detail ? `: ${detail}` : ''}
+          </div>
+        `;
+      }
     }
 
-    advice = `
-      <div class="advice-box">
-        متبقي لك <b>${fmt(remInt,0)}</b> ${hourWord(remInt)}${detail ? `: ${detail}` : ''}
+    const isComplexType = (has1 && has2);
+    const showAbsent1 = has1;
+    const showAbsent2 = has2;
+
+    // ===== بناء البطاقة =====
+    const card = document.createElement('div');
+    card.className = 'course-card';
+
+    card.innerHTML = `
+      <button class="delete-course" onclick="deleteCourse(${course.id})">✕</button>
+
+      <input type="text" class="course-title"
+        value="${course.name}"
+        onchange="updateCourse(${course.id}, 'name', this.value)">
+
+      <div class="input-group">
+        <label>لقاءات المقرر الأسبوعية <small style="color:#777;">(حتى 3 لقاءات)</small></label>
+
+        <div id="meetWrap-${course.id}"></div>
+
+        <div style="display:flex; gap:8px; margin-top:10px;">
+          <button type="button" class="reset-all" style="flex:1;" onclick="addMeeting(${course.id})">➕ إضافة لقاء</button>
+          <button type="button" class="reset-all" style="flex:1;" onclick="removeMeeting(${course.id})">➖ حذف آخر لقاء</button>
+        </div>
+
+        <div style="margin-top:10px; font-size:0.82rem; color:#475569; font-weight:700; text-align:center;">
+          مجموع الساعات الأسبوعية: <b class="primary-num">${weeklyH}</b> ${hourWord(weeklyH)}
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label>عدد مرات الغياب <small style="color:#777;">(المُسجّلة بنظام رايات)</small></label>
+
+        <div class="flex-inputs">
+          ${showAbsent2 ? `<div>
+            ${isComplexType ? `<span class="input-sub-label">
+              <span class="hint-icon" onclick="openHintTwoHours()">?</span>
+              محاضرة (فئة ساعتين)
+            </span>` : ''}
+            <input type="text" inputmode="numeric"
+              value="${course.absent2}" placeholder="0"
+              oninput="handleInput(${course.id}, 'absent2', this)">
+          </div>` : ''}
+
+          ${showAbsent1 ? `<div>
+            ${isComplexType ? `<span class="input-sub-label">
+              <span class="hint-icon" onclick="openHintOneHour()">?</span>
+              محاضرة (فئة ساعة)
+            </span>` : ''}
+            <input type="text" inputmode="numeric"
+              value="${course.absent1}" placeholder="0"
+              oninput="handleInput(${course.id}, 'absent1', this)">
+          </div>` : ''}
+        </div>
+      </div>
+
+      <div class="result-area ${statusClass}">
+        <div style="font-size:0.95rem; font-weight:800; color:${statusColor}; margin-bottom:10px;">${msg}</div>
+
+        <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:5px;">
+          <span style="font-size:1.8rem; font-weight:900; color:var(--primary);">${fmt(percent,1)}%</span>
+          <span style="font-size:0.85rem; color:#718096; font-weight:bold;">من أصل 20%</span>
+        </div>
+
+        <div class="progress-bar">
+          <div class="progress-fill" style="width:${Math.min((percent/20)*100, 100)}%; background:${statusColor}"></div>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#555; font-weight:700; margin-top:5px;">
+          <span>غيابك الحالي: ${fmt(currentAbsent,1)} ${hourWord(currentAbsent)}</span>
+          <span>
+            حد الحرمان: ${fmt(limit,1)} ${hourWord(limit)}
+            <span class="info-icon ${infoIconClass}" onclick="openLimitInfo(${weeklyH}, ${totalHours}, ${limit})">i</span>
+          </span>
+        </div>
+
+        ${advice}
       </div>
     `;
-  }
-}
 
-            const isComplexType = (has1 && has2);
-const showAbsent1 = has1;
-const showAbsent2 = has2;
+    // ✅ الآن نضيف البطاقة للصفحة
+    list.appendChild(card);
 
-
-            const card = document.createElement('div');
-            card.className = 'course-card';
-
-            card.innerHTML = `
-                <button class="delete-course" onclick="deleteCourse(${course.id})">✕</button>
-                // تعبئة واجهة اللقاءات
-const wrap = card.querySelector(`#meetWrap-${course.id}`);
-if (wrap) {
-  wrap.innerHTML = (course.meetings || []).slice(0,3).map((m, idx) => `
-    <div class="flex-inputs" style="margin-top:8px;">
-      <div>
-        <div class="input-sub-label">اليوم</div>
-        <select onchange="updateMeeting(${course.id}, ${idx}, 'day', this.value)">
-          ${['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'].map(d =>
-            `<option value="${d}" ${(m.day===d)?'selected':''}>${d}</option>`
-          ).join('')}
-        </select>
-      </div>
-      <div>
-        <div class="input-sub-label">المدة</div>
-        <select onchange="updateMeeting(${course.id}, ${idx}, 'dur', this.value)">
-          <option value="1" ${Number(m.dur)===1?'selected':''}>ساعة</option>
-          <option value="2" ${Number(m.dur)===2?'selected':''}>ساعتين</option>
-        </select>
-      </div>
-    </div>
-  `).join('');
-}
-
-
-                <input type="text" class="course-title"
-                    value="${course.name}"
-                    onchange="updateCourse(${course.id}, 'name', this.value)">
-
-                <div class="input-group">
-  <label>لقاءات المقرر الأسبوعية <small style="color:#777;">(حتى 3 لقاءات)</small></label>
-
-  <div id="meetWrap-${course.id}"></div>
-
-  <div style="display:flex; gap:8px; margin-top:10px;">
-    <button type="button" class="reset-all" style="flex:1;"
-      onclick="addMeeting(${course.id})">➕ إضافة لقاء</button>
-    <button type="button" class="reset-all" style="flex:1;"
-      onclick="removeMeeting(${course.id})">➖ حذف آخر لقاء</button>
-  </div>
-
-  <div style="margin-top:10px; font-size:0.82rem; color:#475569; font-weight:700; text-align:center;">
-    مجموع الساعات الأسبوعية: <b class="primary-num">${weeklyH}</b> ${hourWord(weeklyH)}
-  </div>
-</div>
-
-
-                <div class="input-group">
-                    <label>عدد مرات الغياب <small style="color:#777;">(المُسجّلة بنظام رايات)</small></label>
-
-                    <div class="flex-inputs">
-                        ${showAbsent2 ? `<div>
-                            ${isComplexType ? `<span class="input-sub-label">
-                                <span class="hint-icon" onclick="openHintTwoHours()">?</span>
-                                محاضرة (فئة ساعتين)
-                            </span>` : ''}
-                            <input type="text" inputmode="numeric"
-                                value="${course.absent2}" placeholder="0"
-                                oninput="handleInput(${course.id}, 'absent2', this)">
-                        </div>` : ''}
-
-                        ${showAbsent1 ? `<div>
-                            ${isComplexType ? `<span class="input-sub-label">
-                                <span class="hint-icon" onclick="openHintOneHour()">?</span>
-                                محاضرة (فئة ساعة)
-                            </span>` : ''}
-                            <input type="text" inputmode="numeric"
-                                value="${course.absent1}" placeholder="0"
-                                oninput="handleInput(${course.id}, 'absent1', this)">
-                        </div>` : ''}
-                    </div>
-                </div>
-
-                <div class="result-area ${statusClass}">
-                    <div style="font-size:0.95rem; font-weight:800; color:${statusColor}; margin-bottom:10px;">${msg}</div>
-
-                    <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:5px;">
-                        <span style="font-size:1.8rem; font-weight:900; color:var(--primary);">${fmt(percent,1)}%</span>
-                        <span style="font-size:0.85rem; color:#718096; font-weight:bold;">من أصل 20%</span>
-                    </div>
-
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width:${Math.min((percent/20)*100, 100)}%; background:${statusColor}"></div>
-                    </div>
-
-                    <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#555; font-weight:700; margin-top:5px;">
-                        <span>غيابك الحالي: ${fmt(currentAbsent,1)} ${hourWord(currentAbsent)}</span>
-
-                        <span>
-                            حد الحرمان: ${fmt(limit,1)} ${hourWord(limit)}
-                       <span class="info-icon ${infoIconClass}" onclick="openLimitInfo(${weeklyH}, ${totalHours}, ${limit})">i</span>
-                        </span>
-                    </div>
-
-                    ${advice}
-                </div>
-            `;
-
-            list.appendChild(card);
-        });
-
-        localStorage.setItem('myCourses', JSON.stringify(courses));
+    // ✅ تعبئة اللقاءات بعد بناء DOM
+    const wrap = card.querySelector(`#meetWrap-${course.id}`);
+    if (wrap) {
+      wrap.innerHTML = (course.meetings || []).slice(0,3).map((m, idx) => `
+        <div class="flex-inputs" style="margin-top:8px;">
+          <div>
+            <div class="input-sub-label">اليوم</div>
+            <select onchange="updateMeeting(${course.id}, ${idx}, 'day', this.value)">
+              ${['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'].map(d =>
+                `<option value="${d}" ${(m.day===d)?'selected':''}>${d}</option>`
+              ).join('')}
+            </select>
+          </div>
+          <div>
+            <div class="input-sub-label">المدة</div>
+            <select onchange="updateMeeting(${course.id}, ${idx}, 'dur', this.value)">
+              <option value="1" ${Number(m.dur)===1?'selected':''}>ساعة</option>
+              <option value="2" ${Number(m.dur)===2?'selected':''}>ساعتين</option>
+            </select>
+          </div>
+        </div>
+      `).join('');
     }
+  });
+
+  localStorage.setItem('myCourses', JSON.stringify(courses));
+}
 
     function handleInput(id, field, el) { el.value = fixNumbers(el.value); updateCourse(id, field, el.value); }
     function updateCourse(id, field, value) {
@@ -1016,9 +998,9 @@ if (wrap) {
     function clearEverything() { if (confirm('إعادة ضبط كافة البيانات؟')) { courses = []; localStorage.removeItem('myCourses'); renderCourses(); } }
 
 window.onload = function () {
+  courses.forEach(c => ensureMeetings(c));
   renderCourses();
 };
-
 
 </script>
 </body>
