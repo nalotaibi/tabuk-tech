@@ -770,7 +770,7 @@ function removeMeeting(courseId){
 }
 
 
-function updateMeeting(courseId, idx, field, value){
+function updateMeeting(courseId, idx, field, value, doRender = true){
   const i = courses.findIndex(c => c.id === courseId);
   if (i === -1) return;
 
@@ -783,8 +783,9 @@ function updateMeeting(courseId, idx, field, value){
   if (field === 'dur') m.dur = Number(value) === 1 ? 1 : 2;
   if (field === 'absent') m.absent = fixNumbers(value);
 
-  renderCourses();
+  if (doRender) renderCourses();
 }
+
 
 
     function renderCourses() {
@@ -1014,8 +1015,12 @@ let detail = detailParts.join(' + ');
             <div class="input-sub-label">عدد مرات الغياب</div>
             <input type="text" inputmode="numeric" pattern="[0-9]*"
   value="${m.absent ?? ''}" placeholder="0"
-  oninput="this.value = fixNumbers(this.value)"
-  onchange="updateMeeting(${course.id}, ${idx}, 'absent', this.value)">
+  oninput="
+    this.value = fixNumbers(this.value);
+    updateMeeting(${course.id}, ${idx}, 'absent', this.value, false);
+  "
+  onchange="updateMeeting(${course.id}, ${idx}, 'absent', this.value, true)">
+
 
 
 
