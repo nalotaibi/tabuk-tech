@@ -783,9 +783,148 @@ function updateMeeting(courseId, idx, field, value, doRender = true){
   if (field === 'dur') m.dur = Number(value) === 1 ? 1 : 2;
   if (field === 'absent') m.absent = fixNumbers(value);
 
-  if (doRender) renderCourses();
+  if (doRender) renderCourses(); // فقط عند تغيير اليوم/المدة أو عند الخروج من الحقل
 }
 
+
+function computeCourseState(course){
+  ensureMeetings(course);
+
+  const EPS = 1e-9;
+
+  const cleanMeetings = (course.meetings || []).slice(0, 3)
+    .filter(m => m && m.day && (Number(m.dur) === 1 || Number(m.dur) === 2))
+    .map(m => ({
+      day: m.day,
+      dur: Number(m.dur),
+      absent: parseFloat(m.absent) || 0
+    }));
+
+  const weeklyH = cleanMeetings.reduce((s,m)=> s + m.dur, 0);
+
+  const dayCountCache = {};
+  function dayCount(dayName){
+    if (dayCountCache[dayName] === undefined) dayCountCache[dayName] = countDayOccurrences(dayName);
+    return dayCountCache[dayName];
+  }
+
+  const totalHours = cleanMeetings.reduce((s,m)=> s + (dayCount(m.day) * m.dur), 0);
+  const limit = totalHours * 0.20;
+  const currentAbsent = cleanMeetings.reduce((s,m)=> s + (m.absent * m.dur), 0);
+
+  const percent = totalHours ? (currentAbsent / totalHours) * 100 : 0;
+
+  // رسائل التنبيه حسب طلبك:
+  let statusClass = 'safe-bg';
+  let statusColor = 'var(--safe)';
+  let msg = '🟢 وضعك آمن ومستقر';
+
+  if (currentAbsent + EPS >= limit) {
+    statusClass = 'danger-bg';
+    statusColor = 'var(--danger)';
+    msg = '🔴 حالة حرمان';
+  } else if (percent >= 15) {
+    statusClass = 'warning-bg';
+    statusColor = 'var(--orange)';
+    msg = '🟠 تنبيه: اقتربت من الحرمان';
+  } else if (percent >= 10) {
+    statusClass = 'warning-bg';
+    statusColor = 'var(--warning)';
+    msg = '🟡 انتباه: بدأ رصيدك بالنقصان';
+  }
+
+  // صندوق المتبقي (بنفس منطقك الحالي)
+  const minDur = cleanMeetings.length ? Math.min(...cleanMeetings.map(m => m.dur)) : 1;
+  let advice = '';
+
+  function fmt(n, digits = 1) {
+    const x = Number(n);
+    if (!Number.isFinite(x)) return '0';
+    return x.toFixed(digits).replace(/\.0+$/, '');
+  }
+
+  if (currentAbsent + EPS >= limit) {
+    advice = `<div class="advice-box" style="color:#dc2626; font-weight:900;">
+                تجاوزتِ الحد المسموح (${fmt(limit,1)} ${hourWord(limit)})
+              </div>`;
+  } else {
+    const remainingSafeRaw = (limit - EPS) - currentAbsent;
+    const nextStep = minDur;
+
+    if (remainingSafeRaw <= EPS || remainingSafeRaw < nextStep - EPS) {
+      advice = `
+        <div class="advice-box" style="color:var(--danger); font-weight:900; text-align:center;">
+          ⚠️ أي غياب قادم سيؤدي إلى الحرمان
+        </div>
+      `;
+    } else {
+      const remInt = Math.max(0, Math.floor(remainingSafeRaw));
+
+      const has1 = cleanMeetings.some(m => m.dur === 1);
+      const has2 = cleanMeetings.some(m => m.dur === 2);
+
+      // ✅ تحسين الدمج (ساعتين ثم ساعة)
+      let rem = remainingSafeRaw;
+      let used2 = has2 ? Math.floor(rem / 2) : 0;
+      rem -= used2 * 2;
+      let used1 = has1 ? Math.floor(rem / 1) : 0;
+
+      let parts = [];
+      if (has2 && used2 > 0) parts.push(`${getLectureText(used2)} (ساعتين)`);
+      if (has1 && used1 > 0) parts.push(`${getLectureText(used1)} (ساعة)`);
+      const detail = parts.join(' + ');
+
+      advice = `
+        <div class="advice-box">
+          متبقي لك <b>${fmt(remInt,0)}</b> ${hourWord(remInt)}${detail ? `: ${detail}` : ''}
+        </div>
+      `;
+    }
+  }
+
+  return { weeklyH, totalHours, limit, currentAbsent, percent, statusClass, statusColor, msg, advice };
+}
+
+function updateCourseUI(courseId){
+  const course = courses.find(c => c.id === courseId);
+  if (!course) return;
+
+  const s = computeCourseState(course);
+
+  const box = document.getElementById(`resultBox-${courseId}`);
+  const msgEl = document.getElementById(`statusMsg-${courseId}`);
+  const pctEl = document.getElementById(`percentTxt-${courseId}`);
+  const barEl = document.getElementById(`barFill-${courseId}`);
+  const absEl = document.getElementById(`absentTxt-${courseId}`);
+  const limEl = document.getElementById(`limitTxt-${courseId}`);
+  const advEl = document.getElementById(`adviceBox-${courseId}`);
+
+  if (!box || !msgEl || !pctEl || !barEl || !absEl || !limEl || !advEl) return;
+
+  // تحديث الكلاسات/الألوان
+  box.classList.remove('safe-bg','warning-bg','danger-bg');
+  box.classList.add(s.statusClass);
+
+  msgEl.textContent = s.msg;
+  msgEl.style.color = s.statusColor;
+
+  pctEl.textContent = `${Number(s.percent).toFixed(1).replace(/\.0+$/,'')}%`;
+
+  const w = Math.min((s.percent / 20) * 100, 100);
+  barEl.style.width = `${w}%`;
+  barEl.style.background = s.statusColor;
+
+  absEl.textContent = `غيابك الحالي: ${Number(s.currentAbsent).toFixed(1).replace(/\.0+$/,'')} ${hourWord(s.currentAbsent)}`;
+
+  // ملاحظة: نحافظ على أيقونة i كما هي داخل limEl، فنحدث النص فقط بدون كسر الأيقونة:
+  // أبسط: نعيد بناء محتوى حد الحرمان مع ترك الأيقونة
+  limEl.innerHTML = `حد الحرمان: ${Number(s.limit).toFixed(1).replace(/\.0+$/,'')} ${hourWord(s.limit)} ` + limEl.querySelector('.info-icon')?.outerHTML;
+
+  advEl.innerHTML = s.advice;
+
+  // حفظ مباشر بدون إعادة رسم
+  localStorage.setItem('myCourses', JSON.stringify(courses));
+}
 
 
     function renderCourses() {
@@ -960,30 +1099,42 @@ let detail = detailParts.join(' + ');
         </div>
       </div>
 
-      <div class="result-area ${statusClass}">
-        <div style="font-size:0.95rem; font-weight:800; color:${statusColor}; margin-bottom:10px;">${msg}</div>
+      <div class="result-area ${statusClass}" id="resultBox-${course.id}">
+  <div id="statusMsg-${course.id}"
+       style="font-size:0.95rem; font-weight:800; color:${statusColor}; margin-bottom:10px;">
+    ${msg}
+  </div>
 
-        <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:5px;">
-          <span style="font-size:1.8rem; font-weight:900; color:var(--primary);">${fmt(percent, 1)}%</span>
-          <span style="font-size:0.85rem; color:#718096; font-weight:bold;">من أصل 20%</span>
-        </div>
+  <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:5px;">
+    <span id="percentTxt-${course.id}"
+          style="font-size:1.8rem; font-weight:900; color:var(--primary);">
+      ${fmt(percent, 1)}%
+    </span>
+    <span style="font-size:0.85rem; color:#718096; font-weight:bold;">من أصل 20%</span>
+  </div>
 
-        <div class="progress-bar">
-          <div class="progress-fill" style="width:${Math.min((percent / 20) * 100, 100)}%; background:${statusColor}"></div>
-        </div>
+  <div class="progress-bar">
+    <div id="barFill-${course.id}" class="progress-fill"
+         style="width:${Math.min((percent / 20) * 100, 100)}%; background:${statusColor}">
+    </div>
+  </div>
 
-        <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#555; font-weight:700; margin-top:5px;">
-          <span>غيابك الحالي: ${fmt(currentAbsent, 1)} ${hourWord(currentAbsent)}</span>
+  <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#555; font-weight:700; margin-top:5px;">
+    <span id="absentTxt-${course.id}">
+      غيابك الحالي: ${fmt(currentAbsent, 1)} ${hourWord(currentAbsent)}
+    </span>
 
-          <span>
-            حد الحرمان: ${fmt(limit, 1)} ${hourWord(limit)}
-            <span class="info-icon ${infoIconClass}" onclick="openLimitInfo(${weeklyH}, ${totalHours}, ${limit})">i</span>
-          </span>
-        </div>
+    <span id="limitTxt-${course.id}">
+      حد الحرمان: ${fmt(limit, 1)} ${hourWord(limit)}
+      <span class="info-icon ${infoIconClass}"
+            onclick="openLimitInfo(${weeklyH}, ${totalHours}, ${limit})">i</span>
+    </span>
+  </div>
 
-        ${advice}
-      </div>
-    `;
+  <div id="adviceBox-${course.id}">
+    ${advice}
+  </div>
+</div>
 
     list.appendChild(card);
 
@@ -1018,8 +1169,10 @@ let detail = detailParts.join(' + ');
   oninput="
     this.value = fixNumbers(this.value);
     updateMeeting(${course.id}, ${idx}, 'absent', this.value, false);
+    updateCourseUI(${course.id});
   "
   onchange="updateMeeting(${course.id}, ${idx}, 'absent', this.value, true)">
+
 
 
 
