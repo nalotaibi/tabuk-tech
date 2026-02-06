@@ -1008,8 +1008,9 @@ let detail = detailParts.join(' + ');
           <div>
             <div class="input-sub-label">عدد مرات الغياب</div>
             <input type="number" min="0" step="1"
-              value="${m.absent ?? ''}" placeholder="0"
-              oninput="updateMeeting(${course.id}, ${idx}, 'absent', this.value)">
+  value="${m.absent ?? ''}" placeholder="0"
+  onchange="updateMeeting(${course.id}, ${idx}, 'absent', this.value)">
+
           </div>
         </div>
       `).join('');
