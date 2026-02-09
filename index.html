@@ -547,6 +547,39 @@
     return count;
   }
 
+   // ====== حساب حرمان الشق "حسب التواريخ الفعلية" ======
+function perSectionStateByCalendar(dayName, durHours, absentMeetings){
+  const EPS = 1e-9;
+
+  const totalMeetings = countDayOccurrences(dayName);       // ✅ عدد اللقاءات الفعلية لهذا اليوم (بعد حذف الإجازات/الفجوة)
+  const totalHoursSec = totalMeetings * durHours;           // ✅ ساعات الشق الفعلية بالترم
+  const limitHoursSec = totalHoursSec * 0.20;               // ✅ حد الحرمان للشق بالساعات (20%)
+
+  const absentMeet = Math.max(0, parseFloat(absentMeetings) || 0);  // مرات الغياب (لقاءات)
+  const absentHoursSec = absentMeet * durHours;                      // غياب الشق بالساعات
+
+  // ✅ المتبقي الآمن بالساعات قبل الحرمان (نفس منطقك العام)
+  const remainingHoursSafe = (limitHoursSec - EPS) - absentHoursSec;
+
+  // ✅ المتبقي باللقاءات (كم لقاء كامل تقدر تغيب في هذا الشق)
+  const remainingMeetingsSafe = Math.max(0, Math.floor(remainingHoursSafe / durHours));
+
+  // ✅ هل أي غياب قادم (في هذا الشق) يسبب حرمان؟
+  const nextAbsenceCausesBan = remainingHoursSafe < durHours - EPS;
+
+  return {
+    totalMeetings,
+    totalHoursSec,
+    limitHoursSec,
+    absentMeet,
+    absentHoursSec,
+    remainingHoursSafe,
+    remainingMeetingsSafe,
+    nextAbsenceCausesBan
+  };
+}
+  
+  
   function hourWord(n) {
     let v = Math.abs(parseFloat(n));
     if (v === 0) return "ساعة";
@@ -683,64 +716,134 @@
   }
 
   function computeCourseState(course){
-    ensureMeetings(course);
-    const EPS = 1e-9;
+  ensureMeetings(course);
+  const EPS = 1e-9;
 
-    const cleanMeetings = (course.meetings || []).slice(0, 3)
-      .filter(m => m && m.day && (Number(m.dur) === 1 || Number(m.dur) === 2))
-      .map(m => ({ day: m.day, dur: Number(m.dur), absent: parseFloat(m.absent) || 0 }));
+  const cleanMeetings = (course.meetings || []).slice(0, 3)
+    .filter(m => m && m.day && (Number(m.dur) === 1 || Number(m.dur) === 2))
+    .map(m => ({ day: m.day, dur: Number(m.dur), absent: parseFloat(m.absent) || 0 }));
 
-    const weeklyH = cleanMeetings.reduce((s,m)=> s + m.dur, 0);
+  const weeklyH = cleanMeetings.reduce((s,m)=> s + m.dur, 0);
 
-    const dayCountCache = {};
-    function dayCount(dayName){
-      if (dayCountCache[dayName] === undefined) dayCountCache[dayName] = countDayOccurrences(dayName);
-      return dayCountCache[dayName];
-    }
+  const dayCountCache = {};
+  function dayCount(dayName){
+    if (dayCountCache[dayName] === undefined) dayCountCache[dayName] = countDayOccurrences(dayName);
+    return dayCountCache[dayName];
+  }
 
-    const totalHours = cleanMeetings.reduce((s,m)=> s + (dayCount(m.day) * m.dur), 0);
-    const limit = totalHours * 0.20;
-    const currentAbsent = cleanMeetings.reduce((s,m)=> s + (m.absent * m.dur), 0);
-    const percent = totalHours ? (currentAbsent / totalHours) * 100 : 0;
+  // ====== حساب المقرر (كما هو عندك) بناءً على التقويم الفعلي ======
+  const totalHours = cleanMeetings.reduce((s,m)=> s + (dayCount(m.day) * m.dur), 0);
+  const limit = totalHours * 0.20;
+  const currentAbsent = cleanMeetings.reduce((s,m)=> s + (m.absent * m.dur), 0);
+  const percent = totalHours ? (currentAbsent / totalHours) * 100 : 0;
 
-    let statusClass = 'safe-bg';
-    let statusColor = 'var(--safe)';
-    let msg = '🟢 وضعك آمن ومستقر';
+  // ====== جديد: حساب كل شق حسب التقويم الفعلي ======
+  const secStates = cleanMeetings.map(m => perSectionStateByCalendar(m.day, m.dur, m.absent));
 
-    if (currentAbsent + EPS >= limit) {
-      statusClass = 'danger-bg';
-      statusColor = 'var(--danger)';
-      msg = '🔴 حالة حرمان';
-    } else if (percent >= 15) {
-      statusClass = 'warning-bg';
-      statusColor = 'var(--orange)';
-      msg = '🟠 تنبيه: اقتربت من الحرمان';
-    } else if (percent >= 10) {
-      statusClass = 'warning-bg';
-      statusColor = 'var(--warning)';
-      msg = '🟡 انتباه: بدأ رصيدك بالنقصان';
-    }
+  // ✅ حرمان المقرر إذا تجاوزت 20% في أي شق
+  const anySectionBanned = secStates.some(sx => (sx.absentHoursSec + EPS) >= sx.limitHoursSec);
 
-    const minDur = cleanMeetings.length ? Math.min(...cleanMeetings.map(m => m.dur)) : 1;
-    let advice = '';
+  // ✅ الشق/الأشقّاء اللي تجاوزت الحد (للعرض)
+  const bannedSections = secStates
+    .map((sx, i) => ({ sx, i }))
+    .filter(x => (x.sx.absentHoursSec + EPS) >= x.sx.limitHoursSec);
 
-    function fmt(n, digits = 1) {
-      const x = Number(n);
-      if (!Number.isFinite(x)) return '0';
-      return x.toFixed(digits).replace(/\.0+$/, '');
-    }
+  // ✅ أقرب شق للخطر: أي غياب قادم فيه يؤدي للحرمان
+  const riskySectionIdx = secStates.findIndex(sx => sx.nextAbsenceCausesBan);
 
-    if (currentAbsent + EPS >= limit) {
-      advice = `<div class="advice-box" style="color:#dc2626; font-weight:900;">
-                  تجاوزتِ الحد المسموح (${fmt(limit,1)} ${hourWord(limit)})
+  // ====== UI state ======
+  let statusClass = 'safe-bg';
+  let statusColor = 'var(--safe)';
+  let msg = '🟢 وضعك آمن ومستقر';
+
+  if (anySectionBanned) {
+    statusClass = 'danger-bg';
+    statusColor = 'var(--danger)';
+    msg = '🔴 حالة حرمان (تجاوزتِ الحد في أحد الأشق)';
+  } else if (riskySectionIdx !== -1) {
+    statusClass = 'warning-bg';
+    statusColor = 'var(--orange)';
+    msg = '🟠 تنبيه: شق واحد على الأقل على وشك الحرمان';
+  } else if (percent >= 15) {
+    statusClass = 'warning-bg';
+    statusColor = 'var(--orange)';
+    msg = '🟠 تنبيه: اقتربت من الحرمان';
+  } else if (percent >= 10) {
+    statusClass = 'warning-bg';
+    statusColor = 'var(--warning)';
+    msg = '🟡 انتباه: بدأ رصيدك بالنقصان';
+  }
+
+  const minDur = cleanMeetings.length ? Math.min(...cleanMeetings.map(m => m.dur)) : 1;
+  let advice = '';
+
+  function fmt(n, digits = 1) {
+    const x = Number(n);
+    if (!Number.isFinite(x)) return '0';
+    return x.toFixed(digits).replace(/\.0+$/, '');
+  }
+
+  // ✅ صندوق "متبقي لكل شق"
+  const perSectionLines = secStates.map((sx, i) => {
+    const m = cleanMeetings[i];
+    const durTxt = m.dur === 2 ? 'ساعتين' : 'ساعة';
+    const warn = sx.nextAbsenceCausesBan;
+
+    return `
+      <div style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:10px;
+        padding:6px 10px;
+        border-radius:12px;
+        border:1px solid rgba(0,0,0,0.06);
+        background:${warn ? '#fef2f2' : '#f8fdff'};
+        margin-top:6px;
+        font-size:0.82rem;
+        font-weight:800;
+        color:${warn ? 'var(--danger)' : '#334155'};
+      ">
+        <span>شق ${i+1} (${durTxt} - ${m.day})</span>
+     <span>
+  متبقي:
+  ${getLectureText(sx.remainingMeetingsSafe)}
+</span>
+      </div>
+    `;
+  }).join('');
+
+  // ====== رسائل المتبقي / التحذير ======
+  if (anySectionBanned) {
+    const details = bannedSections.map(x => {
+      const m = cleanMeetings[x.i];
+      const durTxt = m.dur === 2 ? 'ساعتين' : 'ساعة';
+      return `شق ${x.i+1} (${durTxt} - ${m.day})`;
+    }).join('، ');
+
+    advice = `<div class="advice-box" style="color:#dc2626; font-weight:900;">
+                تجاوزتِ الحد المسموح في: <b>${details}</b>
+                <div style="margin-top:10px;">${perSectionLines}</div>
+              </div>`;
+  } else {
+    // ✅ تحذير ذكي إذا أي غياب قادم في شق معيّن يسبب حرمان
+    if (riskySectionIdx !== -1) {
+      const m = cleanMeetings[riskySectionIdx];
+      const durTxt = m.dur === 2 ? 'ساعتين' : 'ساعة';
+
+      advice = `<div class="advice-box" style="color:var(--danger); font-weight:900; text-align:center;">
+                  ⚠️ أي غياب قادم في الشق <b>${riskySectionIdx+1}</b> (${durTxt} - ${m.day}) سيؤدي إلى الحرمان
+                  <div style="margin-top:10px;">${perSectionLines}</div>
                 </div>`;
     } else {
+      // ✅ رسالتك الأصلية "متبقي لك..." (على مستوى المقرر) + نُلحق بعدها "متبقي لكل شق"
       const remainingSafeRaw = (limit - EPS) - currentAbsent;
       const nextStep = minDur;
 
       if (remainingSafeRaw <= EPS || remainingSafeRaw < nextStep - EPS) {
         advice = `<div class="advice-box" style="color:var(--danger); font-weight:900; text-align:center;">
                     ⚠️ أي غياب قادم سيؤدي إلى الحرمان
+                    <div style="margin-top:10px;">${perSectionLines}</div>
                   </div>`;
       } else {
         const remInt = Math.max(0, Math.floor(remainingSafeRaw));
@@ -759,12 +862,14 @@
 
         advice = `<div class="advice-box">
                     متبقي لك <b>${fmt(remInt,0)}</b> ${hourWord(remInt)}${detail ? `: ${detail}` : ''}
+                    <div style="margin-top:10px;">${perSectionLines}</div>
                   </div>`;
       }
     }
-
-    return { weeklyH, totalHours, limit, currentAbsent, percent, statusClass, statusColor, msg, advice };
   }
+
+  return { weeklyH, totalHours, limit, currentAbsent, percent, statusClass, statusColor, msg, advice };
+}
 
   function updateCourseUI(courseId){
     const course = courses.find(c => c.id === courseId);
@@ -964,40 +1069,70 @@
       list.appendChild(card);
 
       const wrap = card.querySelector(`#meetWrap-${course.id}`);
-      if (wrap) {
-        wrap.innerHTML = (course.meetings || []).slice(0, 3).map((m, idx) => `
-          <div class="flex-inputs" style="margin-top:8px;">
-            <div>
-              <div class="input-sub-label">اليوم</div>
-              <select onchange="updateMeeting(${course.id}, ${idx}, 'day', this.value)">
-                ${['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس'].map(d =>
-                  `<option value="${d}" ${(m.day === d) ? 'selected' : ''}>${d}</option>`
-                ).join('')}
-              </select>
-            </div>
+if (wrap) {
 
-            <div>
-              <div class="input-sub-label">المدة</div>
-              <select onchange="updateMeeting(${course.id}, ${idx}, 'dur', this.value)">
-                <option value="1" ${Number(m.dur) === 1 ? 'selected' : ''}>ساعة</option>
-                <option value="2" ${Number(m.dur) === 2 ? 'selected' : ''}>ساعتين</option>
-              </select>
-            </div>
+  // ✅ جديد: حساب المتبقي لكل شق حسب التقويم الفعلي (التواريخ + الإجازات + الفجوة)
+  const perSecStates = (course.meetings || []).slice(0, 3).map(m => {
+    const day = m.day || 'الأحد';
+    const dur = Number(m.dur) === 1 ? 1 : 2;
+    const abs = parseFloat(m.absent) || 0;
+    return perSectionStateByCalendar(day, dur, abs);
+  });
 
-            <div>
-              <div class="input-sub-label">عدد مرات الغياب</div>
-              <input type="text" inputmode="numeric" pattern="[0-9]*"
-                value="${m.absent ?? ''}" placeholder="0"
-                oninput="
-                  this.value = fixNumbers(this.value);
-                  updateMeeting(${course.id}, ${idx}, 'absent', this.value, false);
-                  updateCourseUI(${course.id});
-                "
-                onchange="updateMeeting(${course.id}, ${idx}, 'absent', this.value, true)">
-            </div>
-          </div>
-        `).join('');
-      }
+  wrap.innerHTML = (course.meetings || []).slice(0, 3).map((m, idx) => `
+    <div class="flex-inputs" style="margin-top:8px;">
+      <div>
+        <div class="input-sub-label">اليوم</div>
+        <select onchange="updateMeeting(${course.id}, ${idx}, 'day', this.value)">
+          ${['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس'].map(d =>
+            `<option value="${d}" ${(m.day === d) ? 'selected' : ''}>${d}</option>`
+          ).join('')}
+        </select>
+      </div>
+
+      <div>
+        <div class="input-sub-label">المدة</div>
+        <select onchange="updateMeeting(${course.id}, ${idx}, 'dur', this.value)">
+          <option value="1" ${Number(m.dur) === 1 ? 'selected' : ''}>ساعة</option>
+          <option value="2" ${Number(m.dur) === 2 ? 'selected' : ''}>ساعتين</option>
+        </select>
+      </div>
+
+      <div>
+        <div class="input-sub-label">عدد مرات الغياب</div>
+        <input type="text" inputmode="numeric" pattern="[0-9]*"
+          value="${m.absent ?? ''}" placeholder="0"
+          oninput="
+            this.value = fixNumbers(this.value);
+            updateMeeting(${course.id}, ${idx}, 'absent', this.value, false);
+            updateCourseUI(${course.id});
+          "
+          onchange="updateMeeting(${course.id}, ${idx}, 'absent', this.value, true)">
+      </div>
+
+      <!-- ✅ جديد: متبقي لهذا الشق (باللقاءات) -->
+      <div>
+        <div class="input-sub-label">متبقي لهذا الشق</div>
+        <div style="
+          height:42px;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          border:1.5px solid #edf2f1;
+          border-radius:12px;
+          background:${(perSecStates[idx] && perSecStates[idx].nextAbsenceCausesBan) ? '#fef2f2' : '#f8fdff'};
+          color:${(perSecStates[idx] && perSecStates[idx].nextAbsenceCausesBan) ? 'var(--danger)' : 'var(--primary)'};
+          font-weight:900;
+          font-size:0.85rem;
+          box-sizing:border-box;
+          white-space:nowrap;
+        ">
+          ${perSecStates[idx] ? getLectureText(perSecStates[idx].remainingMeetingsSafe) : ''}
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
     });
 
     localStorage.setItem('myCourses', JSON.stringify(courses));
