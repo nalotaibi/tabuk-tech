@@ -824,6 +824,7 @@ function lectureWord(n){
 
   // نص الإرشاد
     // نص الإرشاد (صيغة موحدة احترافية)
+// نص الإرشاد (صيغة احترافية + ألوان ديناميكية)
 let advice = '';
 
 const remainingByType = {
@@ -835,44 +836,49 @@ if (isDeprived) {
 
   advice = `<div class="advice-box" style="color:#dc2626; font-weight:900;">
               تجاوزتِ الحد المسموح.
-              ${detailHTML}
             </div>`;
 
 } else {
 
   let lines = [];
 
-  if (hasTheory) {
-    lines.push(`
-      <div>
-        <b>النظري:</b> 
+  function buildLine(type){
+    const remaining = remainingByType[type];
+    const absent = absentByType[type];
+    const limit = limitByType[type];
+
+    let color = '#16a34a'; // أخضر افتراضي
+    let weight = '700';
+    let icon = '';
+
+    if (remaining === 0){
+      color = '#dc2626'; // أحمر
+      weight = '900';
+      icon = '⚠️ ';
+    }
+    else if (remaining === 1){
+      color = '#f97316'; // برتقالي
+      weight = '900';
+      icon = '⚠️ ';
+    }
+
+    return `
+      <div style="color:${color}; font-weight:${weight}; margin-bottom:4px;">
+        ${icon}<b>${type}:</b>
         غيابك 
-        <span class="primary-num">${absentByType['نظري']}</span> 
+        <span class="primary-num">${absent}</span> 
         من 
-        <span class="primary-num">${limitByType['نظري']}</span>
+        <span class="primary-num">${limit}</span>
         —
         المتبقي 
-        <span class="primary-num">${remainingByType['نظري']}</span> 
-        ${lectureWord(remainingByType['نظري'])}
+        <span class="primary-num">${remaining}</span> 
+        ${lectureWord(remaining)}
       </div>
-    `);
+    `;
   }
 
-  if (hasPrac) {
-    lines.push(`
-      <div>
-        <b>العملي:</b> 
-        غيابك 
-        <span class="primary-num">${absentByType['عملي']}</span> 
-        من 
-        <span class="primary-num">${limitByType['عملي']}</span>
-        —
-        المتبقي 
-        <span class="primary-num">${remainingByType['عملي']}</span> 
-        ${lectureWord(remainingByType['عملي'])}
-      </div>
-    `);
-  }
+  if (hasTheory) lines.push(buildLine('نظري'));
+  if (hasPrac)   lines.push(buildLine('عملي'));
 
   advice = `
     <div class="advice-box" style="line-height:1.9;">
