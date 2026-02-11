@@ -843,39 +843,44 @@ if (isDeprived) {
   let lines = [];
 
   function buildLine(type){
-    const remaining = remainingByType[type];
-    const absent = absentByType[type];
-    const limit = limitByType[type];
+  const remaining = remainingByType[type];
+  const absent = absentByType[type];
+  const limit = limitByType[type];
 
-    let color = '#16a34a'; // أخضر افتراضي
-    let weight = '700';
-    let icon = '';
+  // 🎨 ألوان الشق
+  const typeColor = (type === 'نظري') ? '#2563eb' : '#16a34a';
 
-    if (remaining === 0){
-      color = '#dc2626'; // أحمر
-      weight = '900';
-      icon = '⚠️ ';
-    }
-    else if (remaining === 1){
-      color = '#f97316'; // برتقالي
-      weight = '900';
-      icon = '⚠️ ';
-    }
+  let color = '#16a34a'; // لون افتراضي آمن
+  let weight = '700';
+  let icon = '';
 
-    return `
-      <div style="color:${color}; font-weight:${weight}; margin-bottom:4px;">
-        ${icon}<b>ال${type}:</b>
-        غيابك 
-        <span class="primary-num">${absent}</span> 
-        من 
-        <span class="primary-num">${limit}</span>
-        —
-        يتبقى لك 
-        <span class="primary-num">${remaining}</span> 
-        ${lectureWord(remaining)}
-      </div>
-    `;
+  if (remaining === 0){
+    color = '#dc2626'; // أحمر
+    weight = '900';
+    icon = '⚠️ ';
   }
+  else if (remaining === 1){
+    color = '#f97316'; // برتقالي
+    weight = '900';
+    icon = '⚠️ ';
+  }
+
+  return `
+    <div style="color:${color}; font-weight:${weight}; margin-bottom:6px;">
+      ${icon}
+      <b style="color:${typeColor};">ال${type}:</b>
+      غيابك 
+      <span class="primary-num">${absent}</span> 
+      من 
+      <span class="primary-num">${limit}</span>
+      —
+      يتبقى لك 
+      <span class="primary-num">${remaining}</span> 
+      ${lectureWord(remaining)}
+    </div>
+  `;
+}
+
 
   if (hasTheory) lines.push(buildLine('نظري'));
   if (hasPrac)   lines.push(buildLine('عملي'));
