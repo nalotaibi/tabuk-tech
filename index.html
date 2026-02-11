@@ -1064,7 +1064,7 @@ localStorage.setItem('myCourses', JSON.stringify(courses));
     </div>
 
     <div>
-      <div class="input-sub-label">المدة (لا تؤثر)</div>
+      <div class="input-sub-label">المدة</div>
       <select onchange="updateMeeting(${course.id}, ${idx}, 'dur', this.value)">
         <option value="1" ${Number(m.dur) === 1 ? 'selected' : ''}>ساعة</option>
         <option value="2" ${Number(m.dur) === 2 ? 'selected' : ''}>ساعتين</option>
