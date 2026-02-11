@@ -928,13 +928,7 @@ function lectureWord(n){
   courses.forEach(course => {
     ensureMeetings(course);
 
-    // ✅ الحسبة الجديدة (باللقاءات + 19 أسبوع) من دالة واحدة فقط
     const s = computeCourseState(course);
-
-    // لون زر i حسب الحالة
-    const infoIconClass =
-      (s.statusClass === 'danger-bg') ? 'danger' :
-      (s.percentShown >= 10) ? 'warn' : '';
 
     const card = document.createElement('div');
     card.className = 'course-card';
@@ -959,48 +953,46 @@ function lectureWord(n){
         </div>
 
         <div style="margin-top:10px; font-size:0.82rem; color:#475569; font-weight:700; text-align:center;">
-  عدد اللقاءات الأسبوعية: <b class="primary-num">${s.weeklyMeetings}</b> لقاء
-</div>
-
+          عدد اللقاءات الأسبوعية: <b class="primary-num">${s.weeklyMeetings}</b> لقاء
+        </div>
       </div>
 
-     <div class="result-area ${s.statusClass}" id="resultBox-${course.id}">
-  <div id="statusMsg-${course.id}"
-      style="font-size:0.95rem; font-weight:800; color:${s.statusColor}; margin-bottom:10px;">
-    ${s.msg}
-  </div>
+      <div class="result-area ${s.statusClass}" id="resultBox-${course.id}">
+        <div id="statusMsg-${course.id}"
+            style="font-size:0.95rem; font-weight:800; color:${s.statusColor}; margin-bottom:10px;">
+          ${s.msg}
+        </div>
 
-  <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:5px;">
-    <span id="percentTxt-${course.id}"
-          style="font-size:1.8rem; font-weight:900; color:var(--primary);">
-      ${s.percentShown.toFixed(1).replace(/\.0+$/,'')}%
-    </span>
-    <span style="font-size:0.85rem; color:#718096; font-weight:bold;">من أصل 20%</span>
-  </div>
+        <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:5px;">
+          <span id="percentTxt-${course.id}"
+                style="font-size:1.8rem; font-weight:900; color:var(--primary);">
+            ${s.percentShown.toFixed(1).replace(/\\.0+$/,'')}%
+          </span>
+          <span style="font-size:0.85rem; color:#718096; font-weight:bold;">من أصل 20%</span>
+        </div>
 
-  <div class="progress-bar">
-    <div id="barFill-${course.id}" class="progress-fill"
-        style="width:${Math.min((s.percentShown / 20) * 100, 100)}%; background:${s.statusColor}">
-    </div>
-  </div>
+        <div class="progress-bar">
+          <div id="barFill-${course.id}" class="progress-fill"
+              style="width:${Math.min((s.percentShown / 20) * 100, 100)}%; background:${s.statusColor}">
+          </div>
+        </div>
 
-  <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#555; font-weight:700; margin-top:5px;">
-    <span id="absentTxt-${course.id}">
-      غيابك الحالي: ${s.absentAll} ${lectureWord(s.absentAll)}
-    </span>
+        <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#555; font-weight:700; margin-top:5px;">
+          <span id="absentTxt-${course.id}">
+            غيابك الحالي: ${s.absentAll} ${lectureWord(s.absentAll)}
+          </span>
 
-    <span id="limitTxt-${course.id}">
-      حد الحرمان: ${s.limitAll} ${lectureWord(s.limitAll)}
-      <span class="info-icon ${s.statusClass==='danger-bg'?'danger':(s.percentShown>=10?'warn':'')}"
-            onclick="openLimitInfo(${course.id})">i</span>
-    </span>
-  </div>
+          <span id="limitTxt-${course.id}">
+            حد الحرمان: ${s.limitAll} ${lectureWord(s.limitAll)}
+            <span class="info-icon ${s.statusClass==='danger-bg'?'danger':(s.percentShown>=10?'warn':'')}"
+                  onclick="openLimitInfo(${course.id})">i</span>
+          </span>
+        </div>
 
-  <div id="adviceBox-${course.id}">
-    ${s.advice}
-  </div>
-</div>
-
+        <div id="adviceBox-${course.id}">
+          ${s.advice}
+        </div>
+      </div>
     `;
 
     list.appendChild(card);
@@ -1054,53 +1046,6 @@ function lectureWord(n){
   localStorage.setItem('myCourses', JSON.stringify(courses));
 }
 
-      const wrap = card.querySelector(`#meetWrap-${course.id}`);
-      if (wrap) {
-        wrap.innerHTML = (course.meetings || []).slice(0, 3).map((m, idx) => `
-  <div class="flex-inputs" style="margin-top:8px;">
-    <div>
-      <div class="input-sub-label">اليوم</div>
-      <select onchange="updateMeeting(${course.id}, ${idx}, 'day', this.value)">
-        ${['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس'].map(d =>
-          `<option value="${d}" ${(m.day === d) ? 'selected' : ''}>${d}</option>`
-        ).join('')}
-      </select>
-    </div>
-
-    <div>
-      <div class="input-sub-label">النوع</div>
-      <select onchange="updateMeeting(${course.id}, ${idx}, 'type', this.value)">
-        <option value="نظري" ${(m.type === 'نظري') ? 'selected' : ''}>نظري</option>
-        <option value="عملي" ${(m.type === 'عملي') ? 'selected' : ''}>عملي</option>
-      </select>
-    </div>
-
-    <div>
-      <div class="input-sub-label">المدة</div>
-      <select onchange="updateMeeting(${course.id}, ${idx}, 'dur', this.value)">
-        <option value="1" ${Number(m.dur) === 1 ? 'selected' : ''}>ساعة</option>
-        <option value="2" ${Number(m.dur) === 2 ? 'selected' : ''}>ساعتين</option>
-      </select>
-    </div>
-
-    <div>
-      <div class="input-sub-label">عدد مرات الغياب</div>
-      <input type="text" inputmode="numeric" pattern="[0-9]*"
-        value="${m.absent ?? ''}" placeholder="0"
-        oninput="
-          this.value = fixNumbers(this.value);
-          updateMeeting(${course.id}, ${idx}, 'absent', this.value, false);
-          updateCourseUI(${course.id});
-        "
-        onchange="updateMeeting(${course.id}, ${idx}, 'absent', this.value, true)">
-    </div>
-  </div>
-`).join('');
-      }
-    });
-
-    localStorage.setItem('myCourses', JSON.stringify(courses));
-  }
 
   function updateCourse(id, field, value) {
     const index = courses.findIndex(c => c.id === id);
