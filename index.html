@@ -615,25 +615,64 @@ function lectureWord(n){
     ov.style.display = 'none';
   }
 
-  function openLimitInfo(weeklyH, totalHours, limit) {
-    const fixed = Number(limit).toFixed(1);
-    const text = `
-      <div style="font-weight:900; margin-bottom:6px; color:var(--primary);">
-        حساب الحرمان بناءً على التقويم التدريبي للفصل التدريبي الثاني 1447 (16 أسبوعًا) :
-      </div>
+  function openLimitInfo(courseId){
+  const course = courses.find(c => c.id === courseId);
+  if (!course) return;
 
-      <div style="margin-top:8px;">
-        • مجموع الساعات الأسبوعية (عدد اللقاءات): <b class="num">${weeklyH}</b><br>
-        • الساعات الفعلية في الترم (بعد حذف الإجازات الرسمية): <b class="num">${Number(totalHours).toFixed(1).replace(/\\.0+$/,'')}</b> ساعة
-      </div>
+  const s = computeCourseState(course);
 
-      <div class="formula-line" style="margin-top:10px;">
-        ( <span class="num">${Number(totalHours).toFixed(1).replace(/\\.0+$/,'')}</span> ساعة ) × <span class="num">20%</span>
-        = <span class="num">${fixed}</span> ساعة
+  const totalAll = s.totalLecturesAll;
+  const limitAll = s.limitAll;
+
+  const theoryBlock = s.hasTheory ? `
+    <div style="margin-top:8px; padding:10px 12px; border-radius:14px; background:#f8fafc; border:1px solid rgba(15,23,42,0.08);">
+      <div style="font-weight:900; color:#0f172a; margin-bottom:6px;">النظري</div>
+      • إجمالي اللقاءات: <b class="num">${s.totalByType['نظري']}</b> لقاء<br>
+      • حد الحرمان (20%): <b class="num">${s.limitByType['نظري']}</b> غياب
+    </div>
+  ` : '';
+
+  const pracBlock = s.hasPrac ? `
+    <div style="margin-top:8px; padding:10px 12px; border-radius:14px; background:#f8fafc; border:1px solid rgba(15,23,42,0.08);">
+      <div style="font-weight:900; color:#0f172a; margin-bottom:6px;">العملي</div>
+      • إجمالي اللقاءات: <b class="num">${s.totalByType['عملي']}</b> لقاء<br>
+      • حد الحرمان (20%): <b class="num">${s.limitByType['عملي']}</b> غياب
+    </div>
+  ` : '';
+
+  const text = `
+    <div style="font-weight:900; margin-bottom:6px; color:var(--primary);">
+      حساب الحرمان وفق نظام <span class="num">${SYSTEM_WEEKS}</span> أسبوع (مطابقة رايات) — باللقاءات:
+    </div>
+
+    <div style="margin-top:8px; line-height:1.9;">
+      • عدد اللقاءات الأسبوعية: <b class="num">${s.weeklyMeetings}</b><br>
+      • إجمالي اللقاءات في الترم: <b class="num">${totalAll}</b> لقاء
+    </div>
+
+    <div class="formula-line" style="margin-top:10px;">
+      ( <span class="num">${totalAll}</span> لقاء ) × <span class="num">20%</span>
+      = <span class="num">${(totalAll * 0.20).toFixed(1).replace(/\\.0+$/,'')}</span> لقاء
+    </div>
+
+    <div style="margin-top:8px; font-weight:900; color:#0f172a;">
+      🔴 يبدأ الحرمان عند <span class="num">${limitAll}</span> غيابًا (أول عدد يحقق ≥ 20%)
+    </div>
+
+    ${(s.hasTheory || s.hasPrac) ? `
+      <hr style="border:none; border-top:1px solid rgba(15,23,42,0.10); margin:12px 0;">
+      <div style="font-weight:900; color:#334155; margin-bottom:6px;">تفصيل الشُعب:</div>
+      ${theoryBlock}
+      ${pracBlock}
+      <div style="margin-top:10px; color:#ef4444; font-weight:900;">
+        🔴 أول شق يصل الحد ⇒ حرمان المقرر
       </div>
-    `;
-    openInfoModal({ title: 'طريقة الحساب', text, badge: 'i', formula: '' });
-  }
+    ` : ''}
+  `;
+
+  openInfoModal({ title: 'طريقة الحساب', text, badge: 'i', formula: '' });
+}
+
 
   function ensureMeetings(course){
   if (!Array.isArray(course.meetings)) course.meetings = [];
@@ -832,203 +871,188 @@ function lectureWord(n){
 }
 
   function updateCourseUI(courseId){
-    const course = courses.find(c => c.id === courseId);
-    if (!course) return;
+  const course = courses.find(c => c.id === courseId);
+  if (!course) return;
 
-    const s = computeCourseState(course);
+  const s = computeCourseState(course);
 
-const box = document.getElementById(`resultBox-${courseId}`);
-const msgEl = document.getElementById(`statusMsg-${courseId}`);
-const pctEl = document.getElementById(`percentTxt-${courseId}`);
-const barEl = document.getElementById(`barFill-${courseId}`);
-const absEl = document.getElementById(`absentTxt-${courseId}`);
-const limEl = document.getElementById(`limitTxt-${courseId}`);
-const advEl = document.getElementById(`adviceBox-${courseId}`);
+  const box = document.getElementById(`resultBox-${courseId}`);
+  const msgEl = document.getElementById(`statusMsg-${courseId}`);
+  const pctEl = document.getElementById(`percentTxt-${courseId}`);
+  const barEl = document.getElementById(`barFill-${courseId}`);
+  const absEl = document.getElementById(`absentTxt-${courseId}`);
+  const limEl = document.getElementById(`limitTxt-${courseId}`);
+  const advEl = document.getElementById(`adviceBox-${courseId}`);
 
-if (!box || !msgEl || !pctEl || !barEl || !absEl || !limEl || !advEl) return;
+  if (!box || !msgEl || !pctEl || !barEl || !absEl || !limEl || !advEl) return;
 
-box.classList.remove('safe-bg','warning-bg','danger-bg');
-box.classList.add(s.statusClass);
+  box.classList.remove('safe-bg','warning-bg','danger-bg');
+  box.classList.add(s.statusClass);
 
-msgEl.textContent = s.msg;
-msgEl.style.color = s.statusColor;
+  msgEl.textContent = s.msg;
+  msgEl.style.color = s.statusColor;
 
-pctEl.textContent = `${s.percentShown.toFixed(1).replace(/\.0+$/,'')}%`;
+  pctEl.textContent = `${Number(s.percentShown).toFixed(1).replace(/\.0+$/,'')}%`;
 
-const w = Math.min((s.percentShown / 20) * 100, 100);
-barEl.style.width = `${w}%`;
-barEl.style.background = s.statusColor;
+  const w = Math.min((s.percentShown / 20) * 100, 100);
+  barEl.style.width = `${w}%`;
+  barEl.style.background = s.statusColor;
 
-absEl.textContent = `غيابك الحالي: ${s.absentAll} ${lectureWord(s.absentAll)}`;
+  absEl.textContent = `غيابك الحالي: ${s.absentAll} ${lectureWord(s.absentAll)}`;
 
-const icon = limEl.querySelector('.info-icon')?.outerHTML || '';
-limEl.innerHTML = `حد الحرمان: ${s.limitAll} ${lectureWord(s.limitAll)} ${icon}`;
+  // لون زر i حسب الحالة
+  const infoIconClass =
+    (s.statusClass === 'danger-bg') ? 'danger' :
+    (s.percentShown >= 10) ? 'warn' : '';
 
-advEl.innerHTML = s.advice;
+  // ✅ نعيد بناء limitTxt بالكامل عشان نضمن onclick الجديد (باللقاءات)
+  limEl.innerHTML = `
+    حد الحرمان: ${s.limitAll} ${lectureWord(s.limitAll)}
+    <span class="info-icon ${infoIconClass}" onclick="openLimitInfo(${courseId})">i</span>
+  `;
 
-localStorage.setItem('myCourses', JSON.stringify(courses));
+  advEl.innerHTML = s.advice;
 
-  }
+  localStorage.setItem('myCourses', JSON.stringify(courses));
+}
+
 
   // ============================
   // ✅ renderCourses (تم إصلاح إغلاق الـ template literal)
   // ============================
   function renderCourses() {
-    const list = $('coursesList');
-    if (!list) return;
-    list.innerHTML = '';
+  const list = $('coursesList');
+  if (!list) return;
+  list.innerHTML = '';
 
-    const EPS = 1e-9;
+  courses.forEach(course => {
+    ensureMeetings(course);
 
-    function fmt(n, digits = 1) {
-      const x = Number(n);
-      if (!Number.isFinite(x)) return '0';
-      return x.toFixed(digits).replace(/\.0+$/, '');
+    // ✅ الحسبة الجديدة (باللقاءات + 19 أسبوع) من دالة واحدة فقط
+    const s = computeCourseState(course);
+
+    // لون زر i حسب الحالة
+    const infoIconClass =
+      (s.statusClass === 'danger-bg') ? 'danger' :
+      (s.percentShown >= 10) ? 'warn' : '';
+
+    const card = document.createElement('div');
+    card.className = 'course-card';
+
+    card.innerHTML = `
+      <button class="delete-course" onclick="deleteCourse(${course.id})">✕</button>
+
+      <input type="text" class="course-title"
+        value="${course.name}"
+        onchange="updateCourse(${course.id}, 'name', this.value)">
+
+      <div class="input-group">
+        <label style="text-align:center;">لقاءات المقرر الأسبوعية</label>
+
+        <div id="meetWrap-${course.id}"></div>
+
+        <div style="display:flex; gap:8px; margin-top:10px;">
+          <button type="button" class="reset-all" style="flex:1;"
+            onclick="addMeeting(${course.id})">➕ إضافة لقاء</button>
+          <button type="button" class="reset-all" style="flex:1;"
+            onclick="removeMeeting(${course.id})">➖ حذف آخر لقاء</button>
+        </div>
+
+        <div style="margin-top:10px; font-size:0.82rem; color:#475569; font-weight:700; text-align:center;">
+  عدد اللقاءات الأسبوعية: <b class="primary-num">${s.weeklyMeetings}</b> لقاء
+</div>
+
+      </div>
+
+     <div class="result-area ${s.statusClass}" id="resultBox-${course.id}">
+  <div id="statusMsg-${course.id}"
+      style="font-size:0.95rem; font-weight:800; color:${s.statusColor}; margin-bottom:10px;">
+    ${s.msg}
+  </div>
+
+  <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:5px;">
+    <span id="percentTxt-${course.id}"
+          style="font-size:1.8rem; font-weight:900; color:var(--primary);">
+      ${s.percentShown.toFixed(1).replace(/\.0+$/,'')}%
+    </span>
+    <span style="font-size:0.85rem; color:#718096; font-weight:bold;">من أصل 20%</span>
+  </div>
+
+  <div class="progress-bar">
+    <div id="barFill-${course.id}" class="progress-fill"
+        style="width:${Math.min((s.percentShown / 20) * 100, 100)}%; background:${s.statusColor}">
+    </div>
+  </div>
+
+  <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#555; font-weight:700; margin-top:5px;">
+    <span id="absentTxt-${course.id}">
+      غيابك الحالي: ${s.absentAll} ${lectureWord(s.absentAll)}
+    </span>
+
+    <span id="limitTxt-${course.id}">
+      حد الحرمان: ${s.limitAll} ${lectureWord(s.limitAll)}
+      <span class="info-icon ${s.statusClass==='danger-bg'?'danger':(s.percentShown>=10?'warn':'')}"
+            onclick="openLimitInfo(${course.id})">i</span>
+    </span>
+  </div>
+
+  <div id="adviceBox-${course.id}">
+    ${s.advice}
+  </div>
+</div>
+
+    `;
+
+    list.appendChild(card);
+
+    // ✅ بناء واجهة اللقاءات (اليوم/النوع/المدة/الغياب)
+    const wrap = card.querySelector(`#meetWrap-${course.id}`);
+    if (wrap) {
+      wrap.innerHTML = (course.meetings || []).slice(0, 3).map((m, idx) => `
+        <div class="flex-inputs" style="margin-top:8px;">
+          <div>
+            <div class="input-sub-label">اليوم</div>
+            <select onchange="updateMeeting(${course.id}, ${idx}, 'day', this.value)">
+              ${['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس'].map(d =>
+                `<option value="${d}" ${(m.day === d) ? 'selected' : ''}>${d}</option>`
+              ).join('')}
+            </select>
+          </div>
+
+          <div>
+            <div class="input-sub-label">النوع</div>
+            <select onchange="updateMeeting(${course.id}, ${idx}, 'type', this.value)">
+              <option value="نظري" ${(m.type === 'نظري' || !m.type) ? 'selected' : ''}>نظري</option>
+              <option value="عملي" ${(m.type === 'عملي') ? 'selected' : ''}>عملي</option>
+            </select>
+          </div>
+
+          <div>
+            <div class="input-sub-label">مدة اللقاء</div>
+            <select onchange="updateMeeting(${course.id}, ${idx}, 'dur', this.value)">
+              <option value="1" ${Number(m.dur) === 1 ? 'selected' : ''}>ساعة</option>
+              <option value="2" ${Number(m.dur) === 2 ? 'selected' : ''}>ساعتين</option>
+            </select>
+          </div>
+
+          <div>
+            <div class="input-sub-label">عدد مرات الغياب</div>
+            <input type="text" inputmode="numeric" pattern="[0-9]*"
+              value="${m.absent ?? ''}" placeholder="0"
+              oninput="
+                this.value = fixNumbers(this.value);
+                updateMeeting(${course.id}, ${idx}, 'absent', this.value, false);
+                updateCourseUI(${course.id});
+              "
+              onchange="updateMeeting(${course.id}, ${idx}, 'absent', this.value, true)">
+          </div>
+        </div>
+      `).join('');
     }
+  });
 
-    courses.forEach(course => {
-      ensureMeetings(course);
-
-      const cleanMeetings = (course.meetings || []).slice(0, 3)
-        .filter(m => m && m.day && (Number(m.dur) === 1 || Number(m.dur) === 2))
-        .map(m => ({ day: m.day, dur: Number(m.dur), absent: parseFloat(m.absent) || 0 }));
-
-      const weeklyH = cleanMeetings.reduce((s, m) => s + m.dur, 0);
-
-      const dayCountCache = {};
-      function dayCount(dayName) {
-        if (dayCountCache[dayName] === undefined) dayCountCache[dayName] = countDayOccurrences(dayName);
-        return dayCountCache[dayName];
-      }
-
-      const totalHours = cleanMeetings.reduce((s, m) => s + (dayCount(m.day) * m.dur), 0);
-      const limit = totalHours * 0.20;
-      const currentAbsent = cleanMeetings.reduce((s, m) => s + (m.absent * m.dur), 0);
-      const percent = totalHours ? (currentAbsent / totalHours) * 100 : 0;
-
-      const minDur = cleanMeetings.length ? Math.min(...cleanMeetings.map(m => m.dur)) : 1;
-
-      let statusClass = 'safe-bg', statusColor = 'var(--safe)', msg = '🟢 وضعك آمن ومستقر', infoIconClass = '';
-
-      if (currentAbsent + EPS >= limit) {
-        statusClass = 'danger-bg';
-        statusColor = 'var(--danger)';
-        msg = '🔴 حالة حرمان';
-        infoIconClass = 'danger';
-      } else if (percent >= 15) {
-        statusClass = 'warning-bg';
-        statusColor = 'var(--orange)';
-        msg = '🟠 تنبيه: اقتربت من الحرمان';
-        infoIconClass = 'warn';
-      } else if (percent >= 10) {
-        statusClass = 'warning-bg';
-        statusColor = 'var(--warning)';
-        msg = '🟡 انتباه: بدأ رصيدك بالنقصان';
-        infoIconClass = 'warn';
-      }
-
-      let advice = '';
-      if (currentAbsent + EPS >= limit) {
-        advice = `<div class="advice-box" style="color:#dc2626; font-weight:900;">
-                    تجاوزتِ الحد المسموح (${fmt(limit, 1)} ${hourWord(limit)})
-                  </div>`;
-      } else {
-        const remainingSafeRaw = (limit - EPS) - currentAbsent;
-        const nextStep = minDur;
-
-        if (remainingSafeRaw <= EPS || remainingSafeRaw < nextStep - EPS) {
-          advice = `<div class="advice-box" style="color:var(--danger); font-weight:900; text-align:center;">
-                      ⚠️ أي غياب قادم سيؤدي إلى الحرمان
-                    </div>`;
-        } else {
-          const remInt = Math.max(0, Math.floor(remainingSafeRaw));
-
-          const has1 = cleanMeetings.some(m => m.dur === 1);
-          const has2 = cleanMeetings.some(m => m.dur === 2);
-
-          let rem = remainingSafeRaw;
-          let used2 = has2 ? Math.floor(rem / 2) : 0;
-          rem -= used2 * 2;
-          let used1 = has1 ? Math.floor(rem / 1) : 0;
-
-          let detailParts = [];
-          if (has2 && used2 > 0) detailParts.push(`${getLectureText(used2)} (ساعتين)`);
-          if (has1 && used1 > 0) detailParts.push(`${getLectureText(used1)} (ساعة)`);
-          let detail = detailParts.join(' + ');
-
-          advice = `<div class="advice-box">
-                      متبقي لك <b>${fmt(remInt, 0)}</b> ${hourWord(remInt)}${detail ? `: ${detail}` : ''}
-                    </div>`;
-        }
-      }
-
-      const card = document.createElement('div');
-      card.className = 'course-card';
-
-      // ✅ تم إصلاح إغلاق النص هنا (أهم إصلاح)
-      card.innerHTML = `
-        <button class="delete-course" onclick="deleteCourse(${course.id})">✕</button>
-
-        <input type="text" class="course-title"
-          value="${course.name}"
-          onchange="updateCourse(${course.id}, 'name', this.value)">
-
-        <div class="input-group">
-          <label style="text-align:center;">لقاءات المقرر الأسبوعية</label>
-
-          <div id="meetWrap-${course.id}"></div>
-
-          <div style="display:flex; gap:8px; margin-top:10px;">
-            <button type="button" class="reset-all" style="flex:1;"
-              onclick="addMeeting(${course.id})">➕ إضافة لقاء</button>
-            <button type="button" class="reset-all" style="flex:1;"
-              onclick="removeMeeting(${course.id})">➖ حذف آخر لقاء</button>
-          </div>
-
-          <div style="margin-top:10px; font-size:0.82rem; color:#475569; font-weight:700; text-align:center;">
-            مجموع الساعات الأسبوعية: <b class="primary-num">${weeklyH}</b> ${hourWord(weeklyH)}
-          </div>
-        </div>
-
-        <div class="result-area ${statusClass}" id="resultBox-${course.id}">
-          <div id="statusMsg-${course.id}"
-              style="font-size:0.95rem; font-weight:800; color:${statusColor}; margin-bottom:10px;">
-            ${msg}
-          </div>
-
-          <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:5px;">
-            <span id="percentTxt-${course.id}"
-                  style="font-size:1.8rem; font-weight:900; color:var(--primary);">
-              ${fmt(percent, 1)}%
-            </span>
-            <span style="font-size:0.85rem; color:#718096; font-weight:bold;">من أصل 20%</span>
-          </div>
-
-          <div class="progress-bar">
-            <div id="barFill-${course.id}" class="progress-fill"
-                style="width:${Math.min((percent / 20) * 100, 100)}%; background:${statusColor}">
-            </div>
-          </div>
-
-          <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#555; font-weight:700; margin-top:5px;">
-            <span id="absentTxt-${course.id}">
-              غيابك الحالي: ${fmt(currentAbsent, 1)} ${hourWord(currentAbsent)}
-            </span>
-
-            <span id="limitTxt-${course.id}">
-              حد الحرمان: ${fmt(limit, 1)} ${hourWord(limit)}
-              <span class="info-icon ${infoIconClass}"
-                    onclick="openLimitInfo(${weeklyH}, ${totalHours}, ${limit})">i</span>
-            </span>
-          </div>
-
-          <div id="adviceBox-${course.id}">
-            ${advice}
-          </div>
-        </div>
-      `;
-
-      list.appendChild(card);
+  localStorage.setItem('myCourses', JSON.stringify(courses));
+}
 
       const wrap = card.querySelector(`#meetWrap-${course.id}`);
       if (wrap) {
