@@ -823,51 +823,63 @@ function lectureWord(n){
     : '';
 
   // نص الإرشاد
-    // نص الإرشاد (مُصحّح للشقّين)
-    // نص الإرشاد (عرض مستقل لكل شق)
-  let advice = '';
+    // نص الإرشاد (صيغة موحدة احترافية)
+let advice = '';
 
-  const remainingByType = {
-    'نظري': hasTheory ? ((limitByType['نظري'] - 1) - absentByType['نظري']) : null,
-    'عملي': hasPrac   ? ((limitByType['عملي'] - 1) - absentByType['عملي']) : null
-  };
+const remainingByType = {
+  'نظري': hasTheory ? ((limitByType['نظري'] - 1) - absentByType['نظري']) : null,
+  'عملي': hasPrac   ? ((limitByType['عملي'] - 1) - absentByType['عملي']) : null
+};
 
-  if (isDeprived) {
-    advice = `<div class="advice-box" style="color:#dc2626; font-weight:900;">
-                تجاوزتِ الحد المسموح.
-                ${detailHTML}
-              </div>`;
-  } else {
+if (isDeprived) {
 
-    let lines = [];
+  advice = `<div class="advice-box" style="color:#dc2626; font-weight:900;">
+              تجاوزتِ الحد المسموح.
+              ${detailHTML}
+            </div>`;
 
-    if (hasTheory) {
-      if (remainingByType['نظري'] <= 0) {
-        lines.push(`⚠️ <b style="color:var(--danger)">النظري:</b> أي غياب قادم سيؤدي إلى الحرمان`);
-      } else {
-        lines.push(`<b>النظري:</b> متبقي لك 
-          <span class="primary-num">${remainingByType['نظري']}</span> 
-          ${lectureWord(remainingByType['نظري'])}`);
-      }
-    }
+} else {
 
-    if (hasPrac) {
-      if (remainingByType['عملي'] <= 0) {
-        lines.push(`⚠️ <b style="color:var(--danger)">العملي:</b> أي غياب قادم سيؤدي إلى الحرمان`);
-      } else {
-        lines.push(`<b>العملي:</b> متبقي لك 
-          <span class="primary-num">${remainingByType['عملي']}</span> 
-          ${lectureWord(remainingByType['عملي'])}`);
-      }
-    }
+  let lines = [];
 
-    advice = `
-      <div class="advice-box" style="line-height:1.8;">
-        ${lines.join('<br>')}
-        ${detailHTML}
+  if (hasTheory) {
+    lines.push(`
+      <div>
+        <b>النظري:</b> 
+        غيابك 
+        <span class="primary-num">${absentByType['نظري']}</span> 
+        من 
+        <span class="primary-num">${limitByType['نظري']}</span>
+        —
+        المتبقي 
+        <span class="primary-num">${remainingByType['نظري']}</span> 
+        ${lectureWord(remainingByType['نظري'])}
       </div>
-    `;
+    `);
   }
+
+  if (hasPrac) {
+    lines.push(`
+      <div>
+        <b>العملي:</b> 
+        غيابك 
+        <span class="primary-num">${absentByType['عملي']}</span> 
+        من 
+        <span class="primary-num">${limitByType['عملي']}</span>
+        —
+        المتبقي 
+        <span class="primary-num">${remainingByType['عملي']}</span> 
+        ${lectureWord(remainingByType['عملي'])}
+      </div>
+    `);
+  }
+
+  advice = `
+    <div class="advice-box" style="line-height:1.9;">
+      ${lines.join('')}
+    </div>
+  `;
+}
 
 
   // للعرض أعلى البطاقة
