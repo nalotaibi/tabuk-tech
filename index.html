@@ -642,7 +642,7 @@ function lectureWord(n){
 
   const text = `
     <div style="font-weight:900; margin-bottom:6px; color:var(--primary);">
-      حساب الحرمان وفق نظام <span class="num">${SYSTEM_WEEKS}</span> أسبوع (مطابقة رايات) — باللقاءات:
+      حساب الحرمان  <span class="num">${SYSTEM_WEEKS}</span>:
     </div>
 
     <div style="margin-top:8px; line-height:1.9;">
@@ -656,7 +656,7 @@ function lectureWord(n){
     </div>
 
     <div style="margin-top:8px; font-weight:900; color:#0f172a;">
-      🔴 يبدأ الحرمان عند <span class="num">${limitAll}</span> غيابًا (أول عدد يحقق ≥ 20%)
+      🔴 يبدأ الحرمان عند <span class="num">${limitAll}</span> غيابًا)
     </div>
 
     ${(s.hasTheory || s.hasPrac) ? `
@@ -665,7 +665,7 @@ function lectureWord(n){
       ${theoryBlock}
       ${pracBlock}
       <div style="margin-top:10px; color:#ef4444; font-weight:900;">
-        🔴 أول شق يصل الحد ⇒ حرمان المقرر
+        🔴 المقرر نمط (نظري/عملي) عند الحرمان بأحدهما يؤدي إلى الحرمان في كامل المقرر
       </div>
     ` : ''}
   `;
