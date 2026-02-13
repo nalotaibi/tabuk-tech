@@ -285,24 +285,19 @@
   padding: 10px;
   line-height: normal;
 }
+/* ✅ إصلاح قص النص مع إبقاء سهم الـ select الافتراضي */
 .flex-inputs select{
   min-height: 48px;
   height: auto !important;
-  padding: 12px 42px 12px 14px; /* مساحة للسهم */
+  padding: 12px 14px;
   line-height: 1.4;
   text-align: center;
   text-align-last: center;
 
-  -webkit-appearance: none;
-  appearance: none;
-
-  background-image: linear-gradient(45deg, transparent 50%, #64748b 50%),
-                    linear-gradient(135deg, #64748b 50%, transparent 50%);
-  background-position: calc(1rem) 50%, calc(1.35rem) 50%;
-  background-size: 6px 6px, 6px 6px;
-  background-repeat: no-repeat;
-  background-color: #fff;
+  -webkit-appearance: menulist;  /* يرجّع السهم */
+  appearance: menulist;
 }
+
 
 @supports (-webkit-touch-callout: none) {
   .flex-inputs select{
