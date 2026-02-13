@@ -400,28 +400,20 @@ body {
   direction: rtl;
   unicode-bidi: plaintext;
 }
-/* تنسيق عام لحقل select */
-select {
-  padding: 12px 40px 12px 15px; /* مساحة للسهم */
-  border-radius: 14px;
-  border: 2px solid #e5e7eb;
-  background-color: #f3f4f6;
-  font-weight: 700;
-  font-size: 16px;
-  color: #1e293b;
-  cursor: pointer;
 
-  /* إلغاء السهم الافتراضي */
-  -webkit-appearance: none;
-  appearance: none;
+select{
+  /* مهم: اتركي مساحة كبيرة للسهم */
+  padding: 12px 16px 12px 52px;   /* left = 52px عشان السهم */
+  text-align: right;
 
-  /* إضافة سهم مخصص */
-  background-image: url("data:image/svg+xml;utf8,<svg fill='%231e73be' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5-5 5 5z'/><path d='M7 14l5 5 5-5z'/></svg>");
+  -webkit-appearance:none;
+  appearance:none;
+
+  background-image: url("data:image/svg+xml;utf8,<svg fill='%23006699' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5-5 5 5z'/><path d='M7 14l5 5 5-5z'/></svg>");
   background-repeat: no-repeat;
-  background-position: left 12px center;
+  background-position: 16px 50%;  /* السهم يسار */
   background-size: 18px;
 }
-
     
   </style>
 </head>
