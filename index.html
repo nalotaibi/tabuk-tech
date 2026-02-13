@@ -473,18 +473,18 @@
 
 <script>
   let courses = JSON.parse(localStorage.getItem('myCourses')) || [];
-const selectedWeeks = 16; // للتوافق فقط
+const selectedWeeks = 16; 
 
-// ===== قاعدة رايات (مطابقة) =====
+// ===== حساب نظام رايات (مطابقة) =====
 const SYSTEM_WEEKS = 19;
 const DEPRIVATION_RATE = 0.20;
 const EPS = 1e-9;
 
 function ceilLimit(totalLectures){
-  return Math.ceil((totalLectures * DEPRIVATION_RATE) - EPS); // أول عدد يحقق ≥20%
+  return Math.ceil((totalLectures * DEPRIVATION_RATE) - EPS); 
 }
 function floor1(x){
-  return Math.floor((Number(x)||0) * 10) / 10; // Floor لعشري واحد
+  return Math.floor((Number(x)||0) * 10) / 10; 
 }
 function lectureWord(n){
   return (Math.abs(parseInt(n||0,10)) === 1) ? "لقاء" : "لقاءات";
@@ -493,7 +493,7 @@ function lectureWord(n){
 
   function $(id){ return document.getElementById(id); }
 
-  // ===== التقويم الحقيقي (ثابت) =====
+  // ===== التقويم التدريبي =====
   const TERM_START = parseDMY('18-1-2026');
   const TERM_END   = parseDMY('21-5-2026');
 
@@ -685,7 +685,7 @@ function lectureWord(n){
 
   course.meetings.forEach(m => {
     if (!m.day) m.day = 'الأحد';
-    m.dur = Number(m.dur) === 1 ? 1 : 2;     // للعرض فقط (لا يدخل بالحسبة)
+    m.dur = Number(m.dur) === 1 ? 1 : 2;    
     if (!m.type) m.type = 'نظري';            // ✅ الجديد
     if (m.absent === undefined) m.absent = '';
   });
@@ -723,8 +723,8 @@ function lectureWord(n){
   if (!m) return;
 
   if (field === 'day') m.day = value;
-  if (field === 'dur') m.dur = Number(value) === 1 ? 1 : 2; // للعرض فقط
-  if (field === 'type') m.type = value;                     // ✅ الجديد
+  if (field === 'dur') m.dur = Number(value) === 1 ? 1 : 2; 
+  if (field === 'type') m.type = value;                     
   if (field === 'absent') m.absent = fixNumbers(value);
 
   if (doRender) renderCourses();
@@ -740,7 +740,7 @@ function lectureWord(n){
       day: m.day,
       dur: Number(m.dur),                     // للعرض فقط
       type: (m.type === 'عملي') ? 'عملي' : 'نظري',
-      absent: parseInt(m.absent, 10) || 0     // ✅ غيابات باللقاءات
+      absent: parseInt(m.absent, 10) || 0     //  غيابات باللقاءات
     }));
 
   // عدد اللقاءات الأسبوعية لكل شق
@@ -753,7 +753,6 @@ function lectureWord(n){
     'عملي': weeklyByType['عملي'] * SYSTEM_WEEKS
   };
 
-  // حد الحرمان لكل شق (Ceil)
   const limitByType = {
     'نظري': ceilLimit(totalByType['نظري']),
     'عملي': ceilLimit(totalByType['عملي'])
@@ -763,7 +762,6 @@ function lectureWord(n){
   const absentByType = { 'نظري': 0, 'عملي': 0 };
   cleanMeetings.forEach(m => { absentByType[m.type] += m.absent; });
 
-  // النسبة لكل شق (لعرضها بـ Floor)
   function pct(abs, total){
     if (!total) return 0;
     return (abs / total) * 100;
@@ -772,7 +770,6 @@ function lectureWord(n){
   const pctTheory = pct(absentByType['نظري'], totalByType['نظري']);
   const pctPrac   = pct(absentByType['عملي'], totalByType['عملي']);
 
-  // نعرض "الأشد" (الأعلى نسبة) حتى يكون التحذير واضح
   const hasTheory = totalByType['نظري'] > 0;
   const hasPrac   = totalByType['عملي'] > 0;
 
@@ -824,8 +821,6 @@ function lectureWord(n){
     : '';
 
   // نص الإرشاد
-    // نص الإرشاد (صيغة موحدة احترافية)
-// نص الإرشاد (صيغة احترافية + ألوان ديناميكية)
 let advice = '';
 
 const remainingByType = {
@@ -944,12 +939,12 @@ if (isDeprived) {
 
   absEl.textContent = `غيابك الحالي: ${s.absentAll} ${lectureWord(s.absentAll)}`;
 
-  // لون زر i حسب الحالة
+ 
   const infoIconClass =
     (s.statusClass === 'danger-bg') ? 'danger' :
     (s.percentShown >= 10) ? 'warn' : '';
 
-  // ✅ نعيد بناء limitTxt بالكامل عشان نضمن onclick الجديد (باللقاءات)
+ 
   limEl.innerHTML = `
     حد الحرمان: ${s.limitAll} ${lectureWord(s.limitAll)}
     <span class="info-icon ${infoIconClass}" onclick="openLimitInfo(${courseId})">i</span>
@@ -960,10 +955,6 @@ if (isDeprived) {
   localStorage.setItem('myCourses', JSON.stringify(courses));
 }
 
-
-  // ============================
-  // ✅ renderCourses (تم إصلاح إغلاق الـ template literal)
-  // ============================
   function renderCourses() {
   const list = $('coursesList');
   if (!list) return;
@@ -1041,7 +1032,7 @@ if (isDeprived) {
 
     list.appendChild(card);
 
-    // ✅ بناء واجهة اللقاءات (اليوم/النوع/المدة/الغياب)
+    //  بناء واجهة اللقاءات (اليوم/النوع/المدة/الغياب)
     const wrap = card.querySelector(`#meetWrap-${course.id}`);
     if (wrap) {
       wrap.innerHTML = (course.meetings || []).slice(0, 3).map((m, idx) => `
