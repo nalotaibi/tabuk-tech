@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -73,8 +74,7 @@
 
     .install-text {
       font-weight: 600;
-      color: #0f172a;  
-
+      color: var(--primary);
       font-size: 0.78rem;
     }
 
@@ -210,30 +210,8 @@
     }
 
     input:focus { border-color: var(--secondary); background: #f8fdff; }
-    /* ✅ صف اللقاءات: 4 أعمدة ثابتة (يمنع خروج حقل الغياب خارج الكرت) */
-.flex-inputs{
-  display: grid !important;
-  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-  gap: 6px !important;
-  align-items: end !important;
-}
-
-/* مهم: يسمح للعناصر تصغر بدون ما تدفع غيرها خارج الصفحة */
-.flex-inputs > div{ min-width: 0 !important; }
-
-/* ✅ على الشاشات الضيقة جدًا: خليها عمودين */
-.flex-inputs{
-  display: grid !important;
-  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-  gap: 8px !important;
-  align-items: end !important;
-}
-
-.flex-inputs > div{
-  min-width: 0 !important;
-}
-
-
+    .flex-inputs { display: flex; gap: 8px; align-items: flex-end; }
+    .flex-inputs > div { flex: 1; }
 
     .input-sub-label {
       font-size: 0.8rem;
@@ -396,221 +374,6 @@
       box-shadow: 0 12px 28px rgba(0,0,0,0.12);
     }
     .info-ok:active{ transform: translateY(1px); }
-
-  /* ✅ Fix select RTL across Windows/iPhone — keep your exact size & style */
-html, body { -webkit-text-size-adjust: 100%; }
-
-button, input, select, textarea{
-  font-family: 'Cairo','Segoe UI',Tahoma,sans-serif !important;
-}
-
-.flex-inputs input{
-  height: 42px !important;
-  padding: 6px 10px !important;
-  border-radius: 12px !important;
-  box-sizing: border-box !important;
-  text-align: center !important;
-  font-size: 15px !important;
-  font-weight: 800 !important;
-  line-height: 1.1 !important;
-}
-
-/* select فقط: يمنع تكسير العربية + يوحّد السهم */
-.flex-inputs select{
-  direction: rtl !important;
-  unicode-bidi: plaintext !important;
-
-  background: #eee !important;
-  border: 1.5px solid #edf2f1 !important;
-  color: var(--primary) !important;
-
-  -webkit-appearance: none !important;
-  appearance: none !important;
-
-  /* سهمين صغيرة مثل شكل الصورة بدون تكبير */
-  padding: 6px 12px 6px 36px !important;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24'%3E%3Cpath fill='%23006699' d='M7.41 15.59 12 11l4.59 4.59L18 14.17l-6-6-6 6z'/%3E%3Cpath fill='%23006699' d='M7.41 8.41 12 13l4.59-4.59L18 9.83l-6 6-6-6z'/%3E%3C/svg%3E") !important;
-  background-repeat: no-repeat !important;
-  background-position: 12px 50% !important;
-}
-
-.flex-inputs select option{
-  direction: rtl;
-  unicode-bidi: plaintext;
-}
-
-    /* ===== Custom Select (ثابت على iPhone + Windows) ===== */
-.cs {
-  position: relative;
-  width: 100%;
-}
-
-.cs-btn{
-  width: 100%;
-  height: 42px;
-  border-radius: 12px;
-  border: 1.5px solid #edf2f1;
-  background: #eee;
-  color: var(--primary);
-  font-family: 'Cairo','Segoe UI',Tahoma,sans-serif;
-  font-size: 0.95rem;
-  font-weight: 400;
-  line-height: 1.2;
-  box-sizing: border-box;
-
-  text-align: center;
-  cursor: pointer;
-
-  /* سهمين ثابتة يسار */
-  padding: 6px 12px 6px 36px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24'%3E%3Cpath fill='%23006699' d='M7.41 15.59 12 11l4.59 4.59L18 14.17l-6-6-6 6z'/%3E%3Cpath fill='%23006699' d='M7.41 8.41 12 13l4.59-4.59L18 9.83l-6 6-6-6z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: 12px 50%;
-}
-
-.cs.open .cs-btn{
-  border-color: var(--secondary);
-  background: #f8fdff;
-}
-
-.cs-menu{
-  position: absolute;
-  top: calc(100% + 6px);
-  right: 0;
-  left: 0;
-  z-index: 9999;
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 14px;
-  box-shadow: 0 12px 30px rgba(0,0,0,0.10);
-  padding: 6px;
-  display: none;
-  max-height: 220px;
-  overflow: auto;
-}
-
-.cs.open .cs-menu{ display: block; }
-
-.cs-opt{
-  padding: 10px 12px;
-  border-radius: 12px;
-  font-weight: 800;
-  color: #0f172a;
-  cursor: pointer;
-  text-align: center;
-}
-
-.cs-opt:hover{
-  background: #f0f7f9;
-}
-
-.cs-opt.active{
-  background: #e0f2fe;
-  color: var(--primary);
-}
-/* ✅ تثبيت زر الـ Custom Select على كل الأجهزة (يمنع تجاوز النص) */
-.cs-btn{
-  -webkit-appearance: none !important;
-  appearance: none !important;
-
-  height: 42px !important;
-  line-height: 42px !important;      /* ✅ أهم سطر: يخلي النص يتوسّط وما يتجاوز */
-  padding: 0 12px 0 36px !important; /* ✅ بدون padding عمودي */
-
-  font-size: 15px !important;        /* ✅ ثابت (لا يعتمد على rem) */
-  font-weight: 800 !important;
-
-  white-space: nowrap !important;    /* ✅ يمنع نزول السطر */
-  overflow: hidden !important;       /* ✅ يمنع خروج النص */
-  text-overflow: ellipsis !important;/* ✅ لو طول النص يقصه بنقاط */
-
-  border-radius: 12px !important;
-  border: 1.5px solid #edf2f1 !important;
-  background-color: #eee !important;
-  color: var(--primary) !important;
-}
-
-/* خيارات القائمة */
-.cs-opt{
-  font-size: 15px !important;
-  line-height: 1.2 !important;
-  white-space: nowrap !important;
-}
-
-function closeAllCS(except=null){
-  document.querySelectorAll('.cs.open').forEach(el=>{
-    if (except && el === except) return;
-    el.classList.remove('open');
-    const btn = el.querySelector('.cs-btn');
-    if (btn) btn.setAttribute('aria-expanded','false');
-  });
-}
-
-document.addEventListener('click', (e)=>{
-  const opt = e.target.closest('.cs-opt');
-  const btn = e.target.closest('.cs-btn');
-
-  if (opt){
-    const cs = opt.closest('.cs');
-    const courseId = Number(cs.dataset.courseId);
-    const idx = Number(cs.dataset.idx);
-    const field = cs.dataset.field;
-    const value = opt.dataset.value;
-
-    const btnEl = cs.querySelector('.cs-btn');
-    btnEl.textContent = opt.textContent;
-
-    cs.querySelectorAll('.cs-opt').forEach(o=>o.classList.remove('active'));
-    opt.classList.add('active');
-
-    cs.classList.remove('open');
-    btnEl.setAttribute('aria-expanded','false');
-
-    updateMeeting(courseId, idx, field, value, false);
-    updateCourseUI(courseId);
-    return;
-  }
-
-  if (btn){
-    const cs = btn.closest('.cs');
-    const isOpen = cs.classList.contains('open');
-    closeAllCS(cs);
-    cs.classList.toggle('open', !isOpen);
-    btn.setAttribute('aria-expanded', String(!isOpen));
-    return;
-  }
-
-  if (!e.target.closest('.cs')) closeAllCS();
-});
-
-/* ===== Fix: text clipping inside custom select button ===== */
-.cs-btn{
-  height: 44px !important;          /* ارفعناها شوي عشان ما ينقص النص */
-  padding: 0 12px 0 36px !important; /* بدون padding عمودي */
-  line-height: 1 !important;
-
-  display: flex !important;
-  align-items: center !important;    /* ✅ يمنع قص النص عمودياً */
-  justify-content: center !important;
-
-  white-space: nowrap !important;    /* ✅ لا يكسر السطر */
-  overflow: hidden !important;       /* ✅ ما يطلع خارج المربع */
-  text-overflow: ellipsis !important;/* ✅ إذا طول النص يطلع ... */
-}
-
-/* ✅ إزالة أي رموز/×× جاية من pseudo-elements بالغلط */
-.cs-btn::before,
-.cs-btn::after{
-  content: none !important;
-}
-
-/* ✅ خلي النص داخل المربعات غير عريض (كما طلبتي) */
-.cs-btn{
-  font-weight: 600 !important;       /* بدل 800 */
-  font-size: 15px !important;        /* ثابت */
-}
-
-  
   </style>
 </head>
 
@@ -961,16 +724,10 @@ function lectureWord(n){
 
   if (field === 'day') m.day = value;
   if (field === 'dur') m.dur = Number(value) === 1 ? 1 : 2; // للعرض فقط
-  if (field === 'type') m.type = (value === 'عملي') ? 'عملي' : 'نظري';                     // ✅ الجديد
+  if (field === 'type') m.type = value;                     // ✅ الجديد
   if (field === 'absent') m.absent = fixNumbers(value);
 
-  // ✅ إذا كنا نستخدم الـ Custom Select ما نحتاج renderCourses كل مرة
-if (doRender) {
-  renderCourses();
-} else {
-  localStorage.setItem('myCourses', JSON.stringify(courses));
-}
-
+  if (doRender) renderCourses();
 }
 
 
@@ -1287,60 +1044,46 @@ if (isDeprived) {
     // ✅ بناء واجهة اللقاءات (اليوم/النوع/المدة/الغياب)
     const wrap = card.querySelector(`#meetWrap-${course.id}`);
     if (wrap) {
-wrap.innerHTML = (course.meetings || []).slice(0, 3).map((m, idx) => `
-  <div class="flex-inputs" style="margin-top:8px;">
-    <div>
-      <div class="input-sub-label">اليوم</div>
+      wrap.innerHTML = (course.meetings || []).slice(0, 3).map((m, idx) => `
+        <div class="flex-inputs" style="margin-top:8px;">
+          <div>
+            <div class="input-sub-label">اليوم</div>
+            <select onchange="updateMeeting(${course.id}, ${idx}, 'day', this.value)">
+              ${['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس'].map(d =>
+                `<option value="${d}" ${(m.day === d) ? 'selected' : ''}>${d}</option>`
+              ).join('')}
+            </select>
+          </div>
 
-      <div class="cs" data-course-id="${course.id}" data-idx="${idx}" data-field="day">
-        <button type="button" class="cs-btn" aria-expanded="false">${m.day}</button>
-        <div class="cs-menu">
-          ${['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس'].map(d => `
-            <div class="cs-opt ${m.day===d?'active':''}" data-value="${d}">${d}</div>
-          `).join('')}
+          <div>
+            <div class="input-sub-label">النوع</div>
+            <select onchange="updateMeeting(${course.id}, ${idx}, 'type', this.value)">
+              <option value="نظري" ${(m.type === 'نظري' || !m.type) ? 'selected' : ''}>نظري</option>
+              <option value="عملي" ${(m.type === 'عملي') ? 'selected' : ''}>عملي</option>
+            </select>
+          </div>
+
+          <div>
+            <div class="input-sub-label">مدة اللقاء</div>
+            <select onchange="updateMeeting(${course.id}, ${idx}, 'dur', this.value)">
+              <option value="1" ${Number(m.dur) === 1 ? 'selected' : ''}>ساعة</option>
+              <option value="2" ${Number(m.dur) === 2 ? 'selected' : ''}>ساعتين</option>
+            </select>
+          </div>
+
+          <div>
+            <div class="input-sub-label">عدد مرات الغياب</div>
+            <input type="text" inputmode="numeric" pattern="[0-9]*"
+              value="${m.absent ?? ''}" placeholder="0"
+              oninput="
+                this.value = fixNumbers(this.value);
+                updateMeeting(${course.id}, ${idx}, 'absent', this.value, false);
+                updateCourseUI(${course.id});
+              "
+              onchange="updateMeeting(${course.id}, ${idx}, 'absent', this.value, true)">
+          </div>
         </div>
-      </div>
-    </div>
-
-    <div>
-      <div class="input-sub-label">النوع</div>
-
-      <div class="cs" data-course-id="${course.id}" data-idx="${idx}" data-field="type">
-        <button type="button" class="cs-btn" aria-expanded="false">${(m.type==='عملي')?'عملي':'نظري'}</button>
-        <div class="cs-menu">
-          ${['نظري','عملي'].map(t => `
-            <div class="cs-opt ${((m.type==='عملي')? 'عملي':'نظري')===t?'active':''}" data-value="${t}">${t}</div>
-          `).join('')}
-        </div>
-      </div>
-    </div>
-
-    <div>
-      <div class="input-sub-label">مدة اللقاء</div>
-
-      <div class="cs" data-course-id="${course.id}" data-idx="${idx}" data-field="dur">
-        <button type="button" class="cs-btn" aria-expanded="false">${Number(m.dur)===2?'ساعتين':'ساعة'}</button>
-        <div class="cs-menu">
-          <div class="cs-opt ${Number(m.dur)===1?'active':''}" data-value="1">ساعة</div>
-          <div class="cs-opt ${Number(m.dur)===2?'active':''}" data-value="2">ساعتين</div>
-        </div>
-      </div>
-    </div>
-
-    <div>
-      <div class="input-sub-label">عدد مرات الغياب</div>
-      <input type="text" inputmode="numeric" pattern="[0-9]*"
-        value="${m.absent ?? ''}" placeholder="0"
-        oninput="
-          this.value = fixNumbers(this.value);
-          updateMeeting(${course.id}, ${idx}, 'absent', this.value, false);
-          updateCourseUI(${course.id});
-        "
-        onchange="updateMeeting(${course.id}, ${idx}, 'absent', this.value, true)">
-    </div>
-  </div>
-`).join('');
-
+      `).join('');
     }
   });
 
@@ -1370,62 +1113,6 @@ wrap.innerHTML = (course.meetings || []).slice(0, 3).map((m, idx) => `
       renderCourses();
     }
   }
-
-  // ===== Custom Select handlers =====
-function closeAllCS(except = null){
-  document.querySelectorAll('.cs.open').forEach(el => {
-    if (except && el === except) return;
-    el.classList.remove('open');
-    const btn = el.querySelector('.cs-btn');
-    if (btn) btn.setAttribute('aria-expanded', 'false');
-  });
-}
-
-// فتح/إغلاق
-document.addEventListener('click', (e) => {
-  const btn = e.target.closest('.cs-btn');
-  const opt = e.target.closest('.cs-opt');
-
-  // اختيار عنصر
-  if (opt){
-    const cs = opt.closest('.cs');
-    const courseId = Number(cs.dataset.courseId);
-    const idx = Number(cs.dataset.idx);
-    const field = cs.dataset.field;
-    const value = opt.dataset.value;
-
-    // تحديث النص
-    const btnEl = cs.querySelector('.cs-btn');
-    btnEl.textContent = opt.textContent;
-
-    // تفعيل active
-    cs.querySelectorAll('.cs-opt').forEach(o => o.classList.remove('active'));
-    opt.classList.add('active');
-
-    // أغلق
-    cs.classList.remove('open');
-    btnEl.setAttribute('aria-expanded','false');
-
-    // ✅ اربطها بدوالك الحالية
-    updateMeeting(courseId, idx, field, value, true);
-    updateCourseUI(courseId);
-    return;
-  }
-
-  // فتح القائمة
-  if (btn){
-    const cs = btn.closest('.cs');
-    const isOpen = cs.classList.contains('open');
-    closeAllCS(cs);
-    cs.classList.toggle('open', !isOpen);
-    btn.setAttribute('aria-expanded', String(!isOpen));
-    return;
-  }
-
-  // ضغط خارجها = إغلاق
-  if (!e.target.closest('.cs')) closeAllCS();
-});
-
 
   window.onload = function () {
     courses.forEach(c => ensureMeetings(c));
