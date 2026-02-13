@@ -279,14 +279,17 @@
     .primary-num { color: var(--primary); font-weight: 900; }
 
     .flex-inputs select,
-    .flex-inputs input {
-      height: 42px;
-      padding: 10px;
-      border-radius: 12px;
-      box-sizing: border-box;
-      text-align: center;
-      text-align-last: center;
-    }
+.flex-inputs input {
+  min-height: 46px;     /* بدل height */
+  height: auto;
+  padding: 12px 16px;
+  line-height: 1.4;
+  border-radius: 12px;
+  box-sizing: border-box;
+  text-align: center;
+  text-align-last: center;
+}
+
 
     .info-overlay{
       display:none;
@@ -408,6 +411,13 @@ select{
   text-align: right;
 }
 select{ background: #fff !important; }
+@supports (-webkit-touch-callout: none) {
+  .flex-inputs select,
+  .flex-inputs input {
+    padding-top: 14px;
+    padding-bottom: 14px;
+  }
+}
 
     
   </style>
