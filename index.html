@@ -432,6 +432,50 @@ button, input, select, textarea{
   line-height: 1.2;
 }
 
+    /* ✅ تثبيت شكل الـ select مثل الصورة + حل مشكلة RTL في Windows/iPhone */
+html, body { -webkit-text-size-adjust: 100%; }
+
+button, input, select, textarea{
+  font-family: 'Cairo','Segoe UI',Tahoma,sans-serif !important;
+}
+
+/* نفس مقاسك القديم (42px) ونفس شكل البطاقات */
+.flex-inputs select,
+.flex-inputs input{
+  height: 42px !important;
+  font-size: 16px !important;
+  font-weight: 800;
+  line-height: 1.2;
+  box-sizing: border-box;
+}
+
+/* select فقط */
+.flex-inputs select{
+  direction: rtl !important;
+  unicode-bidi: plaintext;          /* ✅ يمنع تكسير العربية */
+  text-align: center;
+  text-align-last: center;
+  background: #eee !important;
+  border: 1.5px solid #edf2f1 !important;
+  border-radius: 14px !important;
+  color: var(--primary) !important; /* ✅ الأزرق مثل الصورة */
+
+  -webkit-appearance: none;
+  appearance: none;
+
+  /* ✅ سهمين بنفس شكل الصورة وبحجم صغير */
+  padding: 10px 12px 10px 36px !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24'%3E%3Cpath fill='%23006699' d='M7.41 15.59 12 11l4.59 4.59L18 14.17l-6-6-6 6z'/%3E%3Cpath fill='%23006699' d='M7.41 8.41 12 13l4.59-4.59L18 9.83l-6 6-6-6z'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: 12px 50% !important;
+}
+
+/* خيارات القائمة RTL */
+.flex-inputs select option{
+  direction: rtl;
+  unicode-bidi: plaintext;
+}
+
   </style>
 </head>
 
