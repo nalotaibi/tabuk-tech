@@ -384,15 +384,17 @@ button, input, select, textarea{
 .flex-inputs select,
 .flex-inputs input{
   height: 42px !important;
-  padding: 10px !important;
+  padding: 6px 10px !important;     /* ✅ قللنا العمودي فقط */
   border-radius: 12px !important;
   box-sizing: border-box !important;
   text-align: center !important;
   text-align-last: center !important;
-  font-size: 0.95rem !important;   /* نفس عندك بالأعلى */
+
+  font-size: 15px !important;       /* ✅ ثابت عشان ما يكبر بجهاز */
   font-weight: 800 !important;
-  line-height: 1.2 !important;
+  line-height: 1.1 !important;      /* ✅ يمنع تجاوز النص */
 }
+
 
 /* select فقط: يمنع تكسير العربية + يوحّد السهم */
 .flex-inputs select{
@@ -407,7 +409,7 @@ button, input, select, textarea{
   appearance: none !important;
 
   /* سهمين صغيرة مثل شكل الصورة بدون تكبير */
-  padding: 10px 12px 10px 36px !important;
+  padding: 6px 12px 6px 36px !important;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24'%3E%3Cpath fill='%23006699' d='M7.41 15.59 12 11l4.59 4.59L18 14.17l-6-6-6 6z'/%3E%3Cpath fill='%23006699' d='M7.41 8.41 12 13l4.59-4.59L18 9.83l-6 6-6-6z'/%3E%3C/svg%3E") !important;
   background-repeat: no-repeat !important;
   background-position: 12px 50% !important;
