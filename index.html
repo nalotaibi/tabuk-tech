@@ -374,103 +374,45 @@
     }
     .info-ok:active{ transform: translateY(1px); }
 
-  /* ===== Fix select RTL rendering + keep same size/look ===== */
+  /* ✅ Fix select RTL across Windows/iPhone — keep your exact size & style */
 html, body { -webkit-text-size-adjust: 100%; }
 
 button, input, select, textarea{
   font-family: 'Cairo','Segoe UI',Tahoma,sans-serif !important;
 }
 
-/* نفس مقاس تصميمك تقريبًا + يحل مشكلة تكسير العربية */
-.flex-inputs select{
-  direction: rtl !important;
-  unicode-bidi: plaintext;
-
-  /* مقاس قريب من قبل (مو كبير) */
-  height: 42px;                 /* بدل 56 */
-  font-size: 15px;              /* واضح بدون تضخيم */
-  font-weight: 800;
-  line-height: 1.2;
-
-  /* نفس الشكل */
-  border-radius: 14px;          /* مثل تصميمك الأساسي */
-  border: 1.5px solid #edf2f1;
-  background-color: #eee;
-
-  /* المحاذاة */
-  text-align: center;
-  text-align-last: center;
-
-  /* مساحة بسيطة لأيقونة السهم */
-  padding: 10px 12px 10px 40px;
-  box-sizing: border-box;
-
-  /* لون النص مثل الصورة (أزرق) */
-  color: var(--primary);
-
-  /* توحيد الشكل بين ويندوز/آيفون */
-  -webkit-appearance: none;
-  appearance: none;
-
-  /* سهمين أصغر (بدون تضخيم) */
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24'%3E%3Cpath fill='%23006699' d='M7.41 15.59 12 11l4.59 4.59L18 14.17l-6-6-6 6z'/%3E%3Cpath fill='%23006699' d='M7.41 8.41 12 13l4.59-4.59L18 9.83l-6 6-6-6z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: 14px 50%;
-}
-
-/* RTL داخل القائمة نفسها */
-.flex-inputs select option{
-  direction: rtl;
-  unicode-bidi: plaintext;
-}
-
-/* (اختياري) خليه نفس ارتفاع select */
-.flex-inputs input{
-  height: 44px;
-  font-size: 16px;
-  font-weight: 800;
-  line-height: 1.2;
-}
-
-    /* ✅ تثبيت شكل الـ select مثل الصورة + حل مشكلة RTL في Windows/iPhone */
-html, body { -webkit-text-size-adjust: 100%; }
-
-button, input, select, textarea{
-  font-family: 'Cairo','Segoe UI',Tahoma,sans-serif !important;
-}
-
-/* نفس مقاسك القديم (42px) ونفس شكل البطاقات */
 .flex-inputs select,
 .flex-inputs input{
   height: 42px !important;
-  font-size: 16px !important;
-  font-weight: 800;
-  line-height: 1.2;
-  box-sizing: border-box;
+  padding: 10px !important;
+  border-radius: 12px !important;
+  box-sizing: border-box !important;
+  text-align: center !important;
+  text-align-last: center !important;
+  font-size: 0.95rem !important;   /* نفس عندك بالأعلى */
+  font-weight: 800 !important;
+  line-height: 1.2 !important;
 }
 
-/* select فقط */
+/* select فقط: يمنع تكسير العربية + يوحّد السهم */
 .flex-inputs select{
   direction: rtl !important;
-  unicode-bidi: plaintext;          /* ✅ يمنع تكسير العربية */
-  text-align: center;
-  text-align-last: center;
+  unicode-bidi: plaintext !important;
+
   background: #eee !important;
   border: 1.5px solid #edf2f1 !important;
-  border-radius: 14px !important;
-  color: var(--primary) !important; /* ✅ الأزرق مثل الصورة */
+  color: var(--primary) !important;
 
-  -webkit-appearance: none;
-  appearance: none;
+  -webkit-appearance: none !important;
+  appearance: none !important;
 
-  /* ✅ سهمين بنفس شكل الصورة وبحجم صغير */
+  /* سهمين صغيرة مثل شكل الصورة بدون تكبير */
   padding: 10px 12px 10px 36px !important;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24'%3E%3Cpath fill='%23006699' d='M7.41 15.59 12 11l4.59 4.59L18 14.17l-6-6-6 6z'/%3E%3Cpath fill='%23006699' d='M7.41 8.41 12 13l4.59-4.59L18 9.83l-6 6-6-6z'/%3E%3C/svg%3E") !important;
   background-repeat: no-repeat !important;
   background-position: 12px 50% !important;
 }
 
-/* خيارات القائمة RTL */
 .flex-inputs select option{
   direction: rtl;
   unicode-bidi: plaintext;
