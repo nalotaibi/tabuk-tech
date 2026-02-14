@@ -195,19 +195,6 @@
       border-right: 3px solid var(--secondary);
     }
 
-    select, input {
-      width: 100%;
-      padding: 10px;
-      border-radius: 12px;
-      border: 1.5px solid #edf2f1;
-      font-family: inherit;
-      text-align: center;
-      font-size: 0.95rem;
-      outline: none;
-      box-sizing: border-box;
-      transition: all 0.3s;
-    }
-
     input:focus { border-color: var(--secondary); background: #f8fdff; }
     .flex-inputs { display: flex; gap: 8px; align-items: flex-end; }
     .flex-inputs > div { flex: 1; }
@@ -276,16 +263,6 @@
     .footer-note p { margin: 3px 0; }
     .footer-note .year { font-size: 0.7rem; color: #888; }
     .primary-num { color: var(--primary); font-weight: 900; }
-
-    .flex-inputs select,
-    .flex-inputs input {
-      height: 42px;
-      padding: 10px;
-      border-radius: 12px;
-      box-sizing: border-box;
-      text-align: center;
-      text-align-last: center;
-    }
 
     .info-overlay{
       display:none;
@@ -373,6 +350,45 @@
       box-shadow: 0 12px 28px rgba(0,0,0,0.12);
     }
     .info-ok:active{ transform: translateY(1px); }
+
+    /* الكود المطور لضمان ظهور النص في كل الأجهزة */
+    select, input {
+      width: 100%;
+      height: 42px; 
+      padding: 5px;
+      border-radius: 12px;
+      border: 1.5px solid #edf2f1;
+      font-family: inherit;
+      text-align: center;
+      font-size: 0.95rem;
+      outline: none;
+      box-sizing: border-box;
+      transition: all 0.3s;
+      background-color: white;
+      color: #2c3e50;
+      line-height: 1.2; /* يضمن ظهور الأحرف العربية كاملة */
+      display: block;
+    }
+
+    /* إصلاح خاص للآيفون والويندوز لمنع تداخل العناصر */
+    select {
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23006699' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: left 10px center;
+    }
+
+    .flex-inputs { 
+      display: flex; 
+      gap: 5px; 
+      align-items: flex-end; 
+    }
+    
+    .flex-inputs > div { 
+      flex: 1; 
+      min-width: 0; 
+    }
   </style>
 </head>
 
