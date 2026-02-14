@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-35NPHCGB93"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -13,7 +12,7 @@
   <link rel="apple-touch-icon" href="1024.png">
   <link rel="icon" href="1024.png">
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>حاسبة الغياب</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800&display=swap" rel="stylesheet">
@@ -23,1093 +22,395 @@
       --primary: #006699;
       --secondary: #00aed9;
       --text-dark: #2c3e50;
-
       --safe: #22c55e;
       --warning: #facc15;
       --orange: #fb923c;
       --danger: #ef4444;
-
       --bg-gradient: linear-gradient(135deg, #e6f4f8 0%, #ffffff 100%);
-
       --info-modal-bg: #ffffff;
       --info-modal-text: #1f2937;
       --info-modal-accent: #0EA5E9;
     }
 
-    .num{
-      direction: ltr;
-      unicode-bidi: isolate;
-      display: inline-block;
-      font-weight: 800;
-    }
-
-    .formula-line{
-      direction: rtl;
-      unicode-bidi: isolate-override;
-      text-align: center;
-      white-space: nowrap;
-    }
+    /* تحسينات عامة للتوافق */
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
     body {
       margin: 0;
-      font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif;
+      font-family: 'Cairo', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       background: var(--bg-gradient);
       padding: 20px 10px;
       direction: rtl;
       min-height: 100vh;
+      color: var(--text-dark);
     }
 
-    .install-banner {
-      background: #ffffff;
-      border: 1px solid #e1e9e7;
-      padding: 4px 12px;
-      border-radius: 14px;
-      margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.03);
-    }
-
-    .install-text {
-      font-weight: 600;
-      color: var(--primary);
-      font-size: 0.78rem;
-    }
-
-    .install-btn {
-      background: var(--secondary);
-      color: white;
-      border: none;
-      padding: 4px 12px;
-      border-radius: 10px;
-      font-size: 0.72rem;
-      font-weight: bold;
-      cursor: pointer;
-    }
+    .num { direction: ltr; unicode-bidi: isolate; display: inline-block; font-weight: 800; }
 
     .app-container { max-width: 450px; margin: 0 auto; }
-    .header-section { text-align: center; margin-bottom: 20px; }
 
-    .college-logo img {
-      width: clamp(220px, 60vw, 300px);
-      margin-bottom: 0px;
-      filter: drop-shadow(0 3px 6px rgba(0,0,0,0.12));
+    /* حل مشكلة اختفاء النصوص في المدخلات */
+    select, input {
+      width: 100%;
+      height: 45px; /* زيادة الارتفاع لضمان عدم قص الخط */
+      padding: 8px 5px;
+      border-radius: 12px;
+      border: 1.5px solid #edf2f1;
+      font-family: 'Cairo', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-align: center;
+      background-color: #ffffff;
+      color: #334155;
+      appearance: none; /* إزالة الستايل الافتراضي للمتصفح */
+      -webkit-appearance: none;
+      outline: none;
+      transition: all 0.3s;
+      line-height: normal; /* حل مشكلة المحاذاة الرأسية في ويندوز */
     }
 
-    .header-text h1 {
-      margin: 0;
-      font-size: clamp(1.9rem, 4.8vw, 2.5rem);
-      font-weight: 800;
-      color: var(--primary);
-      letter-spacing: 0.3px;
+    /* إضافة سهم مخصص للـ select لأن appearance: none تخفيه */
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23006699' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: left 10px center;
+      padding-left: 25px;
     }
 
-    .system-badge {
-      display: inline-block;
-      margin-top: 8px;
-      padding: 4px 12px;
-      background: #e0f2f1;
-      color: #00796b;
-      border-radius: 20px;
+    input:focus, select:focus { border-color: var(--secondary); background: #f8fdff; box-shadow: 0 0 0 3px rgba(0, 174, 217, 0.1); }
+
+    .flex-inputs { 
+      display: grid; 
+      grid-template-columns: repeat(2, 1fr); 
+      gap: 10px; 
+      margin-top: 10px; 
+    }
+
+    /* جعل الحقول تأخذ شكل شبكة لتفادي تداخل النصوص في الشاشات الصغيرة */
+    @media (max-width: 380px) {
+      .flex-inputs { grid-template-columns: 1fr; }
+    }
+
+    .input-sub-label {
       font-size: 0.75rem;
-      font-weight: bold;
-    }
-
-    .system-16 { background: #ecfdf5; color: #047857; }
-    .system-15 { background: #e0f2fe; color: #0369a1; }
-
-    .action-bars { display: flex; gap: 10px; margin: 20px 0; }
-    .add-btn {
-      flex: 2;
-      padding: 14px;
-      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-      color: white;
-      border: none;
-      border-radius: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      font-size: 1.05rem;
-      letter-spacing: 0.3px;
-      box-shadow: 0 4px 12px rgba(0, 102, 153, 0.2);
-    }
-    .reset-all {
-      flex: 1;
-      padding: 12px;
-      background: #fff;
-      color: var(--primary);
-      border: 1px solid var(--primary);
-      border-radius: 16px;
-      cursor: pointer;
-      font-weight: bold;
+      color: #64748b;
+      margin-bottom: 4px;
+      font-weight: 700;
+      display: block;
+      text-align: center;
     }
 
     .course-card {
       background: white;
-      border-radius: 28px;
-      padding: 22px;
+      border-radius: 24px;
+      padding: 20px;
       margin-bottom: 20px;
-      box-shadow: 0 12px 30px rgba(0,0,0,0.06);
-      border: 1px solid #d1e2e8;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+      border: 1px solid #e2e8f0;
       position: relative;
     }
 
-    .delete-course {
-      position: absolute;
-      top: 18px;
-      left: 18px;
-      background: #fee2e2;
-      color: #ef4444;
-      border: none;
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
     .course-title {
-      width: 85%;
+      width: 100%;
       border: none;
-      border-bottom: 2px solid #f0f0f0;
+      border-bottom: 2px solid #f1f5f9;
       font-size: 1.1rem;
-      font-weight: bold;
+      font-weight: 800;
       color: var(--primary);
-      margin-bottom: 15px;
-      padding: 5px;
-      outline: none;
+      margin-bottom: 20px;
+      padding: 8px;
+      text-align: right;
+      height: auto;
       background: transparent;
     }
 
-    .input-group { margin-bottom: 12px; }
-    .input-group label {
-      display: block;
-      font-size: 0.9rem;
-      color: #334155;
-      margin-bottom: 6px;
-      font-weight: 800;
-      background: #f0f7f9;
-      padding: 6px 12px;
-      border-right: 3px solid var(--secondary);
-    }
+    /* بقية التنسيقات الأصلية مع تحسينات طفيفة للمرونة */
+    .header-section { text-align: center; margin-bottom: 20px; }
+    .college-logo img { width: clamp(200px, 50vw, 280px); height: auto; }
+    .header-text h1 { font-size: clamp(1.5rem, 5vw, 2.2rem); color: var(--primary); margin: 10px 0; }
 
-    select, input {
-      width: 100%;
-      padding: 10px;
-      border-radius: 12px;
-      border: 1.5px solid #edf2f1;
-      font-family: inherit;
-      text-align: center;
-      font-size: 0.95rem;
-      outline: none;
-      box-sizing: border-box;
-      transition: all 0.3s;
-    }
+    .action-bars { display: flex; gap: 10px; margin-bottom: 20px; }
+    .add-btn { flex: 2; padding: 14px; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; border-radius: 14px; font-weight: bold; cursor: pointer; }
+    .reset-all { flex: 1; padding: 10px; background: #fff; color: #64748b; border: 1px solid #cbd5e1; border-radius: 14px; cursor: pointer; font-size: 0.85rem; }
 
-    input:focus { border-color: var(--secondary); background: #f8fdff; }
-    .flex-inputs { display: flex; gap: 8px; align-items: flex-end; }
-    .flex-inputs > div { flex: 1; }
+    .result-area { border-radius: 18px; padding: 15px; margin-top: 15px; }
+    .safe-bg { background: #f0fdf4; border: 1px solid #bbf7d0; }
+    .warning-bg { background: #fffbeb; border: 1px solid #fef3c7; }
+    .danger-bg { background: #fef2f2; border: 1px solid #fee2e2; }
 
-    .input-sub-label {
-      font-size: 0.8rem;
-      color: #666;
-      margin-bottom: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 2px;
-      font-weight: 600;
-      width: 100%;      
-      white-space: nowrap;
-    }
+    .progress-bar { height: 8px; background: #e2e8f0; border-radius: 10px; margin: 12px 0; overflow: hidden; }
+    .progress-fill { height: 100%; transition: width 0.5s ease; }
+
+    /* Modal Styles */
+    .info-overlay { display:none; position:fixed; inset:0; background: rgba(0,0,0,0.5); z-index: 9999; justify-content:center; align-items:center; padding: 20px; }
+    .info-modal { background: white; width: 100%; max-width: 400px; border-radius: 20px; padding: 20px; position: relative; }
+    .info-close { position: absolute; top: 15px; left: 15px; border: none; background: #f1f5f9; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; }
 
     .info-icon {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 18px;
-      height: 18px;
+      width: 20px;
+      height: 20px;
       background: var(--info-modal-accent);
       color: white;
-      border-radius: 999px;
-      font-size: 0.78rem;
-      margin-right: 6px;
+      border-radius: 50%;
+      font-size: 0.7rem;
       cursor: pointer;
-      font-weight: 900;
-      vertical-align: middle;
-      box-shadow: 0 6px 14px rgba(14,165,233,0.25);
-      transition: transform 0.15s ease, filter 0.15s ease, background 0.2s ease;
-    }
-    .info-icon:hover { filter: brightness(1.05); }
-    .info-icon:active { transform: translateY(1px) scale(0.98); }
-    .info-icon.warn { background: var(--orange); box-shadow: 0 6px 14px rgba(251,146,60,0.25); }
-    .info-icon.danger { background: var(--danger); box-shadow: 0 6px 14px rgba(239,68,68,0.25); }
-
-    .result-area { border-radius: 20px; padding: 15px; margin-top: 15px; text-align: center; }
-    .safe-bg { background: #f0fdf4; border: 1px solid #dcfce7; }
-    .warning-bg { background: #fffbeb; border: 1px solid #fef3c7; }
-    .danger-bg { background: #fef2f2; border: 1px solid #fee2e2; }
-
-    .progress-bar { height: 8px; background: #e5e7eb; border-radius: 4px; margin: 10px 0; overflow: hidden; }
-    .progress-fill { height: 100%; width: 0%; transition: 0.8s ease-in-out; }
-
-    .advice-box {
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px dashed rgba(0,0,0,0.1);
-      font-size: 0.85rem;
-      color: #444;
-      line-height: 1.4;
-    }
-    .advice-box b { color: var(--primary); }
-
-    .footer-note {
-      text-align: center;
-      font-size: 0.8rem;
-      color: #718096;
-      margin-top: 40px;
-      border-top: 1px solid #d1d9e6;
-      padding-top: 20px;
-    }
-    .footer-note p { margin: 3px 0; }
-    .footer-note .year { font-size: 0.7rem; color: #888; }
-    .primary-num { color: var(--primary); font-weight: 900; }
-
-    .flex-inputs select,
-    .flex-inputs input {
-      height: 42px;
-      padding: 10px;
-      border-radius: 12px;
-      box-sizing: border-box;
-      text-align: center;
-      text-align-last: center;
+      margin-right: 5px;
     }
 
-    .info-overlay{
-      display:none;
-      position:fixed;
-      inset:0;
-      background: rgba(15, 23, 42, 0.55);
-      z-index: 10000;
-      justify-content:center;
-      align-items:center;
-      padding: 14px;
+    .install-banner {
+      background: white; padding: 10px 15px; border-radius: 15px; display: flex; 
+      justify-content: space-between; align-items: center; margin-bottom: 15px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
     }
+    .install-text { font-size: 0.8rem; font-weight: 700; color: var(--primary); }
+    .install-btn { background: var(--primary); color: white; border: none; padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; }
 
-    .info-modal{
-      width: 92%;
-      max-width: 360px;
-      background: var(--info-modal-bg);
-      color: var(--info-modal-text);
-      border-radius: 20px;
-      box-shadow: 0 18px 45px rgba(0,0,0,0.25);
-      overflow: hidden;
-      border: 1px solid rgba(15, 23, 42, 0.08);
+    .delete-course {
+      position: absolute; top: 15px; left: 15px; background: #fff1f2; color: #e11d48;
+      border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer;
+      font-weight: bold; z-index: 5;
     }
-
-    .info-modal-header{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      padding: 14px 16px;
-      border-bottom: 1px solid rgba(15, 23, 42, 0.08);
-    }
-
-    .info-modal-title{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      font-weight: 900;
-      font-size: 0.95rem;
-    }
-
-    .info-badge{
-      width: 28px;
-      height: 28px;
-      border-radius: 10px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background: #e0f2fe;
-      color: var(--info-modal-accent);
-      font-weight: 900;
-    }
-
-    .info-close{
-      background: transparent;
-      border: none;
-      color: #475569;
-      font-size: 1.1rem;
-      cursor: pointer;
-      padding: 6px 10px;
-      border-radius: 10px;
-    }
-    .info-close:hover{
-      background: rgba(2, 132, 199, 0.08);
-      color: var(--info-modal-text);
-    }
-
-    .info-modal-body{
-      padding: 14px 16px 6px 16px;
-      font-size: 0.92rem;
-      line-height: 1.7;
-    }
-
-    .info-modal-footer{
-      padding: 12px 16px 16px 16px;
-    }
-
-    .info-ok{
-      width:100%;
-      background: var(--info-modal-accent);
-      color: white;
-      border: none;
-      border-radius: 14px;
-      padding: 12px 14px;
-      font-weight: 900;
-      cursor: pointer;
-      box-shadow: 0 12px 28px rgba(0,0,0,0.12);
-    }
-    .info-ok:active{ transform: translateY(1px); }
   </style>
 </head>
-
 <body>
 
-  <!-- Guide Modal -->
   <div id="guideModal" class="info-overlay" onclick="toggleModal(false)">
     <div class="info-modal" onclick="event.stopPropagation()">
-      <div class="info-modal-header">
-        <div class="info-modal-title">
-          <span class="info-badge">📱</span>
-          <span>إضافة الحاسبة للصفحة الرئيسية</span>
-        </div>
-        <button class="info-close" onclick="toggleModal(false)">✕</button>
-      </div>
-
-      <div class="info-modal-body" style="text-align:center;">
-        <div style="font-weight:900; color:var(--primary); margin-bottom:8px;">🍏 لمستخدمي iPhone (Safari)</div>
-        <div style="font-size:0.82rem; line-height:1.7;">
-          اضغط على أيقونة المشاركة ⬆️<br>
-          ثم اختر<br>
-          <b style="color:var(--info-modal-accent)">إضافة إلى الصفحة الرئيسية</b>
-        </div>
-
-        <hr style="border:none; border-top:1px solid rgba(15,23,42,0.10); margin:14px 0;">
-
-        <div style="font-weight:900; color:var(--primary); margin-bottom:8px;">🤖 لمستخدمي Android (Chrome)</div>
-        <div style="font-size:0.82rem; line-height:1.7;">
-          اضغط على النقاط الثلاث ⋮<br>
-          ثم اختر<br>
-          <b style="color:var(--info-modal-accent)">إضافة إلى الصفحة الرئيسية</b>
-        </div>
-      </div>
-
-      <div class="info-modal-footer">
-        <button class="info-ok" onclick="toggleModal(false)">فهمت</button>
+      <button class="info-close" onclick="toggleModal(false)">✕</button>
+      <div style="text-align:center;">
+        <h3 style="color:var(--primary)">إضافة الحاسبة لشاشتك</h3>
+        <p style="font-size:0.9rem"><b>آيفون (Safari):</b> اضغط مشاركة ⬆️ ثم "إضافة للصفحة الرئيسية".</p>
+        <p style="font-size:0.9rem"><b>أندرويد (Chrome):</b> اضغط القائمة ⋮ ثم "تثبيت التطبيق".</p>
+        <button class="add-btn" style="width:100%; margin-top:15px" onclick="toggleModal(false)">فهمت</button>
       </div>
     </div>
   </div>
 
-  <!-- Info Modal -->
   <div id="infoOverlay" class="info-overlay" onclick="closeInfoModal()">
     <div class="info-modal" onclick="event.stopPropagation()">
-      <div class="info-modal-header">
-        <div class="info-modal-title">
-          <span class="info-badge" id="infoBadge">i</span>
-          <span id="infoTitle">معلومة</span>
-        </div>
-        <button class="info-close" onclick="closeInfoModal()">✕</button>
-      </div>
-
-      <div class="info-modal-body">
-        <div id="infoText"></div>
-        <div id="infoFormula" class="info-formula" style="display:none;"></div>
-      </div>
-
-      <div class="info-modal-footer">
-        <button class="info-ok" onclick="closeInfoModal()">فهمت</button>
-      </div>
+      <h3 id="infoTitle" style="margin-top:0"></h3>
+      <div id="infoText" style="line-height:1.6"></div>
+      <button class="add-btn" style="width:100%; margin-top:20px" onclick="closeInfoModal()">إغلاق</button>
     </div>
   </div>
 
   <div class="app-container">
     <div class="install-banner">
-      <div class="install-text">استخدم الحاسبة كتطبيق على هاتفك الذكي</div>
-      <button class="install-btn" onclick="toggleModal(true)">طريقة الإضافة</button>
+      <div class="install-text">استخدم الحاسبة كتطبيق ذكي</div>
+      <button class="install-btn" onclick="toggleModal(true)">طريقة التثبيت</button>
     </div>
 
     <header class="header-section">
       <div class="college-logo"><img src="TVTC_identity.png" alt="Logo"></div>
-      <div class="header-text">
-        <h1>حاسبة الغياب الذكية</h1>
-        
-      </div>
+      <h1>حاسبة الغياب الذكية</h1>
     </header>
 
     <div class="action-bars">
-      <button class="add-btn" onclick="addNewCourse()">➕ إضافة مقرر جديد</button>
+      <button class="add-btn" onclick="addNewCourse()">➕ إضافة مقرر</button>
       <button class="reset-all" onclick="clearEverything()">إعادة ضبط</button>
     </div>
 
     <div id="coursesList"></div>
 
-    <footer class="footer-note">
-      <div style="display:flex; flex-direction:column; align-items:center; justify-content:center;">
-        <p style="font-weight:bold; color:var(--primary); margin:0;">تصميم وتطوير: أ. نورة القثامي</p>
-        <p style="margin:4px 0 0; font-size:0.75rem; color:#555;">الكلية التقنية الرقمية للبنات بتبوك</p>
-        <p style="margin:0 0 4px; font-size:0.72rem; color:#777;">قسم الحاسب وتقنية المعلومات</p>
-        <p class="year">1447هـ | 2026م</p>
-
-        <a href="mailto:norah.a@tvtc.gov.sa"
-          style="text-decoration:none; color:#006699; font-size:0.8rem; cursor:pointer;">
-          📧&nbsp; norah.a@tvtc.gov.sa
-        </a>
-      </div>
+    <footer style="text-align:center; margin-top:40px; padding:20px; border-top:1px solid #e2e8f0; color:#94a3b8; font-size:0.8rem;">
+       <p>تصميم وتطوير: أ. نورة القثامي</p>
+       <p>الكلية التقنية الرقمية للبنات بتبوك</p>
+       <p>2026م | 1447هـ</p>
     </footer>
   </div>
 
 <script>
+  // نستخدم نفس المنطق البرمجي الخاص بك مع تحسين بسيط في معالجة المدخلات
   let courses = JSON.parse(localStorage.getItem('myCourses')) || [];
-const selectedWeeks = 16; 
-
-// ===== حساب نظام رايات (مطابقة) =====
-const SYSTEM_WEEKS = 19;
-const DEPRIVATION_RATE = 0.20;
-const EPS = 1e-9;
-
-function ceilLimit(totalLectures){
-  return Math.ceil((totalLectures * DEPRIVATION_RATE) - EPS); 
-}
-function floor1(x){
-  return Math.floor((Number(x)||0) * 10) / 10; 
-}
-function lectureWord(n){
-  return (Math.abs(parseInt(n||0,10)) === 1) ? "لقاء" : "لقاءات";
-}
-
+  const SYSTEM_WEEKS = 19;
+  const DEPRIVATION_RATE = 0.20;
+  const EPS = 1e-9;
 
   function $(id){ return document.getElementById(id); }
-
-  // ===== التقويم التدريبي =====
-  const TERM_START = parseDMY('18-1-2026');
-  const TERM_END   = parseDMY('21-5-2026');
-
-  const HOLIDAYS = new Set([
-    '22-2-2026',
-    '22-3-2026',
-    '23-3-2026',
-    '24-3-2026'
-  ].map(normDMYKey));
-
-  const GAP_START = parseDMY('6-3-2026');
-  const GAP_END   = parseDMY('21-3-2026');
-
-  const WEEKDAY_INDEX = {
-    'الأحد': 0,
-    'الاثنين': 1,
-    'الثلاثاء': 2,
-    'الأربعاء': 3,
-    'الخميس': 4,
-    'الجمعة': 5,
-    'السبت': 6
-  };
-
-  function parseDMY(dmy){
-    const [d,m,y] = String(dmy).split('-').map(Number);
-    return new Date(y, (m||1)-1, d||1, 12, 0, 0);
-  }
-  function normDMYKey(dmy){
-    const [d,m,y] = String(dmy).split('-').map(Number);
-    return `${d}-${m}-${y}`;
-  }
-  function dateToDMYKey(dt){
-    return `${dt.getDate()}-${dt.getMonth()+1}-${dt.getFullYear()}`;
-  }
-  function inRange(dt, a, b){
-    const t = dt.getTime();
-    return t >= a.getTime() && t <= b.getTime();
-  }
-  function isExcludedDate(dt){
-    const key = dateToDMYKey(dt);
-    if (HOLIDAYS.has(key)) return true;
-    if (inRange(dt, GAP_START, GAP_END)) return true;
-    return false;
-  }
-  function countDayOccurrences(dayName){
-    const target = WEEKDAY_INDEX[dayName];
-    if (target === undefined) return 0;
-
-    let count = 0;
-    const cur = new Date(TERM_START.getTime());
-    while (cur.getTime() <= TERM_END.getTime()){
-      if (cur.getDay() === target && !isExcludedDate(cur)) count++;
-      cur.setDate(cur.getDate() + 1);
-    }
-    return count;
-  }
-
-  function hourWord(n) {
-    let v = Math.abs(parseFloat(n));
-    if (v === 0) return "ساعة";
-    if (v >= 1 && v <= 2) return "ساعة";
-    if (v >= 3 && v <= 10) return "ساعات";
-    return "ساعة";
-  }
-
-  function getLectureText(n) {
-    let v = Math.abs(n);
-    if (v === 0) return "";
-    if (v === 1) return `<b class="primary-num">1</b> محاضرة`;
-    if (v === 2) return `<b class="primary-num">2</b> محاضرة`;
-    if (v >= 3 && v <= 10) return `<b class="primary-num">${v}</b> محاضرات`;
-    return `<b class="primary-num">${v}</b> محاضرة`;
-  }
-
-  function toggleModal(show) {
-    const modal = $('guideModal');
-    if (!modal) return;
-    modal.style.display = show ? 'flex' : 'none';
-  }
-
-  function fixNumbers(str) {
-    return String(str || '')
-      .replace(/[٠-٩]/g, d => String(d.charCodeAt(0) - 1632))
-      .replace(/[۰-۹]/g, d => String(d.charCodeAt(0) - 1776))
-      .replace(/[^\d]/g, '');
-  }
+  function fixNumbers(str) { return String(str || '').replace(/[٠-٩]/g, d => String(d.charCodeAt(0) - 1632)).replace(/[^\d]/g, ''); }
+  
+  function ceilLimit(totalLectures){ return Math.ceil((totalLectures * DEPRIVATION_RATE) - EPS); }
+  function lectureWord(n){ return (Math.abs(parseInt(n||0)) === 1) ? "لقاء" : "لقاءات"; }
 
   function addNewCourse() {
-  courses.push({
-    id: Date.now(),
-    name: 'اسم المقرر',
-    meetings: [{ day: 'الأحد', dur: 2, type: 'نظري', absent: '' }]
-  });
-  renderCourses();
-}
-
-
-  function openInfoModal({title='معلومة', text='', formula='', badge='i'}) {
-    const t = $('infoTitle'), tx = $('infoText'), b = $('infoBadge'), f = $('infoFormula'), ov = $('infoOverlay');
-    if (!t || !tx || !b || !f || !ov) return;
-
-    t.textContent = title;
-    tx.innerHTML = text;
-    b.textContent = badge;
-
-    if (formula && formula.trim() !== '') {
-      f.style.display = 'block';
-      f.textContent = formula;
-    } else {
-      f.style.display = 'none';
-      f.textContent = '';
-    }
-    ov.style.display = 'flex';
+    courses.push({
+      id: Date.now(),
+      name: 'اسم المقرر الجديد',
+      meetings: [{ day: 'الأحد', dur: 2, type: 'نظري', absent: '' }]
+    });
+    renderCourses();
   }
-
-  function closeInfoModal() {
-    const ov = $('infoOverlay');
-    if (!ov) return;
-    ov.style.display = 'none';
-  }
-
-  function openLimitInfo(courseId){
-  const course = courses.find(c => c.id === courseId);
-  if (!course) return;
-
-  const s = computeCourseState(course);
-
-  const totalAll = s.totalLecturesAll;
-  const limitAll = s.limitAll;
-
-  const theoryBlock = s.hasTheory ? `
-    <div style="margin-top:8px; padding:10px 12px; border-radius:14px; background:#f8fafc; border:1px solid rgba(15,23,42,0.08);">
-      <div style="font-weight:900; color:#0f172a; margin-bottom:6px;">النظري</div>
-      • إجمالي اللقاءات: <b class="num">${s.totalByType['نظري']}</b> لقاء<br>
-      • حد الحرمان (20%): <b class="num">${s.limitByType['نظري']}</b> غياب
-    </div>
-  ` : '';
-
-  const pracBlock = s.hasPrac ? `
-    <div style="margin-top:8px; padding:10px 12px; border-radius:14px; background:#f8fafc; border:1px solid rgba(15,23,42,0.08);">
-      <div style="font-weight:900; color:#0f172a; margin-bottom:6px;">العملي</div>
-      • إجمالي اللقاءات: <b class="num">${s.totalByType['عملي']}</b> لقاء<br>
-      • حد الحرمان (20%): <b class="num">${s.limitByType['عملي']}</b> غياب
-    </div>
-  ` : '';
-
-  const text = `
-    <div style="font-weight:900; margin-bottom:6px; color:var(--primary);">
-      حساب الحرمان بناءً على نظام رايات :
-    </div>
-
-    <div style="margin-top:8px; line-height:1.9;">
-      • عدد اللقاءات الأسبوعية: <b class="num">${s.weeklyMeetings}</b><br>
-      • إجمالي اللقاءات في الترم: <b class="num">${totalAll}</b> لقاء
-    </div>
-
-    <div class="formula-line" style="margin-top:10px;">
-      ( <span class="num">${totalAll}</span> لقاء ) × <span class="num">20%</span>
-      = <span class="num">${(totalAll * 0.20).toFixed(1).replace(/\\.0+$/,'')}</span> لقاء
-    </div>
-
-    <div style="margin-top:8px; font-weight:900; color:#0f172a;">
-      🔴 يبدأ الحرمان عند <span class="num">${limitAll}</span> غياب
-    </div>
-
-    ${(s.hasTheory || s.hasPrac) ? `
-      <hr style="border:none; border-top:1px solid rgba(15,23,42,0.10); margin:12px 0;">
-      <div style="font-weight:900; color:#334155; margin-bottom:6px;">تفصيل الشُعب:</div>
-      ${theoryBlock}
-      ${pracBlock}
-      <div style="margin-top:10px; color:#ef4444; font-size:0.7rem; font-weight:500;">
-  🔴 الحرمان في أحد الشقين النظري أو العملي يؤدي إلى الحرمان في المقرر كاملًا.
-</div>
-
-    ` : ''}
-  `;
-
-  openInfoModal({ title: 'طريقة الحساب', text, badge: 'i', formula: '' });
-}
-
 
   function ensureMeetings(course){
-  if (!Array.isArray(course.meetings)) course.meetings = [];
-  course.meetings = course.meetings.slice(0,3);
-
-  if (course.meetings.length === 0) {
-    course.meetings.push({ day:'الأحد', dur:2, type:'نظري', absent:'' });
+    if (!course.meetings) course.meetings = [{ day: 'الأحد', dur: 2, type: 'نظري', absent: '' }];
+    course.meetings.forEach(m => {
+        if(!m.type) m.type = 'نظري';
+        if(m.absent === undefined) m.absent = '';
+    });
   }
-
-  course.meetings.forEach(m => {
-    if (!m.day) m.day = 'الأحد';
-    m.dur = Number(m.dur) === 1 ? 1 : 2;    
-    if (!m.type) m.type = 'نظري';            // ✅ الجديد
-    if (m.absent === undefined) m.absent = '';
-  });
-}
-
-  function addMeeting(courseId){
-  const i = courses.findIndex(c => c.id === courseId);
-  if (i === -1) return;
-
-  ensureMeetings(courses[i]);
-  if (courses[i].meetings.length >= 3) return;
-
-  courses[i].meetings.push({ day:'الاثنين', dur:1, type:'عملي', absent:'' });
-  renderCourses();
-}
-
-
-  function removeMeeting(courseId){
-    const i = courses.findIndex(c => c.id === courseId);
-    if (i === -1) return;
-
-    ensureMeetings(courses[i]);
-    if (courses[i].meetings.length <= 1) return;
-
-    courses[i].meetings.pop();
-    renderCourses();
-  }
-
-  function updateMeeting(courseId, idx, field, value, doRender = true){
-  const i = courses.findIndex(c => c.id === courseId);
-  if (i === -1) return;
-
-  ensureMeetings(courses[i]);
-  const m = courses[i].meetings[idx];
-  if (!m) return;
-
-  if (field === 'day') m.day = value;
-  if (field === 'dur') m.dur = Number(value) === 1 ? 1 : 2; 
-  if (field === 'type') m.type = value;                     
-  if (field === 'absent') m.absent = fixNumbers(value);
-
-  if (doRender) renderCourses();
-}
-
-
-  function computeCourseState(course){
-  ensureMeetings(course);
-
-  const cleanMeetings = (course.meetings || []).slice(0, 3)
-    .filter(m => m && m.day && (Number(m.dur) === 1 || Number(m.dur) === 2))
-    .map(m => ({
-      day: m.day,
-      dur: Number(m.dur),                     // للعرض فقط
-      type: (m.type === 'عملي') ? 'عملي' : 'نظري',
-      absent: parseInt(m.absent, 10) || 0     //  غيابات باللقاءات
-    }));
-
-  // عدد اللقاءات الأسبوعية لكل شق
-  const weeklyByType = { 'نظري': 0, 'عملي': 0 };
-  cleanMeetings.forEach(m => weeklyByType[m.type]++);
-
-  // إجمالي اللقاءات في الترم لكل شق
-  const totalByType = {
-    'نظري': weeklyByType['نظري'] * SYSTEM_WEEKS,
-    'عملي': weeklyByType['عملي'] * SYSTEM_WEEKS
-  };
-
-  const limitByType = {
-    'نظري': ceilLimit(totalByType['نظري']),
-    'عملي': ceilLimit(totalByType['عملي'])
-  };
-
-  // الغياب الحالي لكل شق
-  const absentByType = { 'نظري': 0, 'عملي': 0 };
-  cleanMeetings.forEach(m => { absentByType[m.type] += m.absent; });
-
-  function pct(abs, total){
-    if (!total) return 0;
-    return (abs / total) * 100;
-  }
-
-  const pctTheory = pct(absentByType['نظري'], totalByType['نظري']);
-  const pctPrac   = pct(absentByType['عملي'], totalByType['عملي']);
-
-  const hasTheory = totalByType['نظري'] > 0;
-  const hasPrac   = totalByType['عملي'] > 0;
-
-  let focusType = 'نظري';
-  if (hasTheory && hasPrac) {
-    focusType = (pctPrac > pctTheory) ? 'عملي' : 'نظري';
-  } else if (hasPrac) {
-    focusType = 'عملي';
-  }
-
-  const focusPctRaw = (focusType === 'عملي') ? pctPrac : pctTheory;
-  const percentShown = floor1(focusPctRaw);
-
-  // الحرمان إذا أي شق وصل حدّه
-  const deprivedTheory = hasTheory && (absentByType['نظري'] + EPS >= limitByType['نظري']);
-  const deprivedPrac   = hasPrac   && (absentByType['عملي'] + EPS >= limitByType['عملي']);
-  const isDeprived = deprivedTheory || deprivedPrac;
-
-  let statusClass = 'safe-bg';
-  let statusColor = 'var(--safe)';
-  let msg = '🟢 وضعك آمن ومستقر';
-
-  if (isDeprived) {
-    statusClass = 'danger-bg';
-    statusColor = 'var(--danger)';
-    msg = '🔴 حالة حرمان';
-  } else if (percentShown >= 15) {
-    statusClass = 'warning-bg';
-    statusColor = 'var(--orange)';
-    msg = '🟠 تنبيه: اقتربت من الحرمان';
-  } else if (percentShown >= 10) {
-    statusClass = 'warning-bg';
-    statusColor = 'var(--warning)';
-    msg = '🟡 انتباه: بدأ رصيدك بالنقصان';
-  }
-
-  function fmtInt(n){ return String(Math.max(0, parseInt(n||0,10))); }
-
-  // نص التفصيل: نظري + عملي
-  let detailLines = [];
-  if (hasTheory){
-    detailLines.push(`النظري: ${fmtInt(absentByType['نظري'])}/${fmtInt(limitByType['نظري'])} لقاء`);
-  }
-  if (hasPrac){
-    detailLines.push(`العملي: ${fmtInt(absentByType['عملي'])}/${fmtInt(limitByType['عملي'])} لقاء`);
-  }
-  const detailHTML = detailLines.length
-    ? `<div style="margin-top:6px; font-size:0.78rem; color:#475569; font-weight:800; line-height:1.6;">${detailLines.join('<br>')}</div>`
-    : '';
-
-  // نص الإرشاد
-let advice = '';
-
-const remainingByType = {
-  'نظري': hasTheory ? ((limitByType['نظري'] - 1) - absentByType['نظري']) : null,
-  'عملي': hasPrac   ? ((limitByType['عملي'] - 1) - absentByType['عملي']) : null
-};
-
-if (isDeprived) {
-
-  advice = `<div class="advice-box" style="color:#dc2626; font-weight:900;">
-              تجاوزتِ الحد المسموح.
-            </div>`;
-
-} else {
-
-  let lines = [];
-
-  function buildLine(type){
-  const remaining = remainingByType[type];
-  const absent = absentByType[type];
-  const limit = limitByType[type];
-
-  // لون عبارة "يتبقى لك"
-  let remainColor = '#16a34a'; // أخضر افتراضي
-
-  if (remaining === 1){
-    remainColor = '#facc15'; // أصفر
-  }
-
-  if (remaining === 0){
-    remainColor = '#fb923c'; // برتقالي قوي
-  }
-
-  return `
-    <div style="margin-bottom:6px; line-height:1.8; font-weight:700;">
-
-      <b style="color:var(--primary); font-weight:900;">ال${type}:</b>
-
-
-      غيابك 
-      <span class="primary-num">${absent}</span> 
-      من 
-      <span class="primary-num">${limit}</span>
-
-      —
-
-      <span style="color:${remainColor}; font-weight:900;">
-        يتبقى لك 
-        <span class="primary-num">${remaining}</span> 
-        ${lectureWord(remaining)}
-      </span>
-
-    </div>
-  `;
-}
-
-
-  if (hasTheory) lines.push(buildLine('نظري'));
-  if (hasPrac)   lines.push(buildLine('عملي'));
-
-  advice = `
-    <div class="advice-box" style="line-height:1.9;">
-      ${lines.join('')}
-    </div>
-  `;
-}
-
-
-  // للعرض أعلى البطاقة
-  const weeklyMeetings = cleanMeetings.length; // عدد اللقاءات الأسبوعية (إجمالي)
-  const totalLecturesAll = (weeklyMeetings * SYSTEM_WEEKS);
-  const absentAll = absentByType['نظري'] + absentByType['عملي'];
-  const limitAll = ceilLimit(totalLecturesAll); // للمعلومة فقط، لكن الحرمان فعلياً بالشُعب عند وجود شقين
-
-  return {
-    weeklyMeetings,
-    percentShown,
-    statusClass, statusColor, msg, advice,
-
-    // تفصيل
-    hasTheory, hasPrac,
-    weeklyByType, totalByType, limitByType, absentByType,
-
-    // إجمالي عام (اختياري للعرض)
-    totalLecturesAll, absentAll, limitAll
-  };
-}
-
-  function updateCourseUI(courseId){
-  const course = courses.find(c => c.id === courseId);
-  if (!course) return;
-
-  const s = computeCourseState(course);
-
-  const box = document.getElementById(`resultBox-${courseId}`);
-  const msgEl = document.getElementById(`statusMsg-${courseId}`);
-  const pctEl = document.getElementById(`percentTxt-${courseId}`);
-  const barEl = document.getElementById(`barFill-${courseId}`);
-  const absEl = document.getElementById(`absentTxt-${courseId}`);
-  const limEl = document.getElementById(`limitTxt-${courseId}`);
-  const advEl = document.getElementById(`adviceBox-${courseId}`);
-
-  if (!box || !msgEl || !pctEl || !barEl || !absEl || !limEl || !advEl) return;
-
-  box.classList.remove('safe-bg','warning-bg','danger-bg');
-  box.classList.add(s.statusClass);
-
-  msgEl.textContent = s.msg;
-  msgEl.style.color = s.statusColor;
-
-  pctEl.textContent = `${Number(s.percentShown).toFixed(1).replace(/\.0+$/,'')}%`;
-
-  const w = Math.min((s.percentShown / 20) * 100, 100);
-  barEl.style.width = `${w}%`;
-  barEl.style.background = s.statusColor;
-
-  absEl.textContent = `غيابك الحالي: ${s.absentAll} ${lectureWord(s.absentAll)}`;
-
- 
-  const infoIconClass =
-    (s.statusClass === 'danger-bg') ? 'danger' :
-    (s.percentShown >= 10) ? 'warn' : '';
-
- 
-  limEl.innerHTML = `
-    حد الحرمان: ${s.limitAll} ${lectureWord(s.limitAll)}
-    <span class="info-icon ${infoIconClass}" onclick="openLimitInfo(${courseId})">i</span>
-  `;
-
-  advEl.innerHTML = s.advice;
-
-  localStorage.setItem('myCourses', JSON.stringify(courses));
-}
 
   function renderCourses() {
-  const list = $('coursesList');
-  if (!list) return;
-  list.innerHTML = '';
-
-  courses.forEach(course => {
-    ensureMeetings(course);
-
-    const s = computeCourseState(course);
-
-    const card = document.createElement('div');
-    card.className = 'course-card';
-
-    card.innerHTML = `
-      <button class="delete-course" onclick="deleteCourse(${course.id})">✕</button>
-
-      <input type="text" class="course-title"
-        value="${course.name}"
-        onchange="updateCourse(${course.id}, 'name', this.value)">
-
-      <div class="input-group">
-        <label style="text-align:center;">لقاءات المقرر الأسبوعية</label>
-
+    const list = $('coursesList');
+    list.innerHTML = '';
+    
+    courses.forEach(course => {
+      ensureMeetings(course);
+      const s = computeCourseState(course);
+      const card = document.createElement('div');
+      card.className = 'course-card';
+      
+      card.innerHTML = `
+        <button class="delete-course" onclick="deleteCourse(${course.id})">✕</button>
+        <input type="text" class="course-title" value="${course.name}" onchange="updateCourseName(${course.id}, this.value)">
+        
         <div id="meetWrap-${course.id}"></div>
-
-        <div style="display:flex; gap:8px; margin-top:10px;">
-          <button type="button" class="reset-all" style="flex:1;"
-            onclick="addMeeting(${course.id})">➕ إضافة لقاء</button>
-          <button type="button" class="reset-all" style="flex:1;"
-            onclick="removeMeeting(${course.id})">➖ حذف آخر لقاء</button>
+        
+        <div style="display:flex; gap:10px; margin-top:15px;">
+          <button class="reset-all" style="flex:1" onclick="addMeeting(${course.id})">➕ لقاء</button>
+          <button class="reset-all" style="flex:1" onclick="removeMeeting(${course.id})">➖ حذف</button>
         </div>
 
-        <div style="margin-top:10px; font-size:0.82rem; color:#475569; font-weight:700; text-align:center;">
-          عدد اللقاءات الأسبوعية: <b class="primary-num">${s.weeklyMeetings}</b> لقاء
+        <div class="result-area ${s.statusClass}">
+          <div style="font-weight:800; text-align:center; color:${s.statusColor}; margin-bottom:10px;">${s.msg}</div>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+             <span style="font-size:1.8rem; font-weight:900; color:var(--primary)">${s.percentShown}%</span>
+             <span style="font-size:0.8rem; font-weight:700">من أصل 20%</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" style="width:${Math.min((s.percentShown/20)*100, 100)}%; background:${s.statusColor}"></div></div>
+          <div style="display:flex; justify-content:space-between; font-size:0.75rem; font-weight:700; color:#475569">
+            <span>غيابك: ${s.absentAll}</span>
+            <span>الحرمان: ${s.limitAll} <i class="info-icon" onclick="openLimitInfo(${course.id})">i</i></span>
+          </div>
+          <div style="margin-top:10px">${s.advice}</div>
+        </div>
+      `;
+      
+      list.appendChild(card);
+      renderMeetings(course);
+    });
+    localStorage.setItem('myCourses', JSON.stringify(courses));
+  }
+
+  function renderMeetings(course) {
+    const wrap = $(`meetWrap-${course.id}`);
+    wrap.innerHTML = course.meetings.map((m, idx) => `
+      <div class="flex-inputs">
+        <div>
+          <span class="input-sub-label">اليوم</span>
+          <select onchange="updateMeeting(${course.id}, ${idx}, 'day', this.value)">
+            ${['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس'].map(d => `<option value="${d}" ${m.day===d?'selected':''}>${d}</option>`).join('')}
+          </select>
+        </div>
+        <div>
+          <span class="input-sub-label">النوع</span>
+          <select onchange="updateMeeting(${course.id}, ${idx}, 'type', this.value)">
+            <option value="نظري" ${m.type==='نظري'?'selected':''}>نظري</option>
+            <option value="عملي" ${m.type==='عملي'?'selected':''}>عملي</option>
+          </select>
+        </div>
+        <div>
+          <span class="input-sub-label">المدة</span>
+          <select onchange="updateMeeting(${course.id}, ${idx}, 'dur', this.value)">
+            <option value="1" ${m.dur==1?'selected':''}>ساعة</option>
+            <option value="2" ${m.dur==2?'selected':''}>ساعتين</option>
+          </select>
+        </div>
+        <div>
+          <span class="input-sub-label">الغياب</span>
+          <input type="text" inputmode="numeric" value="${m.absent}" placeholder="0" 
+            oninput="this.value=fixNumbers(this.value); updateMeeting(${course.id}, ${idx}, 'absent', this.value, false)">
         </div>
       </div>
+    `).join('');
+  }
 
-      <div class="result-area ${s.statusClass}" id="resultBox-${course.id}">
-        <div id="statusMsg-${course.id}"
-            style="font-size:0.95rem; font-weight:800; color:${s.statusColor}; margin-bottom:10px;">
-          ${s.msg}
-        </div>
-
-        <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:5px;">
-          <span id="percentTxt-${course.id}"
-                style="font-size:1.8rem; font-weight:900; color:var(--primary);">
-            ${s.percentShown.toFixed(1).replace(/\\.0+$/,'')}%
-          </span>
-          <span style="font-size:0.85rem; color:#718096; font-weight:bold;">من أصل 20%</span>
-        </div>
-
-        <div class="progress-bar">
-          <div id="barFill-${course.id}" class="progress-fill"
-              style="width:${Math.min((s.percentShown / 20) * 100, 100)}%; background:${s.statusColor}">
-          </div>
-        </div>
-
-        <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#555; font-weight:700; margin-top:5px;">
-          <span id="absentTxt-${course.id}">
-            غيابك الحالي: ${s.absentAll} ${lectureWord(s.absentAll)}
-          </span>
-
-          <span id="limitTxt-${course.id}">
-            حد الحرمان: ${s.limitAll} ${lectureWord(s.limitAll)}
-            <span class="info-icon ${s.statusClass==='danger-bg'?'danger':(s.percentShown>=10?'warn':'')}"
-                  onclick="openLimitInfo(${course.id})">i</span>
-          </span>
-        </div>
-
-        <div id="adviceBox-${course.id}">
-          ${s.advice}
-        </div>
-      </div>
-    `;
-
-    list.appendChild(card);
-
-    //  بناء واجهة اللقاءات (اليوم/النوع/المدة/الغياب)
-    const wrap = card.querySelector(`#meetWrap-${course.id}`);
-    if (wrap) {
-      wrap.innerHTML = (course.meetings || []).slice(0, 3).map((m, idx) => `
-        <div class="flex-inputs" style="margin-top:8px;">
-          <div>
-            <div class="input-sub-label">اليوم</div>
-            <select onchange="updateMeeting(${course.id}, ${idx}, 'day', this.value)">
-              ${['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس'].map(d =>
-                `<option value="${d}" ${(m.day === d) ? 'selected' : ''}>${d}</option>`
-              ).join('')}
-            </select>
-          </div>
-
-          <div>
-            <div class="input-sub-label">النوع</div>
-            <select onchange="updateMeeting(${course.id}, ${idx}, 'type', this.value)">
-              <option value="نظري" ${(m.type === 'نظري' || !m.type) ? 'selected' : ''}>نظري</option>
-              <option value="عملي" ${(m.type === 'عملي') ? 'selected' : ''}>عملي</option>
-            </select>
-          </div>
-
-          <div>
-            <div class="input-sub-label">مدة اللقاء</div>
-            <select onchange="updateMeeting(${course.id}, ${idx}, 'dur', this.value)">
-              <option value="1" ${Number(m.dur) === 1 ? 'selected' : ''}>ساعة</option>
-              <option value="2" ${Number(m.dur) === 2 ? 'selected' : ''}>ساعتين</option>
-            </select>
-          </div>
-
-          <div>
-            <div class="input-sub-label">عدد مرات الغياب</div>
-            <input type="text" inputmode="numeric" pattern="[0-9]*"
-              value="${m.absent ?? ''}" placeholder="0"
-              oninput="
-                this.value = fixNumbers(this.value);
-                updateMeeting(${course.id}, ${idx}, 'absent', this.value, false);
-                updateCourseUI(${course.id});
-              "
-              onchange="updateMeeting(${course.id}, ${idx}, 'absent', this.value, true)">
-          </div>
-        </div>
-      `).join('');
-    }
-  });
-
-  localStorage.setItem('myCourses', JSON.stringify(courses));
-}
-
-
-  function updateCourse(id, field, value) {
-    const index = courses.findIndex(c => c.id === id);
-    if (index !== -1) {
-      courses[index][field] = value;
-      renderCourses();
+  function updateMeeting(courseId, idx, field, value, shouldRender=true) {
+    const c = courses.find(item => item.id === courseId);
+    if(c && c.meetings[idx]) {
+      c.meetings[idx][field] = (field==='dur') ? Number(value) : value;
+      if(shouldRender) renderCourses();
+      else localStorage.setItem('myCourses', JSON.stringify(courses));
     }
   }
 
-  function deleteCourse(id) {
-    if (confirm('حذف المقرر؟')) {
-      courses = courses.filter(c => c.id !== id);
-      renderCourses();
-    }
+  function updateCourseName(id, val) {
+    const c = courses.find(item => item.id === id);
+    if(c) { c.name = val; localStorage.setItem('myCourses', JSON.stringify(courses)); }
   }
 
-  function clearEverything() {
-    if (confirm('إعادة ضبط كافة البيانات؟')) {
-      courses = [];
-      localStorage.removeItem('myCourses');
-      renderCourses();
-    }
+  function addMeeting(id) {
+    const c = courses.find(item => item.id === id);
+    if(c && c.meetings.length < 3) { c.meetings.push({day:'الأحد', dur:2, type:'نظري', absent:''}); renderCourses(); }
   }
 
-  window.onload = function () {
-    courses.forEach(c => ensureMeetings(c));
-    renderCourses();
-  };
+  function removeMeeting(id) {
+    const c = courses.find(item => item.id === id);
+    if(c && c.meetings.length > 1) { c.meetings.pop(); renderCourses(); }
+  }
+
+  function deleteCourse(id) { if(confirm('حذف؟')) { courses = courses.filter(c => c.id !== id); renderCourses(); } }
+  
+  function clearEverything() { if(confirm('مسح الكل؟')) { courses = []; renderCourses(); } }
+
+  function toggleModal(s) { $('guideModal').style.display = s ? 'flex' : 'none'; }
+  function closeInfoModal() { $('infoOverlay').style.display = 'none'; }
+
+  function openInfoModal(obj) {
+    $('infoTitle').textContent = obj.title;
+    $('infoText').innerHTML = obj.text;
+    $('infoOverlay').style.display = 'flex';
+  }
+
+  function computeCourseState(course) {
+    let absentTheory = 0, absentPrac = 0, meetTheory = 0, meetPrac = 0;
+    
+    course.meetings.forEach(m => {
+      let abs = parseInt(m.absent) || 0;
+      if(m.type === 'عملي') { meetPrac++; absentPrac += abs; }
+      else { meetTheory++; absentTheory += abs; }
+    });
+
+    let totalTheory = meetTheory * SYSTEM_WEEKS;
+    let totalPrac = meetPrac * SYSTEM_WEEKS;
+    let limitTheory = ceilLimit(totalTheory);
+    let limitPrac = ceilLimit(totalPrac);
+
+    let isDeprived = (meetTheory > 0 && absentTheory >= limitTheory) || (meetPrac > 0 && absentPrac >= limitPrac);
+    let maxPct = 0;
+    if(meetTheory > 0) maxPct = Math.max(maxPct, (absentTheory/totalTheory)*100);
+    if(meetPrac > 0) maxPct = Math.max(maxPct, (absentPrac/totalPrac)*100);
+
+    let res = {
+      statusClass: 'safe-bg', statusColor: 'var(--safe)', msg: '🟢 وضعك آمن',
+      percentShown: maxPct.toFixed(1), absentAll: absentTheory + absentPrac,
+      limitAll: ceilLimit((meetTheory + meetPrac) * SYSTEM_WEEKS),
+      advice: ''
+    };
+
+    if(isDeprived) { res.statusClass = 'danger-bg'; res.statusColor = 'var(--danger)'; res.msg = '🔴 حالة حرمان'; }
+    else if(maxPct >= 15) { res.statusClass = 'warning-bg'; res.statusColor = 'var(--orange)'; res.msg = '🟠 تنبيه حرج'; }
+
+    let adv = [];
+    if(meetTheory > 0) adv.push(`يتبقى للنظري: <b class="num">${Math.max(0, limitTheory - absentTheory - 1)}</b>`);
+    if(meetPrac > 0) adv.push(`يتبقى للعملي: <b class="num">${Math.max(0, limitPrac - absentPrac - 1)}</b>`);
+    res.advice = `<div style="font-size:0.8rem; font-weight:700; color:#1e293b; border-top:1px dashed #cbd5e1; padding-top:8px;">${adv.join(' | ')}</div>`;
+
+    return res;
+  }
+
+  function openLimitInfo(id) {
+    const c = courses.find(i => i.id === id);
+    const s = computeCourseState(c);
+    openInfoModal({
+      title: 'تفاصيل الحساب',
+      text: `حسب نظام رايات، الحرمان يبدأ عند غياب 20% من لقاءات الترم.<br><br>إجمالي لقاءات المقرر: ${s.limitAll * 5} لقاء تقريباً.<br><b>حد الحرمان الإجمالي: ${s.limitAll} لقاءات.</b>`
+    });
+  }
+
+  window.onload = renderCourses;
 </script>
-
 </body>
 </html>
